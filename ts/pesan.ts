@@ -15,7 +15,7 @@ const get_jenis_verif = () => get_radio_input_value('jenis_verif')
 const get_verif_dengan = () => get_radio_input_value('verif_dengan')
 
 const loop = () => {
-    submit_button.innerHTML = `<strong>PESAN VERIF</strong> ${get_jenis_verif()}${input_nama_kegiatan.value ? '_' : ''}${input_nama_kegiatan.value} dengan ${get_verif_dengan()}`
+    submit_button.innerHTML = `<strong>DAFTAR VERIF</strong> ${get_jenis_verif()}${input_nama_kegiatan.value ? '_' : ''}${input_nama_kegiatan.value} dengan ${get_verif_dengan()}`
     window.requestAnimationFrame(loop)
 }
 

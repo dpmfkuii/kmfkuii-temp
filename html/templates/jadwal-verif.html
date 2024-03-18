@@ -1,0 +1,109 @@
+<style>
+    iframe {
+        margin: 0 !important;
+        padding: 0 !important;
+
+        box-sizing: border-box !important;
+
+        user-select: none !important;
+        -webkit-user-select: none !important;
+
+        touch-action: none !important;
+    }
+</style>
+
+<div id="jadwal-verif">
+    <h1>JADWAL VERIFIKASI</h1>
+    <div class="mb-3">
+        <div class="accordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button
+                        class="accordion-button"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#panels-jadwal-verif-antrean"
+                        aria-expanded="true"
+                        aria-controls="panels-jadwal-verif-antrean"
+                    >
+                        ANTREAN
+                        <span
+                            class="badge text-bg-secondary mx-2"
+                            id="jadwal-verif-antrean-badge"
+                            >0</span
+                        >
+                        <small>
+                            <strong>
+                                (menunggu konfirmasi untuk masuk kalender)
+                            </strong>
+                        </small>
+                    </button>
+                </h2>
+                <div
+                    id="panels-jadwal-verif-antrean"
+                    class="accordion-collapse collapse show"
+                >
+                    <div class="accordion-body">
+                        <div id="list-antrean-items">
+                            <i class="text-secondary">Tidak ada antrean.</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button
+                        class="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#panels-jadwal-verif-terkonfirmasi"
+                        aria-expanded="false"
+                        aria-controls="panels-jadwal-verif-terkonfirmasi"
+                    >
+                        TERKONFIRMASI
+                        <small class="ms-1">
+                            <strong>(sudah masuk kalender di bawah)</strong>
+                        </small>
+                    </button>
+                </h2>
+                <div
+                    id="panels-jadwal-verif-terkonfirmasi"
+                    class="accordion-collapse collapse show"
+                >
+                    <div class="accordion-body">
+                        <div id="iframe_width_reference"></div>
+                        <div style="overflow: hidden">
+                            <iframe
+                                src="https://docs.google.com/spreadsheets/d/1slLu83MhOM8fbXgiPQLBc6GG1A0whshGnTWnJtS8Z0g/edit?usp=sharing"
+                                style="transform: translate(-46px, -166px)"
+                                width="860"
+                                height="800"
+                                frameborder="0"
+                            ></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    () => {
+        const resize_iframe = () => {
+            try {
+                const iframe_width_reference = document.querySelector(
+                    "#iframe_width_reference"
+                );
+                document
+                    .querySelector("iframe")
+                    ?.setAttribute(
+                        "width",
+                        `${iframe_width_reference.clientWidth + 46}`
+                    );
+            } catch {}
+        };
+        window.addEventListener("resize", () => resize_iframe());
+        resize_iframe();
+    };
+</script>

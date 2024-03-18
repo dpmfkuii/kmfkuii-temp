@@ -2,6 +2,258 @@
 <html lang="en">
     <head>
         <insert-template-head />
+        <insert-template-firebase-head />
+        <script defer src="js/main.js"></script>
+        <script defer src="js/pesan.js"></script>
     </head>
-    <body></body>
+    <body>
+        <insert-template-nav />
+        <div class="container">
+            <div class="mb-3">
+                <a href="./" class="btn btn-primary">Kembali</a>
+            </div>
+            <h3 class="mb-3">Pendaftaran Verifikasi Proposal dan LPJ</h3>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-body-secondary">
+                        Ketentuan pendaftaran verifikasi:
+                    </h6>
+                    <p class="card-text">
+                        <insert-template-ketentuan-verif />
+                    </p>
+                </div>
+            </div>
+            <h3 class="mb-3">Isi Form</h3>
+            <form action="./action.html">
+                <div class="mb-3">
+                    <div class="row g-2">
+                        <div class="col-md">
+                            <div class="form-floating">
+                                <input
+                                    name="nama_pemesan"
+                                    type="text"
+                                    class="form-control"
+                                    id="input_nama_pemesan"
+                                    placeholder=""
+                                    required
+                                />
+                                <label for="input_nama_pemesan"
+                                    >Nama Pendaftar*</label
+                                >
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="form-floating">
+                                <select
+                                    name="organisasi"
+                                    class="form-select"
+                                    id="input_organisasi"
+                                    required
+                                >
+                                    <option disabled selected value>
+                                        -- Pilih organisasi --
+                                    </option>
+                                    <option value="LEM">LEM</option>
+                                    <option value="LPM CARDIOS">
+                                        LPM CARDIOS
+                                    </option>
+                                    <option value="CMIA">CMIA</option>
+                                    <option value="TBMM HUMERUS">
+                                        TBMM HUMERUS
+                                    </option>
+                                    <option value="SMART">SMART</option>
+                                    <option value="CIMSA">CIMSA</option>
+                                    <option value="Medical UII FC">
+                                        Medical UII FC
+                                    </option>
+                                    <option value="Basket">Basket</option>
+                                    <option value="Dara Meutuwah">
+                                        Dara Meutuwah
+                                    </option>
+                                    <option value="Badminton">Badminton</option>
+                                    <option value="Nada Medika">
+                                        Nada Medika
+                                    </option>
+                                    <option value="Non organisasi">
+                                        Non organisasi
+                                    </option>
+                                </select>
+                                <label for="input_organisasi"
+                                    >Organisasi*</label
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-floating">
+                        <input
+                            name="nama_kegiatan"
+                            type="text"
+                            class="form-control"
+                            id="input_nama_kegiatan"
+                            placeholder=""
+                            required
+                        />
+                        <label for="input_nama_kegiatan">Nama Kegiatan*</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-floating">
+                        <input
+                            name="deskripsi_kegiatan"
+                            type="text"
+                            class="form-control"
+                            id="input_deskripsi_kegiatan"
+                            placeholder=""
+                            required
+                        />
+                        <label for="input_deskripsi_kegiatan"
+                            >Deskripsi Kegiatan*</label
+                        >
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label">Jenis Verif*</label>
+                    <div class="col-sm-10">
+                        <input
+                            type="radio"
+                            name="jenis_verif"
+                            value="PROPOSAL"
+                            class="btn-check"
+                            id="input_jenis_verif_proposal"
+                            autocomplete="off"
+                            required
+                            checked
+                        />
+                        <label
+                            class="btn btn-outline-primary"
+                            for="input_jenis_verif_proposal"
+                            >PROPOSAL</label
+                        >
+
+                        <input
+                            type="radio"
+                            name="jenis_verif"
+                            value="LPJ"
+                            class="btn-check"
+                            id="input_jenis_verif_lpj"
+                            autocomplete="off"
+                        />
+                        <label
+                            class="btn btn-outline-primary"
+                            for="input_jenis_verif_lpj"
+                            >LPJ</label
+                        >
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label">Verif dengan*</label>
+                    <div class="col-sm-10">
+                        <input
+                            type="radio"
+                            name="verif_dengan"
+                            value="PRESIDIUM"
+                            class="btn-check"
+                            id="input_verif_dengan_presidium"
+                            autocomplete="off"
+                            required
+                            checked
+                        />
+                        <label
+                            class="btn btn-outline-primary"
+                            for="input_verif_dengan_presidium"
+                            >PRESIDIUM</label
+                        >
+                        <input
+                            type="radio"
+                            name="verif_dengan"
+                            value="LEM"
+                            class="btn-check"
+                            id="input_verif_dengan_lem"
+                            autocomplete="off"
+                            required
+                            disabled
+                        />
+                        <label
+                            class="btn btn-outline-warning"
+                            for="input_verif_dengan_lem"
+                            >LEM</label
+                        >
+                        <input
+                            type="radio"
+                            name="verif_dengan"
+                            value="DPM"
+                            class="btn-check"
+                            id="input_verif_dengan_dpm"
+                            autocomplete="off"
+                            disabled
+                        />
+                        <label
+                            class="btn btn-outline-info"
+                            for="input_verif_dengan_dpm"
+                            >DPM</label
+                        >
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label">Waktu Verif*</label>
+                    <div class="col-sm-10">
+                        <div class="row g-2">
+                            <div class="col-md">
+                                <div class="form-floating">
+                                    <input
+                                        name="tanggal_verif"
+                                        type="date"
+                                        class="form-control"
+                                        id="input_tanggal_verif"
+                                        required
+                                    />
+                                    <label for="input_tanggal_verif"
+                                        >Tanggal</label
+                                    >
+                                </div>
+                            </div>
+                            <div class="col-md">
+                                <div class="form-floating">
+                                    <select
+                                        name="waktu_verif"
+                                        class="form-select"
+                                        id="input_waktu_verif"
+                                        required
+                                    >
+                                        <option disabled selected value>
+                                            -- Pilih waktu --
+                                        </option>
+                                        <option value="15.30">15.30</option>
+                                        <option value="16.00">16.00</option>
+                                        <option value="16.30">16.30</option>
+                                        <option value="17.00">17.00</option>
+                                        <option value="17.30">17.30</option>
+                                        <option value="21.00">21.00</option>
+                                        <option value="21.30">21.30</option>
+                                    </select>
+                                    <label for="input_waktu_verif">Waktu</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <div class="col-sm-12">
+                        <button
+                            class="btn btn-success btn-lg"
+                            style="width: 100%"
+                            type="submit"
+                            id="input_submit_button"
+                        >
+                            DAFTAR VERIF
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <hr />
+            <insert-template-jadwal-verif />
+        </div>
+    </body>
 </html>
