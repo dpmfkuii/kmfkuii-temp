@@ -2,13 +2,25 @@
 
 ## Installation
 
+Clone the project
+
+```bash
+  git clone https://github.com/dpmfkuii/kmfkuii-temp.git
+```
+
+Go to the project directory
+
+```bash
+  cd kmfkuii-temp
+```
+
 Install the project
 
 ```bash
   npm run init
 ```
 
-## Run Locally
+## Development
 
 Start TypeScript development
 
@@ -16,13 +28,13 @@ Start TypeScript development
   tsc -w
 ```
 
-Start html development
+Start HTML development
 
 ```bash
   npm run dev
 ```
 
-Start firebase emu
+Start Firebase emu
 
 ```bash
   firebase emulators:start
