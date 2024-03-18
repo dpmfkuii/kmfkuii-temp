@@ -29,10 +29,12 @@ const build_html = async () => {
 
             for (let i = 0; i < page_content_lines.length; i++) {
                 if (page_content_lines[i].indexOf("<insert-template") > -1) {
-                    template_tags.push({
-                        i,
-                        line: page_content_lines[i],
-                    });
+                    if (page_content_lines[i].indexOf("<!--") < 0) {
+                        template_tags.push({
+                            i,
+                            line: page_content_lines[i],
+                        });
+                    }
                 }
             }
 
