@@ -1,7 +1,7 @@
 (() => {
     const url_params = new URLSearchParams(window.location.search)
 
-    const item: DaftarVerifProps = {
+    const item: VerifItem = {
         nama_pendaftar: url_params.get('nama_pendaftar') || '',
         organisasi: url_params.get('organisasi') || '',
         nama_kegiatan: url_params.get('nama_kegiatan') || '',
@@ -16,8 +16,8 @@
 
     const template_text = `VERIF ${item.jenis_verif}_${item.nama_kegiatan} dengan ${item.verif_dengan}`
 
-    const db_daftar_verif = firebase.database().ref(`/${G.DB_NAME_DAFTAR_VERIF}`)
-    db_daftar_verif.push(item)
+    const db_antrean_verif = firebase.database().ref(`/${G.DB_NAME_ANTREAN_VERIF}`)
+    db_antrean_verif.push(item)
         .then(() => {
             window.location.replace(`./endform-verif.html?template_text=${template_text}&${url_params.toString()}`)
         })

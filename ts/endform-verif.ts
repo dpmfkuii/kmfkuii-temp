@@ -1,6 +1,6 @@
 (() => {
     const url_params = new URLSearchParams(window.location.search)
-    const item: DaftarVerifProps = {
+    const item: VerifItem = {
         nama_pendaftar: url_params.get('nama_pendaftar') || '',
         organisasi: url_params.get('organisasi') || '',
         nama_kegiatan: url_params.get('nama_kegiatan') || '',

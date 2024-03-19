@@ -87,9 +87,9 @@
     (() => {
         document.addEventListener("DOMContentLoaded", () => {
             // update antrean
-            const db_daftar_verif = firebase
+            const db_antrean_verif = firebase
                 .database()
-                .ref(`/${G.DB_NAME_DAFTAR_VERIF}`);
+                .ref(`/${G.DB_NAME_ANTREAN_VERIF}`);
 
             const list_antrean_items = document.querySelector(
                 "#list_antrean_items"
@@ -97,7 +97,7 @@
             const jadwal_verif_antrean_badge = document.querySelector(
                 "#jadwal_verif_antrean_badge"
             );
-            db_daftar_verif.on("value", (snapshot) => {
+            db_antrean_verif.on("value", (snapshot) => {
                 const val = snapshot.val();
                 if (val) {
                     list_antrean_items.innerHTML = "";

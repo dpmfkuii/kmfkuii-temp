@@ -1,9 +1,9 @@
 declare const firebase: any
-declare const QRCode: any
+declare const Swal: any
 
 type StatusVerif = 'QUEUED' | 'CONFIRMED'
 
-type DaftarVerifProps = {
+type VerifItem = {
     nama_pendaftar: string
     organisasi: string
     nama_kegiatan: string
@@ -16,10 +16,27 @@ type DaftarVerifProps = {
     status: StatusVerif
 }
 
+// struktur db
+// daftar_verif: {
+//     "2024": {
+//         "03": {
+//             "29": {
+//                  [key]: VerifItem
+//                  [key]: VerifItem
+//              }
+//         }
+//     }
+// }
+// antrean_verif: {
+//     [key]: VerifItem
+//     [key]: VerifItem
+// }
+
 const G = {
     EMAIL_LEM: 'sekretariatlemfkuii@gmail.com',
     EMAIL_DPM: 'fkuiidpm@gmail.com',
     DB_NAME_DAFTAR_VERIF: 'daftar_verif',
+    DB_NAME_ANTREAN_VERIF: 'antrean_verif',
     C: {
         PRESIDIUM: "primary",
         LEM: "warning",
@@ -72,5 +89,12 @@ const common = {
         const dd = split[2]
         const d = new Date(date_string).getDay()
         return `${G.DAY_NAMES[d]}, ${dd} ${G.MONTH_NAMES[mm]} ${yyyy}`
-    }
+    },
+    get_date_string(date: Date) {
+        const m = date.getMonth() + 1
+        const mm = m < 10 ? `0${m}` : m
+        const d = date.getDate()
+        const dd = d < 10 ? `0${d}` : d
+        return `${date.getFullYear()}-${mm}-${dd}`
+    },
 }
