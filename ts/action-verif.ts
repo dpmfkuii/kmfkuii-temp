@@ -19,7 +19,7 @@
     const db_daftar_verif = firebase.database().ref(`/${G.DB_NAME_DAFTAR_VERIF}`)
     db_daftar_verif.push(item)
         .then(() => {
-            window.location.replace(`./endform.html?template_text=${template_text}&${url_params.toString()}`)
+            window.location.replace(`./endform-verif.html?template_text=${template_text}&${url_params.toString()}`)
         })
 
 })()

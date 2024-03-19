@@ -3,14 +3,14 @@
     <head>
         <insert-template-head />
         <insert-template-firebase-head />
-        <script defer src="js/endform.js"></script>
+        <script defer src="js/endform-verif.js"></script>
     </head>
     <body>
         <insert-template-nav />
         <div class="container">
             <h3 class="mb-3">Pendaftaran verif berhasil!</h3>
             <p>
-                Silahkan konfirmasi lewat email ke
+                Silahkan konfirmasi lewat <i>email</i> ke
                 <span id="email_confirmation" class="text-primary"></span>
                 dengan <i>subject</i>:
             </p>
@@ -35,6 +35,7 @@
                 <a href="./" class="btn btn-primary">Kembali</a>
             </div>
             <div class="mt-5">
+                <hr />
                 <insert-template-jadwal-verif />
             </div>
         </div>

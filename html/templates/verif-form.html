@@ -68,9 +68,9 @@
         <label for="input_deskripsi_kegiatan">Deskripsi Kegiatan*</label>
     </div>
 </div>
-<div class="mb-3 row">
-    <label class="col-sm-2 col-form-label">Jenis Kegiatan*</label>
-    <div class="col-sm-10">
+<div class="mb-3 row align-items-center">
+    <label class="col-md-2 col-form-label">Jenis Kegiatan*</label>
+    <div class="col-md-10">
         <input
             type="radio"
             name="jenis_kegiatan"
@@ -102,9 +102,9 @@
         >
     </div>
 </div>
-<div class="mb-3 row">
-    <label class="col-sm-2 col-form-label">Jenis Verif*</label>
-    <div class="col-sm-10">
+<div class="mb-3 row align-items-center">
+    <label class="col-md-2 col-form-label">Jenis Verif*</label>
+    <div class="col-md-10">
         <input
             type="radio"
             name="jenis_verif"
@@ -132,9 +132,9 @@
         >
     </div>
 </div>
-<div class="mb-3 row">
-    <label class="col-sm-2 col-form-label">Verif dengan*</label>
-    <div class="col-sm-10">
+<div class="mb-3 row align-items-center">
+    <label class="col-md-2 col-form-label">Verif dengan*</label>
+    <div class="col-md-10">
         <input
             type="radio"
             name="verif_dengan"
@@ -143,7 +143,7 @@
             id="input_verif_dengan_lem"
             autocomplete="off"
             required
-            disabled
+            checked
         />
         <label class="btn btn-outline-warning" for="input_verif_dengan_lem"
             >LEM</label
@@ -155,7 +155,6 @@
             class="btn-check"
             id="input_verif_dengan_dpm"
             autocomplete="off"
-            disabled
         />
         <label class="btn btn-outline-info" for="input_verif_dengan_dpm"
             >DPM</label
@@ -167,8 +166,6 @@
             class="btn-check"
             id="input_verif_dengan_presidium"
             autocomplete="off"
-            checked
-            required
         />
         <label
             class="btn btn-outline-primary"
@@ -177,9 +174,9 @@
         >
     </div>
 </div>
-<div class="mb-3 row">
-    <label class="col-sm-2 col-form-label">Waktu Verif*</label>
-    <div class="col-sm-10">
+<div class="mb-3 row align-items-center">
+    <label class="col-md-2 col-form-label">Waktu Verif*</label>
+    <div class="col-md-10">
         <div class="row g-2">
             <div class="col-md">
                 <div class="form-floating">
@@ -209,15 +206,13 @@
         </div>
     </div>
 </div>
-<div class="mb-3 row">
-    <div class="col-sm-12">
-        <button
-            class="btn btn-success btn-lg"
-            style="width: 100%"
-            type="submit"
-            id="input_submit_button"
-        >
-            DAFTAR VERIF
-        </button>
-    </div>
+<div class="d-grid">
+    <button
+        class="btn btn-success btn-lg"
+        style="width: 100%"
+        type="submit"
+        id="input_submit_button"
+    >
+        DAFTAR VERIF
+    </button>
 </div>
