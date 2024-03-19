@@ -9,7 +9,7 @@
         jenis_verif: url_params.get('jenis_verif') || '',
         verif_dengan: url_params.get('verif_dengan') || '',
         tanggal_verif: url_params.get('tanggal_verif') || '', // yyyy-mm-dd
-        waktu_verif: url_params.get('waktu_verif') || '',
+        jam_verif: url_params.get('jam_verif') || '',
         status: 'QUEUED',
     }
 

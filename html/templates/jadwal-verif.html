@@ -1,19 +1,13 @@
 <style>
     #jadwal_verif_iframe {
-        margin: 0 !important;
-        padding: 0 !important;
-
-        box-sizing: border-box !important;
-
         user-select: none !important;
         -webkit-user-select: none !important;
-
         touch-action: none !important;
     }
 </style>
 
 <div id="jadwal_verif">
-    <h1>JADWAL VERIFIKASI</h1>
+    <h2 class="mb-3">Jadwal Verifikasi</h2>
     <div class="mb-3">
         <div class="accordion">
             <div class="accordion-item">
@@ -91,17 +85,18 @@
 
 <script defer>
     (() => {
-        const db_daftar_verif = firebase
-            .database()
-            .ref(`/${G.DB_NAME_DAFTAR_VERIF}`);
+        document.addEventListener("DOMContentLoaded", () => {
+            // update antrean
+            const db_daftar_verif = firebase
+                .database()
+                .ref(`/${G.DB_NAME_DAFTAR_VERIF}`);
 
-        const list_antrean_items = document.querySelector(
-            "#list_antrean_items"
-        );
-        const jadwal_verif_antrean_badge = document.querySelector(
-            "#jadwal_verif_antrean_badge"
-        );
-        if (list_antrean_items !== null) {
+            const list_antrean_items = document.querySelector(
+                "#list_antrean_items"
+            );
+            const jadwal_verif_antrean_badge = document.querySelector(
+                "#jadwal_verif_antrean_badge"
+            );
             db_daftar_verif.on("value", (snapshot) => {
                 const val = snapshot.val();
                 if (val) {
@@ -119,7 +114,7 @@
                                     item.tanggal_verif
                                 )}
                             </strong> <span class="text-primary">${
-                                item.waktu_verif
+                                item.jam_verif
                             } WIB</span>
                             <div>
                                 <small>
@@ -150,30 +145,33 @@
                     }
                 }
             });
-        }
 
-        const jadwal_verif_iframe = document.querySelector(
-            "#jadwal_verif_iframe"
-        );
-        const iframe_width_reference = document.querySelector(
-            "#iframe_width_reference"
-        );
-        const accordion_body = document.querySelector(
-            "#panels_jadwal_verif_terkonfirmasi > .accordion-body"
-        );
-        const resize_iframe = () => {
-            try {
-                jadwal_verif_iframe.setAttribute(
-                    "width",
-                    `${iframe_width_reference.clientWidth + 46}`
-                );
-                accordion_body.setAttribute(
-                    "style",
-                    `height: ${jadwal_verif_iframe.clientHeight - 166 + 38}px`
-                );
-            } catch {}
-        };
-        window.addEventListener("resize", () => resize_iframe());
-        resize_iframe();
+            // update iframe on resize
+            const jadwal_verif_iframe = document.querySelector(
+                "#jadwal_verif_iframe"
+            );
+            const iframe_width_reference = document.querySelector(
+                "#iframe_width_reference"
+            );
+            const accordion_body = document.querySelector(
+                "#panels_jadwal_verif_terkonfirmasi > .accordion-body"
+            );
+            const resize_iframe = () => {
+                try {
+                    jadwal_verif_iframe.setAttribute(
+                        "width",
+                        `${iframe_width_reference.clientWidth + 46}`
+                    );
+                    accordion_body.setAttribute(
+                        "style",
+                        `height: ${
+                            jadwal_verif_iframe.clientHeight - 166 + 38
+                        }px`
+                    );
+                } catch {}
+            };
+            window.addEventListener("resize", () => resize_iframe());
+            resize_iframe();
+        });
     })();
 </script>

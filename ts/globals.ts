@@ -12,7 +12,7 @@ type DaftarVerifProps = {
     jenis_verif: string
     verif_dengan: string
     tanggal_verif: string
-    waktu_verif: string
+    jam_verif: string
     status: StatusVerif
 }
 
@@ -48,6 +48,20 @@ const G = {
         "11": "November",
         "12": "Desember",
     } as { [mm: string]: string },
+    DEFAULT_VERIF_HOUR_OPTIONS: [
+        '15.30',
+        '16.00',
+        '16.30',
+        '17.00',
+        '17.30',
+        '18.30',
+        '19.30',
+        '20.00',
+        '-- Bulan puasa --',
+        '20.30',
+        '21.00',
+        '21.30',
+    ]
 }
 
 const common = {
