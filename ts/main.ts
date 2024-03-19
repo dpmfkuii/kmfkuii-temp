@@ -8,6 +8,7 @@ type DaftarVerifProps = {
     organisasi: string
     nama_kegiatan: string
     deskripsi_kegiatan: string
+    jenis_kegiatan: string
     jenis_verif: string
     verif_dengan: string
     tanggal_verif: string

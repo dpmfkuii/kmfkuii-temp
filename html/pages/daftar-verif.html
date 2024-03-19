@@ -30,14 +30,14 @@
                         <div class="col-md">
                             <div class="form-floating">
                                 <input
-                                    name="nama_pemesan"
+                                    name="nama_pendaftar"
                                     type="text"
                                     class="form-control"
-                                    id="input_nama_pemesan"
+                                    id="input_nama_pendaftar"
                                     placeholder=""
                                     required
                                 />
-                                <label for="input_nama_pemesan"
+                                <label for="input_nama_pendaftar"
                                     >Nama Pendaftar*</label
                                 >
                             </div>
@@ -110,6 +110,42 @@
                         />
                         <label for="input_deskripsi_kegiatan"
                             >Deskripsi Kegiatan*</label
+                        >
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label"
+                        >Jenis Kegiatan*</label
+                    >
+                    <div class="col-sm-10">
+                        <input
+                            type="radio"
+                            name="jenis_kegiatan"
+                            value="INTERNAL"
+                            class="btn-check"
+                            id="input_jenis_kegiatan_internal"
+                            autocomplete="off"
+                            required
+                            checked
+                        />
+                        <label
+                            class="btn btn-outline-secondary"
+                            for="input_jenis_kegiatan_internal"
+                            >INTERNAL</label
+                        >
+
+                        <input
+                            type="radio"
+                            name="jenis_kegiatan"
+                            value="EKSTERNAL"
+                            class="btn-check"
+                            id="input_jenis_kegiatan_eksternal"
+                            autocomplete="off"
+                        />
+                        <label
+                            class="btn btn-outline-secondary"
+                            for="input_jenis_kegiatan_eksternal"
+                            >EKSTERNAL</label
                         >
                     </div>
                 </div>
