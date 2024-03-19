@@ -3,7 +3,6 @@
     <head>
         <insert-template-head />
         <insert-template-firebase-head />
-        <script defer src="js/main.js"></script>
         <script defer src="js/endform.js"></script>
     </head>
     <body>
@@ -11,8 +10,9 @@
         <div class="container">
             <h3 class="mb-3">Pendaftaran verif berhasil!</h3>
             <p>
-                Silahkan konfirmasi lewat email ke fkuiidpm@gmail.com dengan
-                <i>subject</i>:
+                Silahkan konfirmasi lewat email ke
+                <span id="email_confirmation" class="text-primary"></span>
+                dengan <i>subject</i>:
             </p>
             <div class="card mb-3">
                 <div class="card-body">
@@ -38,5 +38,6 @@
                 <insert-template-jadwal-verif />
             </div>
         </div>
+        <insert-template-footer />
     </body>
 </html>

@@ -1,0 +1,24 @@
+<div class="container mt-4 mb-3">
+    <footer>
+        <small>
+            <div class="row">
+                <div class="col-auto" id="copyright_text">&copy; 2024 KM FK UII</div>
+                <div class="col-auto">
+                    <a
+                        href="https://line.me/R/ti/p/%40aye2320t"
+                        class="btn-link text-secondary"
+                    >
+                        OA LINE
+                    </a>
+                </div>
+            </div>
+        </small>
+    </footer>
+</div>
+
+<script>
+    (() => {
+        const copyright_text = document.querySelector("#copyright_text");
+        copyright_text.innerHTML = `&copy; ${new Date().getFullYear()} KM FK UII`;
+    })();
+</script>

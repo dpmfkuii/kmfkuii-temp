@@ -67,13 +67,6 @@ const build_html = async () => {
             fs.writeFileSync(build_path, page_content);
         }
     });
-
-    // log(36, "i js:", `merging ${count} file${count === 1 ? "" : "s"}`);
-
-    // const build_path = path_resolve(public_path, "main.js");
-
-    // fs.writeFileSync(build_path, result);
-    // log(32, "+ js:", path_relative(build_path));
 };
 
 log(36, "i dev:", `start development${is_prod ? " (prod)" : ""}`);

@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <insert-template-head />
-        <script defer src="./js/home.js"></script>
+        <script defer src="js/home.js"></script>
     </head>
     <body>
         <insert-template-nav />
@@ -29,9 +29,10 @@
                         <div class="card-body">
                             <div class="d-grid gap-1 mb-3">
                                 <a
+                                    id="daftar_verifikasi_button"
                                     role="button"
                                     href="./daftar-verif.html"
-                                    class="btn btn-success"
+                                    class="btn btn-success disabled"
                                     >DAFTAR VERIFIKASI
                                 </a>
                                 <a
@@ -70,7 +71,7 @@
                                     role="button"
                                     href="./"
                                     class="btn btn-primary disabled"
-                                    >LIHAT LINIMASA SEKRE
+                                    ><i>COMING SOON</i>
                                 </a>
                             </div>
                             <h5 class="card-title">Linimasa Sekre KM FK UII</h5>
@@ -153,5 +154,6 @@
                 </div>
             </div>
         </div>
+        <insert-template-footer />
     </body>
 </html>

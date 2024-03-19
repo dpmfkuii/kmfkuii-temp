@@ -12,7 +12,7 @@
     }
 </style>
 
-<div id="jadwal-verif">
+<div id="jadwal_verif">
     <h1>JADWAL VERIFIKASI</h1>
     <div class="mb-3">
         <div class="accordion">
@@ -22,14 +22,14 @@
                         class="accordion-button"
                         type="button"
                         data-bs-toggle="collapse"
-                        data-bs-target="#panels-jadwal-verif-antrean"
+                        data-bs-target="#panels_jadwal_verif_antrean"
                         aria-expanded="true"
-                        aria-controls="panels-jadwal-verif-antrean"
+                        aria-controls="panels_jadwal_verif_antrean"
                     >
                         ANTREAN
                         <span
-                            class="badge text-bg-secondary mx-2"
-                            id="jadwal-verif-antrean-badge"
+                            class="badge text-bg-danger mx-2"
+                            id="jadwal_verif_antrean_badge"
                             >0</span
                         >
                         <small>
@@ -40,25 +40,25 @@
                     </button>
                 </h2>
                 <div
-                    id="panels-jadwal-verif-antrean"
+                    id="panels_jadwal_verif_antrean"
                     class="accordion-collapse collapse show"
                 >
                     <div class="accordion-body">
-                        <div id="list-antrean-items">
+                        <ol id="list_antrean_items">
                             <i class="text-secondary">Tidak ada antrean.</i>
-                        </div>
+                        </ol>
                     </div>
                 </div>
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button
-                        class="accordion-button collapsed"
+                        class="accordion-button"
                         type="button"
                         data-bs-toggle="collapse"
-                        data-bs-target="#panels-jadwal-verif-terkonfirmasi"
-                        aria-expanded="false"
-                        aria-controls="panels-jadwal-verif-terkonfirmasi"
+                        data-bs-target="#panels_jadwal_verif_terkonfirmasi"
+                        aria-expanded="true"
+                        aria-controls="panels_jadwal_verif_terkonfirmasi"
                     >
                         TERKONFIRMASI
                         <small class="ms-1">
@@ -67,13 +67,14 @@
                     </button>
                 </h2>
                 <div
-                    id="panels-jadwal-verif-terkonfirmasi"
+                    id="panels_jadwal_verif_terkonfirmasi"
                     class="accordion-collapse collapse show"
                 >
                     <div class="accordion-body">
                         <div id="iframe_width_reference"></div>
                         <div style="overflow: hidden">
                             <iframe
+                                id="jadwal_verif_iframe"
                                 src="https://docs.google.com/spreadsheets/d/1slLu83MhOM8fbXgiPQLBc6GG1A0whshGnTWnJtS8Z0g/edit?usp=sharing"
                                 style="transform: translate(-46px, -166px)"
                                 width="860"
@@ -88,22 +89,93 @@
     </div>
 </div>
 
-<script>
-    () => {
+<script defer>
+    (() => {
+        document.addEventListener("DOMContentLoaded", () => {
+            const db_daftar_verif = firebase
+                .database()
+                .ref(`/${G.DB_NAME_DAFTAR_VERIF}`);
+
+            const list_antrean_items = document.querySelector(
+                "#list_antrean_items"
+            );
+            const jadwal_verif_antrean_badge = document.querySelector(
+                "#jadwal_verif_antrean_badge"
+            );
+            if (list_antrean_items !== null) {
+                db_daftar_verif.on("value", (snapshot) => {
+                    const val = snapshot.val();
+                    if (val) {
+                        list_antrean_items.innerHTML = "";
+                        let antrean_count = 0;
+                        for (const key in val) {
+                            const item = val[key];
+                            if (item.status === "QUEUED") {
+                                const li = document.createElement("li");
+                                li.classList.add("mb-2");
+
+                                li.innerHTML = `
+                                <strong>
+                                    ${common.convert_date_string_to_text(
+                                        item.tanggal_verif
+                                    )}
+                                </strong> <span class="text-primary">${
+                                    item.waktu_verif
+                                } WIB</span>
+                                <div>
+                                    <small>
+                                        <span class="badge text-bg-${
+                                            G.C[item.verif_dengan]
+                                        }">
+                                            ${item.verif_dengan}
+                                        </span>
+                                        <span class="badge text-bg-secondary">
+                                            ${item.jenis_kegiatan.substr(0, 3)}
+                                        </span>
+                                        ${item.jenis_verif}_
+                                        ${item.nama_kegiatan}
+                                    </small>
+                                </div>`;
+
+                                list_antrean_items.appendChild(li);
+                                antrean_count++;
+                            }
+                        }
+                        if (jadwal_verif_antrean_badge !== null) {
+                            jadwal_verif_antrean_badge.innerText =
+                                antrean_count.toString();
+                        }
+                        if (antrean_count === 0) {
+                            list_antrean_items.innerHTML =
+                                '<i class="text-secondary">Tidak ada antrean.</i>';
+                        }
+                    }
+                });
+            }
+        });
+
+        const jadwal_verif_iframe = document.querySelector(
+            "#jadwal_verif_iframe"
+        );
+        const iframe_width_reference = document.querySelector(
+            "#iframe_width_reference"
+        );
+        const accordion_body = document.querySelector(
+            "#panels_jadwal_verif_terkonfirmasi > .accordion-body"
+        );
         const resize_iframe = () => {
             try {
-                const iframe_width_reference = document.querySelector(
-                    "#iframe_width_reference"
+                jadwal_verif_iframe.setAttribute(
+                    "width",
+                    `${iframe_width_reference.clientWidth + 46}`
                 );
-                document
-                    .querySelector("iframe")
-                    ?.setAttribute(
-                        "width",
-                        `${iframe_width_reference.clientWidth + 46}`
-                    );
+                accordion_body.setAttribute(
+                    "style",
+                    `height: ${jadwal_verif_iframe.clientHeight - 166 + 38}px`
+                );
             } catch {}
         };
         window.addEventListener("resize", () => resize_iframe());
         resize_iframe();
-    };
+    })();
 </script>

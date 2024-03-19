@@ -1,7 +1,7 @@
 (() => {
     const url_params = new URLSearchParams(window.location.search)
 
-    const form_values: DaftarVerifProps = {
+    const item: DaftarVerifProps = {
         nama_pendaftar: url_params.get('nama_pendaftar') || '',
         organisasi: url_params.get('organisasi') || '',
         nama_kegiatan: url_params.get('nama_kegiatan') || '',
@@ -14,9 +14,10 @@
         status: 'QUEUED',
     }
 
-    const template_text = `DAFTAR VERIF ${form_values.jenis_verif}_${form_values.nama_kegiatan} dengan ${form_values.verif_dengan} [${form_values.tanggal_verif} at ${form_values.waktu_verif}]`
+    const template_text = `VERIF ${item.jenis_verif}_${item.nama_kegiatan} dengan ${item.verif_dengan}`
 
-    db_daftar_verif.push(form_values)
+    const db_daftar_verif = firebase.database().ref(`/${G.DB_NAME_DAFTAR_VERIF}`)
+    db_daftar_verif.push(item)
         .then(() => {
             window.location.replace(`./endform.html?template_text=${template_text}&${url_params.toString()}`)
         })
