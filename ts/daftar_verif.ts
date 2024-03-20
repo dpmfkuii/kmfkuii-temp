@@ -24,13 +24,13 @@
 
     const input_jam_verif = document.querySelector('#input_jam_verif') as HTMLSelectElement
 
-    const update_input_jam_verif_options = (opsi_jam: string[]) => {
+    const update_input_jam_verif_options = (opsi_jam: string[], taken_jam?: string[]) => {
         input_jam_verif.innerHTML = '<option disabled selected value>-- Pilih jam --</option>'
         for (const jam of opsi_jam) {
             const opt = document.createElement('option')
             opt.value = jam
             opt.innerText = jam
-            if (jam.includes('--')) {
+            if (jam.includes('--') || taken_jam?.includes(jam)) {
                 opt.setAttribute('value', '')
                 opt.setAttribute('disabled', '')
             }
@@ -90,8 +90,7 @@
         })
 
         Promise.all([get_daftar_promise, get_antrean_promise]).then(() => {
-            const avail_hours = G.DEFAULT_VERIF_HOUR_OPTIONS.filter(h => !taken_hours.includes(h))
-            update_input_jam_verif_options(avail_hours)
+            update_input_jam_verif_options(G.DEFAULT_VERIF_HOUR_OPTIONS, taken_hours)
         })
     })
 

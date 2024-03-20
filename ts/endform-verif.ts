@@ -26,14 +26,18 @@
     const link_email = document.querySelector('#link_email') as HTMLAnchorElement
     link_email.href = `mailto:${mailto}?subject=${template_text_text}
 &body=
-Assalamu’alaikum wr. wb.
-%0A%0A
+Yth.%0A
+Kesekretariatan ${item.verif_dengan} FK UII%0A
+di Tempat%0A
+%0A
+Assalamu’alaikum warahmatullahi wabarakatuh%0A
 Perkenalkan, saya ${item.nama_pendaftar} 
-mahasiswa FK UII yang saat ini diamanahi menjadi sekretaris ${item.nama_kegiatan}. 
-Kami bermaksud mengajukan permohonan verifikasi ${item.jenis_verif} 
-kegiatan ${item.nama_kegiatan} dengan ${item.verif_dengan} pada tanggal ${item.tanggal_verif}. 
-Terima kasih.
-%0A%0A
-Wassalamu’alaikum wr. wb.
-%0A%0A`
+selaku perwakilan kegiatan ${item.nama_kegiatan}.%0A
+Kami bermaksud mengajukan permohonan verifikasi ${item.jenis_verif} ${item.nama_kegiatan} 
+dengan ${item.verif_dengan} pada hari ${common.convert_date_string_to_text(item.tanggal_verif)} 
+pukul ${item.jam_verif} WIB.%0A
+%0A
+Atas perhatiannya kami ucapkan terima kasih.%0A
+Wassalamu'alaikum warahmatullahi wabarakatuh%0A
+%0A`
 })()
