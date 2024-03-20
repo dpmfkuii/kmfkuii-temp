@@ -11,6 +11,7 @@
     }
 
     const input_tanggal_verif = document.querySelector('#input_tanggal_verif') as HTMLInputElement
+    const validation_input_tanggal_verif_feedback = document.querySelector('#validation_input_tanggal_verif_feedback') as HTMLDivElement
 
     // batasi pemilihan tanggal, tidak bisa di minggu yg sama
     const senin_depan = new Date()
@@ -23,6 +24,7 @@
     input_tanggal_verif.min = `${common.get_date_string(senin_depan)}`
 
     const input_jam_verif = document.querySelector('#input_jam_verif') as HTMLSelectElement
+    const validation_input_jam_verif_feedback = document.querySelector('#validation_input_jam_verif_feedback') as HTMLDivElement
 
     const update_input_jam_verif_options = (opsi_jam: string[], taken_jam?: string[]) => {
         input_jam_verif.innerHTML = '<option disabled selected value>-- Pilih jam --</option>'
@@ -38,35 +40,42 @@
         }
     }
 
-    update_input_jam_verif_options(G.DEFAULT_VERIF_HOUR_OPTIONS)
+    update_input_jam_verif_options(G.DEFAULT_VERIF_HOUR_OPTIONS, G.DEFAULT_VERIF_HOUR_OPTIONS)
 
     input_tanggal_verif.addEventListener('change', () => {
         // reset jam
         input_jam_verif.value = ''
         const input_value = input_tanggal_verif.value
-        const input_value_date = input_tanggal_verif.valueAsDate!
 
-        // cek ini sebelum minggu depan atau ngga
-        if (common.is_date_before(input_value_date, senin_depan)) {
-            // gabole, minimal senin depan
-            input_tanggal_verif.value = ''
-            swal_bs_primary.fire({
-                title: 'Sudah Lewat',
-                html: 'Pilih waktu verif mulai <strong class="text-primary">Senin</strong> depan!',
-                icon: 'warning',
-            })
+        const input_value_date = input_tanggal_verif.valueAsDate
+
+        if (input_tanggal_verif.classList.contains('is-invalid')) {
+            input_tanggal_verif.classList.remove('is-invalid')
         }
 
-        // cek ini hari weekend atau ngga
-        if (input_value_date.getDay() === 0 || input_value_date?.getDay() === 6) {
-            // gabole kalau weekend
-            input_tanggal_verif.value = ''
-            swal_bs_primary.fire({
-                title: 'Libur',
-                html: 'Pilih waktu verif <strong class="text-primary">Senin—Jum’at</strong>!',
-                icon: 'warning',
-            })
-            return
+        if (input_jam_verif.classList.contains('is-invalid')) {
+            input_jam_verif.classList.remove('is-invalid')
+        }
+
+        if (input_value_date !== null) {
+            // cek ini sebelum minggu depan atau ngga
+            if (common.is_date_before(input_value_date, senin_depan)) {
+                // gabole, minimal senin depan
+                validation_input_tanggal_verif_feedback.innerHTML = 'Pilih waktu verif mulai <strong>Senin</strong> depan!'
+                input_tanggal_verif.classList.add('is-invalid')
+            }
+            // cek ini hari weekend atau ngga
+            else if (input_value_date.getDay() === 0 || input_value_date?.getDay() === 6) {
+                // gabole kalau weekend
+                validation_input_tanggal_verif_feedback.innerHTML = 'Pilih waktu verif <strong>Senin—Jum’at</strong>!'
+                input_tanggal_verif.classList.add('is-invalid')
+            }
+        }
+
+        if (input_tanggal_verif.classList.contains('is-invalid')) {
+            update_input_jam_verif_options(G.DEFAULT_VERIF_HOUR_OPTIONS, G.DEFAULT_VERIF_HOUR_OPTIONS)
+            validation_input_jam_verif_feedback.innerHTML = 'Pilih tanggal yang sesuai!'
+            input_jam_verif.classList.add('is-invalid')
         }
 
         // cek jam berapa yg avail di tanggal segitu
@@ -106,7 +115,12 @@
         })
 
         Promise.all([get_daftar_promise, get_antrean_promise]).then(() => {
-            update_input_jam_verif_options(G.DEFAULT_VERIF_HOUR_OPTIONS, taken_hours)
+            if (input_tanggal_verif.classList.contains('is-invalid')) {
+                update_input_jam_verif_options(G.DEFAULT_VERIF_HOUR_OPTIONS, G.DEFAULT_VERIF_HOUR_OPTIONS)
+            }
+            else {
+                update_input_jam_verif_options(G.DEFAULT_VERIF_HOUR_OPTIONS, taken_hours)
+            }
         })
     })
 
