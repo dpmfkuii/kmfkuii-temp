@@ -44,12 +44,28 @@
         // reset jam
         input_jam_verif.value = ''
         const input_value = input_tanggal_verif.value
+        const input_value_date = input_tanggal_verif.valueAsDate!
+
+        // cek ini sebelum minggu depan atau ngga
+        if (common.is_date_before(input_value_date, senin_depan)) {
+            // gabole, minimal senin depan
+            input_tanggal_verif.value = ''
+            swal_bs_primary.fire({
+                title: 'Sudah Lewat',
+                html: 'Pilih waktu verif mulai <strong class="text-primary">Senin</strong> depan!',
+                icon: 'warning',
+            })
+        }
 
         // cek ini hari weekend atau ngga
-        const input_value_date = input_tanggal_verif.valueAsDate
-        if (input_value_date?.getDay() === 0 || input_value_date?.getDay() === 6) {
+        if (input_value_date.getDay() === 0 || input_value_date?.getDay() === 6) {
             // gabole kalau weekend
             input_tanggal_verif.value = ''
+            swal_bs_primary.fire({
+                title: 'Libur',
+                html: 'Pilih waktu verif <strong class="text-primary">Senin—Jum’at</strong>!',
+                icon: 'warning',
+            })
             return
         }
 

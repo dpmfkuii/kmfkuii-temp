@@ -97,4 +97,21 @@ const common = {
         const dd = d < 10 ? `0${d}` : d
         return `${date.getFullYear()}-${mm}-${dd}`
     },
+    /**
+     * Returns true if `date1` < `date2`
+     * @param date1 
+     * @param date2 
+     */
+    is_date_before(date1: Date, date2: Date) {
+        const sum1 = date1.getFullYear() + ((date1.getMonth() + 1) * 100) + date1.getDate()
+        const sum2 = date2.getFullYear() + ((date2.getMonth() + 1) * 100) + date2.getDate()
+        return sum1 < sum2
+    },
 }
+
+const swal_bs_primary = Swal.mixin({
+    customClass: {
+        confirmButton: 'btn btn-primary',
+    },
+    buttonsStyling: false
+})
