@@ -8,7 +8,8 @@ type VerifItem = {
     organisasi: string
     nama_kegiatan: string
     deskripsi_kegiatan: string
-    jenis_kegiatan: string
+    penyelenggara_kegiatan: string
+    lingkup_kegiatan: string
     jenis_verif: string
     verif_dengan: string
     tanggal_verif: string
@@ -77,7 +78,8 @@ const G = {
         '20.30',
         '21.00',
         '21.30',
-    ]
+    ],
+    CLOSED_DAY: [0] // closed on Sunday
 }
 
 const common = {
@@ -105,6 +107,40 @@ const common = {
         const sum1 = date1.getFullYear() + ((date1.getMonth() + 1) * 100) + date1.getDate()
         const sum2 = date2.getFullYear() + ((date2.getMonth() + 1) * 100) + date2.getDate()
         return sum1 < sum2
+    },
+    get_radio_input_value(name: string) {
+        let value = ''
+        const input = document.querySelectorAll(`input[name="${name}"]`) as NodeListOf<HTMLInputElement>
+        input.forEach(n => {
+            if (n.checked) value = n.value
+        })
+        return value
+    },
+    get_url_params() {
+        return new URLSearchParams(window.location.search)
+    },
+    get_verif_item_from_url_params() {
+        const url_params = new URLSearchParams(window.location.search)
+        const item: VerifItem = {
+            nama_pendaftar: url_params.get('nama_pendaftar') || '',
+            organisasi: url_params.get('organisasi') || '',
+            nama_kegiatan: url_params.get('nama_kegiatan') || '',
+            deskripsi_kegiatan: url_params.get('deskripsi_kegiatan') || '',
+            penyelenggara_kegiatan: url_params.get('penyelenggara_kegiatan') || '',
+            lingkup_kegiatan: url_params.get('lingkup_kegiatan') || '',
+            jenis_verif: url_params.get('jenis_verif') || '',
+            verif_dengan: url_params.get('verif_dengan') || '',
+            tanggal_verif: url_params.get('tanggal_verif') || '',
+            jam_verif: url_params.get('jam_verif') || '',
+            status: 'QUEUED',
+        }
+        return item
+    },
+    /**
+     * Returns true if today supposed to be closed
+     */
+    validate_is_today_closed() {
+        return G.CLOSED_DAY.includes(new Date().getDay())
     },
 }
 

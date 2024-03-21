@@ -1,17 +1,6 @@
 (() => {
-    const url_params = new URLSearchParams(window.location.search)
-    const item: VerifItem = {
-        nama_pendaftar: url_params.get('nama_pendaftar') || '',
-        organisasi: url_params.get('organisasi') || '',
-        nama_kegiatan: url_params.get('nama_kegiatan') || '',
-        deskripsi_kegiatan: url_params.get('deskripsi_kegiatan') || '',
-        jenis_kegiatan: url_params.get('jenis_kegiatan') || '',
-        jenis_verif: url_params.get('jenis_verif') || '',
-        verif_dengan: url_params.get('verif_dengan') || '',
-        tanggal_verif: url_params.get('tanggal_verif') || '',
-        jam_verif: url_params.get('jam_verif') || '',
-        status: 'QUEUED',
-    }
+    const url_params = common.get_url_params()
+    const item = common.get_verif_item_from_url_params()
 
     const mailto = item.verif_dengan === 'LEM' ? G.EMAIL_LEM : G.EMAIL_DPM
 

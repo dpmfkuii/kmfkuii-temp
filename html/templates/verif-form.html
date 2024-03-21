@@ -68,38 +68,40 @@
         <label for="input_deskripsi_kegiatan">Deskripsi Kegiatan*</label>
     </div>
 </div>
-<div class="mb-3 row align-items-center">
-    <label class="col-md-2 col-form-label">Jenis Kegiatan*</label>
-    <div class="col-md-10">
-        <input
-            type="radio"
-            name="jenis_kegiatan"
-            value="INTERNAL"
-            class="btn-check"
-            id="input_jenis_kegiatan_internal"
-            autocomplete="off"
-            required
-            checked
-        />
-        <label
-            class="btn btn-outline-secondary"
-            for="input_jenis_kegiatan_internal"
-            >INTERNAL</label
-        >
-
-        <input
-            type="radio"
-            name="jenis_kegiatan"
-            value="EKSTERNAL"
-            class="btn-check"
-            id="input_jenis_kegiatan_eksternal"
-            autocomplete="off"
-        />
-        <label
-            class="btn btn-outline-secondary"
-            for="input_jenis_kegiatan_eksternal"
-            >EKSTERNAL</label
-        >
+<div class="mb-3">
+    <div class="row g-2">
+        <div class="col-md">
+            <div class="form-floating">
+                <select
+                    name="penyelenggara_kegiatan"
+                    class="form-select"
+                    id="input_penyelenggara_kegiatan"
+                    required
+                >
+                    <option value="INTERNAL" selected>Internal UII</option>
+                    <option value="EKSTERNAL">Eksternal UII</option>
+                </select>
+                <label for="input_penyelenggara_kegiatan">Penyelenggara Kegiatan*</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating">
+                <select
+                    name="lingkup_kegiatan"
+                    class="form-select"
+                    id="input_lingkup_kegiatan"
+                    required
+                >
+                    <option value="FAKULTAS" selected>Fakultas</option>
+                    <option value="UNIVERSITAS">Universitas</option>
+                    <option value="DAERAH">Daerah</option>
+                    <option value="WILAYAH">Wilayah</option>
+                    <option value="NASIONAL">Nasional</option>
+                    <option value="INTERNASIONAL">Internasional</option>
+                </select>
+                <label for="input_lingkup_kegiatan">Lingkup Kegiatan*</label>
+            </div>
+        </div>
     </div>
 </div>
 <div class="mb-3 row align-items-center">

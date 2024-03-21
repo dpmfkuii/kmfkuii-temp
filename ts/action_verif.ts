@@ -1,18 +1,6 @@
 (() => {
     const url_params = new URLSearchParams(window.location.search)
-
-    const item: VerifItem = {
-        nama_pendaftar: url_params.get('nama_pendaftar') || '',
-        organisasi: url_params.get('organisasi') || '',
-        nama_kegiatan: url_params.get('nama_kegiatan') || '',
-        deskripsi_kegiatan: url_params.get('deskripsi_kegiatan') || '',
-        jenis_kegiatan: url_params.get('jenis_kegiatan') || '',
-        jenis_verif: url_params.get('jenis_verif') || '',
-        verif_dengan: url_params.get('verif_dengan') || '',
-        tanggal_verif: url_params.get('tanggal_verif') || '', // yyyy-mm-dd
-        jam_verif: url_params.get('jam_verif') || '',
-        status: 'QUEUED',
-    }
+    const item = common.get_verif_item_from_url_params()
 
     const template_text = `VERIF ${item.jenis_verif}_${item.nama_kegiatan} dengan ${item.verif_dengan}`
 
@@ -21,5 +9,4 @@
         .then(() => {
             window.location.replace(`./endform-verif.html?template_text=${template_text}&${url_params.toString()}`)
         })
-
 })()

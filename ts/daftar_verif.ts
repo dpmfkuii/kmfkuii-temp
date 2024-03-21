@@ -2,30 +2,13 @@
     const form = document.querySelector('form') as HTMLFormElement
     const input_nama_kegiatan = document.querySelector('#input_nama_kegiatan') as HTMLInputElement
     const submit_button = document.querySelector('#input_submit_button') as HTMLButtonElement
-
-    const todays_day = new Date().getDay()
-
-    // remove form when it's Minggu
-    if (todays_day === 0) {
-        form.innerHTML = '<i class="text-secondary">Formulir ditutup di hari Minggu.</i>'
-    }
-
+    const verif_dengan_radios = document.querySelectorAll('input[name="verif_dengan"]') as NodeListOf<HTMLInputElement>
     const input_tanggal_verif = document.querySelector('#input_tanggal_verif') as HTMLInputElement
     const validation_input_tanggal_verif_feedback = document.querySelector('#validation_input_tanggal_verif_feedback') as HTMLDivElement
-
-    // batasi pemilihan tanggal, tidak bisa di minggu yg sama
-    const senin_depan = new Date()
-    if (todays_day === 0) {
-        senin_depan.setDate(senin_depan.getDate() + 1)
-    }
-    else {
-        senin_depan.setDate(senin_depan.getDate() + (8 - todays_day))
-    }
-    input_tanggal_verif.min = `${common.get_date_string(senin_depan)}`
-
+    const get_jenis_verif = () => common.get_radio_input_value('jenis_verif')
+    const get_verif_dengan = () => common.get_radio_input_value('verif_dengan')
     const input_jam_verif = document.querySelector('#input_jam_verif') as HTMLSelectElement
     const validation_input_jam_verif_feedback = document.querySelector('#validation_input_jam_verif_feedback') as HTMLDivElement
-
     const update_input_jam_verif_options = (opsi_jam: string[], taken_jam?: string[]) => {
         input_jam_verif.innerHTML = '<option disabled selected value>-- Pilih jam --</option>'
         for (const jam of opsi_jam) {
@@ -40,9 +23,18 @@
         }
     }
 
+    if (common.validate_is_today_closed()) {
+        form.innerHTML = `<i class="text-secondary">Formulir ditutup di hari ${G.DAY_NAMES[new Date().getDay()]}.</i>`
+        return
+    }
+
+    const senin_depan = new Date()
+    senin_depan.setDate(senin_depan.getDate() + (8 - new Date().getDay()))
+
+    input_tanggal_verif.min = `${common.get_date_string(senin_depan)}`
     update_input_jam_verif_options(G.DEFAULT_VERIF_HOUR_OPTIONS, G.DEFAULT_VERIF_HOUR_OPTIONS)
 
-    input_tanggal_verif.addEventListener('change', () => {
+    const validate_date_and_time = () => {
         // reset jam
         input_jam_verif.value = ''
         const input_value = input_tanggal_verif.value
@@ -106,8 +98,10 @@
                 if (val) {
                     for (const key in val) {
                         const item = val[key] as VerifItem
-                        if (item.tanggal_verif === input_tanggal_verif.value) {
-                            taken_hours.push(item.jam_verif)
+                        if (item.verif_dengan === get_verif_dengan()) {
+                            if (item.tanggal_verif === input_tanggal_verif.value) {
+                                taken_hours.push(item.jam_verif)
+                            }
                         }
                     }
                 }
@@ -122,22 +116,15 @@
                 update_input_jam_verif_options(G.DEFAULT_VERIF_HOUR_OPTIONS, taken_hours)
             }
         })
-    })
-
-    const get_radio_input_value = (name: string) => {
-        let value = ''
-        const input = document.querySelectorAll(`input[name="${name}"]`) as NodeListOf<HTMLInputElement>
-        input.forEach(n => {
-            if (n.checked) value = n.value
-        })
-        return value
     }
 
-    const get_jenis_verif = () => get_radio_input_value('jenis_verif')
-    const get_verif_dengan = () => get_radio_input_value('verif_dengan')
+    verif_dengan_radios.forEach(n => {
+        n.addEventListener('change', () => validate_date_and_time())
+    })
+    input_tanggal_verif.addEventListener('change', () => validate_date_and_time())
 
     const loop = () => {
-        submit_button.innerHTML = `<strong>DAFTAR VERIF</strong> ${get_jenis_verif()}${input_nama_kegiatan.value ? '_' : ''}${input_nama_kegiatan.value} dengan ${get_verif_dengan()}`
+        submit_button.innerHTML = `<strong>DAFTAR VERIF</strong> ${get_jenis_verif()}${input_nama_kegiatan.value.toString() ? '_' : ''}${input_nama_kegiatan.value.toString()} dengan ${get_verif_dengan()}`
         window.requestAnimationFrame(loop)
     }
 
