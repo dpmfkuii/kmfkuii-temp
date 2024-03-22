@@ -2,6 +2,8 @@
     const form = document.querySelector('form') as HTMLFormElement
     const input_nama_kegiatan = document.querySelector('#input_nama_kegiatan') as HTMLInputElement
     const submit_button = document.querySelector('#input_submit_button') as HTMLButtonElement
+    const input_anggaran_kegiatan = document.querySelector('#input_anggaran_kegiatan') as HTMLInputElement
+    const jenis_verif_radios = document.querySelectorAll('input[name="jenis_verif"]') as NodeListOf<HTMLInputElement>
     const verif_dengan_radios = document.querySelectorAll('input[name="verif_dengan"]') as NodeListOf<HTMLInputElement>
     const input_tanggal_verif = document.querySelector('#input_tanggal_verif') as HTMLInputElement
     const validation_input_tanggal_verif_feedback = document.querySelector('#validation_input_tanggal_verif_feedback') as HTMLDivElement
@@ -118,6 +120,20 @@
         })
     }
 
+    jenis_verif_radios.forEach(n => {
+        n.addEventListener('change', () => {
+            const p = input_anggaran_kegiatan.parentElement?.parentElement?.parentElement
+            input_anggaran_kegiatan.value = ''
+            if (!p?.classList.contains('d-none')) {
+                p?.classList.add('d-none')
+                input_anggaran_kegiatan.attributes.removeNamedItem('required')
+            }
+            if (get_jenis_verif() === 'PROPOSAL') {
+                p?.classList.remove('d-none')
+                input_anggaran_kegiatan.setAttribute('required', '')
+            }
+        })
+    })
     verif_dengan_radios.forEach(n => {
         n.addEventListener('change', () => validate_date_and_time())
     })

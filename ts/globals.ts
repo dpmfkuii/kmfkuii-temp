@@ -1,7 +1,7 @@
 declare const firebase: any
 declare const Swal: any
 
-type StatusVerif = 'QUEUED' | 'CONFIRMED'
+type StatusVerif = 'ANTREAN' | 'TERKONFIRMASI' | 'VERIFIKASI' | 'REVISI' | 'DISETUJUI' | 'DISAHKAN' | 'DIKETAHUI'
 
 type VerifItem = {
     nama_pendaftar: string
@@ -11,6 +11,7 @@ type VerifItem = {
     penyelenggara_kegiatan: string
     lingkup_kegiatan: string
     jenis_verif: string
+    anggaran_kegiatan: string
     verif_dengan: string
     tanggal_verif: string
     jam_verif: string
@@ -129,10 +130,11 @@ const common = {
             penyelenggara_kegiatan: url_params.get('penyelenggara_kegiatan') || '',
             lingkup_kegiatan: url_params.get('lingkup_kegiatan') || '',
             jenis_verif: url_params.get('jenis_verif') || '',
+            anggaran_kegiatan: url_params.get('anggaran_kegiatan') || '',
             verif_dengan: url_params.get('verif_dengan') || '',
             tanggal_verif: url_params.get('tanggal_verif') || '',
             jam_verif: url_params.get('jam_verif') || '',
-            status: 'QUEUED',
+            status: 'ANTREAN',
         }
         return item
     },

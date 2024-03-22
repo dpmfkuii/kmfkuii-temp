@@ -20,13 +20,15 @@ Kesekretariatan ${item.verif_dengan} FK UII%0A
 di Tempat%0A
 %0A
 Assalamu’alaikum warahmatullahi wabarakatuh%0A
+%0A
 Perkenalkan, saya ${item.nama_pendaftar} 
 selaku perwakilan kegiatan ${item.nama_kegiatan}.%0A
-Kami bermaksud mengajukan permohonan verifikasi ${item.jenis_verif} ${item.nama_kegiatan} 
+Izin mengajukan permohonan verifikasi ${item.jenis_verif} ${item.nama_kegiatan} 
 dengan ${item.verif_dengan} pada hari ${common.convert_date_string_to_text(item.tanggal_verif)} 
 pukul ${item.jam_verif} WIB.%0A
 %0A
-Atas perhatiannya kami ucapkan terima kasih.%0A
+Terima kasih atas perhatiannya 🙏🏻%0A
+%0A
 Wassalamu'alaikum warahmatullahi wabarakatuh%0A
 %0A`
 })()
