@@ -104,7 +104,7 @@
                     let antrean_count = 0;
                     for (const key in val) {
                         const item = val[key];
-                        if (item.status === "QUEUED") {
+                        if (item.status === "ANTREAN") {
                             const li = document.createElement("li");
                             li.classList.add("mb-2");
 
@@ -124,10 +124,9 @@
                                         ${item.verif_dengan}
                                     </span>
                                     <span class="badge text-bg-secondary">
-                                        ${item.penyelenggara_kegiatan.substr(0, 3)}
+                                    ${item.penyelenggara_kegiatan.substr(0, 3)}
                                     </span>
-                                    ${item.jenis_verif}_
-                                    ${item.nama_kegiatan}
+                                    ${item.jenis_verif}_${item.nama_kegiatan}
                                 </small>
                             </div>`;
 
