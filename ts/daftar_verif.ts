@@ -73,7 +73,7 @@
         }
 
         // cek jam berapa yg avail di tanggal segitu
-        // ambil dari antrian dan terkonfirmasi
+        // ambil dari antrean dan terkonfirmasi
 
         const db_daftar_verif = firebase.database().ref(`/${G.DB_NAME_DAFTAR_VERIF}/${input_value.replaceAll('-', '/')}`)
         const db_antrean_verif = firebase.database().ref(`/${G.DB_NAME_ANTREAN_VERIF}`)
