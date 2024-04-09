@@ -22,13 +22,7 @@ Install the project
 
 ## Development
 
-Start TypeScript development
-
-```bash
-  tsc -w
-```
-
-Start HTML development
+Start development watch
 
 ```bash
   npm run dev
@@ -37,5 +31,5 @@ Start HTML development
 Start Firebase emu
 
 ```bash
-  firebase emulators:start
+  npm run serve
 ```

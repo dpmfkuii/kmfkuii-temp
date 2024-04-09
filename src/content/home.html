@@ -1,0 +1,28 @@
+<div class="container">
+    <h1 class="display-3 mb-4">
+        <span
+            class="display-6 mb-0 material-symbols-outlined"
+            style="transform: translateY(-0.1rem)"
+        >
+            handshake
+        </span>
+        <i>Assalamu’alaikum</i>
+    </h1>
+    <p class="fs-2">Mau <i>ngapain</i>, nih?</p>
+    <hr />
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3" id="card_container">
+        <insert-component-home/card-kegiatan />
+        <insert-component-home/card-organisasi />
+        <insert-component-home/card-kritik-dan-saran />
+    </div>
+</div>
+
+<style>
+    #card_container .animate:nth-child(2) {
+        transition-delay: 100ms;
+    }
+
+    #card_container .animate:nth-child(3) {
+        transition-delay: 200ms;
+    }
+</style>

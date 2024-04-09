@@ -3,11 +3,11 @@
     "scripts": {
         "init": "npm i",
         "dev": "node dev/dev",
-        "dev:prod": "node dev/dev --prod"
+        "serve": "firebase emulators:start"
     },
     "private": true,
     "devDependencies": {
         "fs": "^0.0.1-security",
-        "fs-readdir-recursive": "^1.1.0"
+        "typescript": "^5.4.4"
     }
 }

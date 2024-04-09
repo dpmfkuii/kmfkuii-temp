@@ -2,11 +2,14 @@
     "compilerOptions": {
         "module": "none",
         "target": "es5",
-        "lib": ["DOM", "ES2021"],
-        "outDir": "./public/js",
-        "rootDir": "./ts",
+        "lib": [
+            "DOM",
+            "ES2021"
+        ],
+        "outDir": "./public/assets/js",
+        "rootDir": "./src/ts",
         "removeComments": true,
         "skipLibCheck": true,
-        "strict": true
+        "strict": true,
     }
 }

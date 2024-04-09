@@ -1,0 +1,26 @@
+:root {
+    --bs-body-bg: #f9f9f9;
+    --bs-body-font-family: "Geologica", sans-serif;
+}
+
+.card {
+    background-color: #fff;
+}
+
+/* animate system */
+.animate {
+    transition: all 500ms;
+}
+
+.animate.animate-fade-on-enter {
+    opacity: 0;
+}
+
+.animate.animate-rise-on-enter {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.animate.animate-speed-50 {
+    transition: all 250ms;
+}
