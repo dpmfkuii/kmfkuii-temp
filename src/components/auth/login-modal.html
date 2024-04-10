@@ -1,0 +1,78 @@
+<div
+    class="modal fade"
+    id="auth_login_modal"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    aria-labelledby="auth_login_modal_label"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <form>
+                <div class="modal-header">
+                    <h1
+                        class="modal-title fs-5 flex-grow-1 text-center"
+                        id="auth_login_modal_label"
+                    >
+                        Masuk untuk mengurus
+                    </h1>
+                </div>
+                <div class="modal-body">
+                    <div class="card mb-2">
+                        <div class="card-body text-center">
+                            <div class="form-floating">
+                                <div class="input-group">
+                                    <span class="input-group-text">UID</span>
+                                    <input
+                                        name="uid"
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="XXXX-XXX-XXX"
+                                        autocomplete="on"
+                                        autofocus
+                                        required
+                                    />
+                                    <div class="invalid-feedback px-2"></div>
+                                </div>
+                                <div class="mt-3">
+                                    <small>
+                                        <a
+                                            href="/akun/reset/"
+                                            class="btn-link text-decoration-none"
+                                            >Lupa UID?</a
+                                        >
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body text-center">
+                            Belum punya UID?
+                            <a
+                                href="/akun/daftar/"
+                                class="btn-link text-decoration-none"
+                                ><strong>Daftar</strong></a
+                            >
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        Tutup
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script defer src="/assets/js/auth/login_modal.js"></script>

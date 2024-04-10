@@ -57,9 +57,9 @@
     </footer>
 </div>
 
-<script>
+<script defer>
     (() => {
-        document.querySelector("#copyright_year_text").innerHTML = new Date()
+        dom.q("#copyright_year_text").innerHTML = new Date()
             .getFullYear()
             .toString();
     })();

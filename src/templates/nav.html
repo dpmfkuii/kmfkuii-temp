@@ -1,11 +1,81 @@
 <nav class="navbar">
     <div class="container my-3">
         <a class="navbar-brand" href="/">
-            <img
-                src="/assets/images/logo-web-km.png"
-                alt="Web KM FK UII"
-                height="56"
-            />
+            <img src="/assets/images/logo-web-km.png" alt="Web KM FK UII" />
         </a>
+        <div
+            id="nav_user_login_group"
+            class="d-flex flex-grow-1 justify-content-end d-none"
+        >
+            <button
+                type="button"
+                class="btn btn-km-primary btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#auth_login_modal"
+            >
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk
+            </button>
+        </div>
+        <div
+            id="nav_user_logout_group"
+            class="d-flex flex-grow-1 justify-content-end d-none"
+        >
+            <div class="btn-group">
+                <button
+                    type="menu"
+                    class="btn btn-km-primary btn-sm rounded-0 rounded-start"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                    <span id="nav_user_role"></span>
+                    <i class="fa-regular fa-circle-user"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <div class="px-2">
+                        UID: <span id="nav_user_uid">...</span>
+                    </div>
+                </div>
+            </div>
+            <button
+                type="button"
+                class="btn btn-danger btn-sm rounded-0 rounded-end"
+                onclick="auth.logout()"
+            >
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
+            </button>
+        </div>
     </div>
 </nav>
+
+<insert-component-auth/login-modal />
+
+<script defer>
+    (() => {
+        const logged_in_user = auth.get_logged_in_user();
+        if (logged_in_user != null) {
+            dom.q("#nav_user_logout_group").classList.remove("d-none");
+            dom.q("#nav_user_role").textContent = logged_in_user.role || "";
+            dom.q("#nav_user_uid").textContent = logged_in_user.uid || "-";
+        } else {
+            dom.q("#nav_user_login_group").classList.remove("d-none");
+        }
+    })();
+</script>
+
+<style>
+    .navbar .navbar-brand > img {
+        height: 56px;
+    }
+
+    @media (max-width: 576px) {
+        .navbar .navbar-brand > img {
+            height: 48px;
+        }
+    }
+
+    @media (max-width: 380px) {
+        .navbar .navbar-brand > img {
+            height: 42px;
+        }
+    }
+</style>

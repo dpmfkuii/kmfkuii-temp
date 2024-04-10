@@ -7,8 +7,35 @@
         />
         <div class="card-body">
             <div class="d-grid gap-1 mb-3">
-                <button class="btn btn-primary">URUS VERIFIKASI</button>
-                <button class="btn btn-success">DAFTAR VERIFIKASI</button>
+                <div class="row g-1">
+                    <div class="col d-grid">
+                        <a
+                            role="button"
+                            href="/akun/daftar/"
+                            class="btn btn-success"
+                        >
+                            DAFTAR
+                        </a>
+                    </div>
+                    <div class="col d-grid">
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#auth_login_modal"
+                        >
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                            URUS
+                        </button>
+                    </div>
+                </div>
+                <a
+                    role="button"
+                    href="/kegiatan/jadwal-verifikasi/"
+                    class="btn btn-outline-primary"
+                >
+                    LIHAT JADWAL VERIFIKASI
+                </a>
             </div>
             <h5 class="card-title">Verifikasi Kegiatan KM FK UII</h5>
             <p class="card-text">

@@ -1,10 +1,31 @@
 :root {
-    --bs-body-bg: #f9f9f9;
     --bs-body-font-family: "Geologica", sans-serif;
 }
 
-.card {
-    background-color: #fff;
+/* km-primary modifier classes */
+.text-km-primary {
+    color: #042188;
+}
+
+.text-bg-km-primary {
+    background-color: #042188;
+}
+
+.btn-km-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #042188;
+    --bs-btn-border-color: #042188;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #052aad;
+    --bs-btn-hover-border-color: #052aad;
+    --bs-btn-focus-shadow-rgb: 66, 70, 73;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #062ebf;
+    --bs-btn-active-border-color: #062ebf;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #042188;
+    --bs-btn-disabled-border-color: #042188;
 }
 
 /* animate system */
