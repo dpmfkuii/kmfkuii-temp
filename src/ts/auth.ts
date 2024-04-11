@@ -70,7 +70,7 @@ const auth: AuthController = {
         await db.ref(`users/${uid}`).once<User>('value').then(snap => {
             if (snap.exists()) {
                 user = snap.val()
-                localStorage.setItem(defines.store_key.user, JSON.stringify(user))
+                store.set_local_item(defines.store_key.user, JSON.stringify(user))
                 if (auto_redirect) {
                     this.redirect_home(user.role)
                 }
@@ -79,11 +79,11 @@ const auth: AuthController = {
         return user
     },
     logout(redirect_path = '/') {
-        localStorage.removeItem(defines.store_key.user)
+        store.remove_local_item(defines.store_key.user)
         location.href = redirect_path
     },
     get_logged_in_user() {
-        const value = localStorage.getItem(defines.store_key.user)
+        const value = store.get_local_item(defines.store_key.user)
         if (value !== null) {
             const stored_user = JSON.parse(value) as User
             if (stored_user.uid && stored_user.role) {

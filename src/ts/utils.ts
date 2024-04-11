@@ -59,3 +59,33 @@ const common = {
         return n.join('')
     },
 }
+
+declare const CryptoJS: any
+
+const store = {
+    passphrase: 'store',
+    set_item(key: string, value: string, storage: Storage = sessionStorage) {
+        storage.setItem(
+            CryptoJS.MD5(key).toString(),
+            CryptoJS.AES.encrypt(value, this.passphrase)
+        )
+    },
+    get_item(key: string, storage: Storage = sessionStorage): string | null {
+        const value = storage.getItem(CryptoJS.MD5(key).toString())
+        return value !== null
+            ? CryptoJS.AES.decrypt(value, this.passphrase).toString(CryptoJS.enc.Utf8)
+            : null
+    },
+    remove_item(key: string, storage: Storage = sessionStorage) {
+        storage.removeItem(CryptoJS.MD5(key).toString())
+    },
+    set_local_item(key: string, value: string) {
+        this.set_item(key, value, localStorage)
+    },
+    get_local_item(key: string): string | null {
+        return this.get_item(key, localStorage)
+    },
+    remove_local_item(key: string) {
+        this.remove_item(key, localStorage)
+    },
+}
