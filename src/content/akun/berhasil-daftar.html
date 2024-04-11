@@ -1,0 +1,79 @@
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-9 col-lg-7 col-xl-5 text-center">
+            <div class="card mb-3 animate animate-rise-on-enter">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Pendaftaran berhasil!</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-3 text-body-secondary">
+                        Sekarang kamu bisa masuk dengan UID di bawah ini untuk
+                        mengurus detail kegiatan<span
+                            id="param_nama_kegiatan_text"
+                        ></span
+                        >.
+                    </h6>
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item">
+                            <a href="#" class="fs-1 text-decoration-none">
+                                <span id="param_uid_text"></span>
+                                <i class="fa-regular fa-copy"></i>
+                            </a>
+                        </li>
+                        <li
+                            class="list-group-item text-white text-bg-dark small fst-italic"
+                        >
+                            Ingat UID ini dan simpan ditempat yang aman.
+                        </li>
+                    </ul>
+                    <div class="d-grid">
+                        <button
+                            type="button"
+                            class="btn btn-km-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#auth_login_modal"
+                            aria-label="Masuk"
+                        >
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                            Masuk
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card animate animate-rise-on-enter animate-delay-100">
+                <div class="card-body">
+                    <a
+                        role="button"
+                        href="/"
+                        class="btn-link text-secondary"
+                        aria-label="Back home"
+                        >Kembali ke beranda</a
+                    >
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script defer>
+    (() => {
+        const uid = common.url_params.get("uid") || "";
+        const nama_kegiatan = common.url_params.get("nama_kegiatan") || "";
+
+        dom.q("#param_uid_text").textContent = uid;
+        dom.q("#param_nama_kegiatan_text").textContent = nama_kegiatan
+            ? ` ${nama_kegiatan}`
+            : "";
+
+        const a_copy = dom.q("#param_uid_text").parentElement;
+        a_copy.addEventListener("click", () => {
+            navigator.clipboard.writeText(uid).then(() => {
+                const icon = dom.qe(a_copy, ".fa-copy");
+                if (icon) {
+                    icon.classList.remove("fa-regular", "fa-copy");
+                    icon.classList.add("fa-solid", "fa-check");
+                }
+            });
+        });
+    })();
+</script>

@@ -1,0 +1,118 @@
+<div class="mb-3">
+    <div class="form-floating">
+        <input
+            name="email_pendaftar"
+            type="email"
+            class="form-control"
+            id="input_email_pendaftar"
+            placeholder=""
+            required
+        />
+        <label for="input_email_pendaftar">Email Pendaftar</label>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-sm-2">
+    <div class="col">
+        <div class="mb-3">
+            <div class="form-floating">
+                <input
+                    name="nama_pendaftar"
+                    type="text"
+                    class="form-control"
+                    id="input_nama_pendaftar"
+                    placeholder=""
+                    required
+                />
+                <label for="input_nama_pendaftar">Nama Pendaftar</label>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="mb-3">
+            <div class="form-floating">
+                <select
+                    name="organisasi"
+                    class="form-select"
+                    id="select_organisasi"
+                    required
+                >
+                    <option disabled selected value>
+                        -- Pilih organisasi --
+                    </option>
+                </select>
+                <label for="select_organisasi">Organisasi</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="form-floating">
+        <input
+            name="nama_kegiatan"
+            type="text"
+            class="form-control"
+            id="input_nama_kegiatan"
+            placeholder=""
+            required
+        />
+        <label for="input_nama_kegiatan">Nama Kegiatan</label>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-sm-2">
+    <div class="col">
+        <div class="mb-3">
+            <div class="form-floating">
+                <select
+                    name="penyelenggara_kegiatan"
+                    class="form-select"
+                    id="select_penyelenggara_kegiatan"
+                    required
+                >
+                    <option disabled selected value>
+                        -- Pilih penyelenggara kegiatan --
+                    </option>
+                </select>
+                <label for="select_penyelenggara_kegiatan"
+                    >Penyelenggara Kegiatan</label
+                >
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="mb-3">
+            <div class="form-floating">
+                <select
+                    name="lingkup_kegiatan"
+                    class="form-select"
+                    id="select_lingkup_kegiatan"
+                    required
+                >
+                    <option disabled selected value>
+                        -- Pilih lingkup kegiatan --
+                    </option>
+                </select>
+                <label for="select_lingkup_kegiatan">Lingkup Kegiatan</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media (min-width: 475px) {
+        #form_akun_daftar .row-cols-sm-2 > * {
+            flex: 0 0 auto;
+            width: 50%;
+        }
+
+        #form_akun_daftar .row-cols-sm-2 > *:nth-child(1) {
+            padding-right: calc(var(--bs-gutter-x) * 0.25);
+        }
+
+        #form_akun_daftar .row-cols-sm-2 > *:nth-child(2) {
+            padding-left: calc(var(--bs-gutter-x) * 0.25);
+        }
+    }
+</style>

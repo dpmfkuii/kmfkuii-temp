@@ -14,6 +14,11 @@ enum UserRole {
 }
 
 interface AuthController {
+    seeded_uid(seed?: number): string
+    /**
+     * make sure firebase is loaded
+     */
+    register(user: User): Promise<AuthRegisterStatus>
     /**
      * make sure firebase is loaded
      */
@@ -28,7 +33,38 @@ interface AuthController {
     as(...allowed_roles: UserRole[]): void
 }
 
+enum AuthRegisterStatus {
+    SUCCESS,
+    ALREADY_EXISTS,
+    ERROR,
+}
+
 const auth: AuthController = {
+    seeded_uid(seed = Date.now()) {
+        // https://en.wikipedia.org/wiki/Linear_congruential_generator
+        seed = ((seed * 9301 + 49297) % 233280) / 233280 * 10000000000
+        const n = seed.toString().split('.')[0].split('')
+        n.splice(7, 0, '-')
+        n.splice(4, 0, '-')
+
+        const uid = common.scramble_numbers(n.join(''))
+        return uid
+    },
+    async register(user) {
+        let status: AuthRegisterStatus = AuthRegisterStatus.SUCCESS
+        const db_new_user = db.ref(`users/${user.uid}`)
+        await db_new_user.once<User>('value').then(snap => {
+            if (snap.exists()) {
+                status = AuthRegisterStatus.ALREADY_EXISTS
+            }
+        })
+        if (status === AuthRegisterStatus.SUCCESS) {
+            await db_new_user.set(user).catch(() => {
+                status = AuthRegisterStatus.ERROR
+            })
+        }
+        return status
+    },
     async login(uid, auto_redirect = true) {
         let user = null
         await db.ref(`users/${uid}`).once<User>('value').then(snap => {

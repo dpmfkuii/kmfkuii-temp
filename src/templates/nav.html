@@ -12,6 +12,7 @@
                 class="btn btn-km-primary btn-sm"
                 data-bs-toggle="modal"
                 data-bs-target="#auth_login_modal"
+                aria-label="Masuk"
             >
                 <i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk
             </button>
@@ -30,9 +31,16 @@
                     <span id="nav_user_role"></span>
                     <i class="fa-regular fa-circle-user"></i>
                 </button>
-                <div class="dropdown-menu dropdown-menu-end">
-                    <div class="px-2">
-                        UID: <span id="nav_user_uid">...</span>
+                <div
+                    class="dropdown-menu dropdown-menu-end py-1"
+                    style="min-width: max-content"
+                >
+                    <div class="px-2 text-center">
+                        <small>
+                            <small>
+                                UID: <span id="nav_user_uid">...</span>
+                            </small>
+                        </small>
                     </div>
                 </div>
             </div>
@@ -63,6 +71,11 @@
 </script>
 
 <style>
+    .navbar .navbar-brand:disabled,
+    .navbar .navbar-brand.disabled {
+        opacity: 1;
+    }
+
     .navbar .navbar-brand > img {
         height: 56px;
     }

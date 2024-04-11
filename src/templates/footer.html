@@ -59,7 +59,7 @@
 
 <script defer>
     (() => {
-        dom.q("#copyright_year_text").innerHTML = new Date()
+        dom.q("#copyright_year_text").textContent = new Date()
             .getFullYear()
             .toString();
     })();

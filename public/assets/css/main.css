@@ -2,6 +2,11 @@
     --bs-body-font-family: "Geologica", sans-serif;
 }
 
+a.disabled {
+    pointer-events: none;
+    opacity: 0.65;
+}
+
 /* km-primary modifier classes */
 .text-km-primary {
     color: #042188;
@@ -44,4 +49,8 @@
 
 .animate.animate-speed-50 {
     transition: all 250ms;
+}
+
+.animate.animate-delay-100 {
+    transition-delay: 100ms;
 }
