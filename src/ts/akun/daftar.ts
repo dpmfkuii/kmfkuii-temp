@@ -80,7 +80,7 @@
         await common.sleep(100)
 
         const new_user: User = {
-            uid: auth.seeded_uid(),
+            uid: `${input_nama_kegiatan.value.substring(0, 3).toLowerCase()}${auth.seeded_uid().substring(3)}`,
             role: UserRole.PENGURUS,
         }
 
