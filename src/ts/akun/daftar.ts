@@ -79,8 +79,9 @@
 
         await common.sleep(100)
 
+        const prefix_uid = input_nama_kegiatan.value.substring(0, 3).toLowerCase()
         const new_user: User = {
-            uid: `${input_nama_kegiatan.value.substring(0, 3).toLowerCase()}${auth.seeded_uid().substring(3)}`,
+            uid: `${prefix_uid}${auth.seeded_uid().substring(prefix_uid.length)}`,
             role: UserRole.PENGURUS,
         }
 

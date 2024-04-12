@@ -18,13 +18,13 @@
             <label
                 class="btn btn-outline-primary"
                 for="radio_periode_kegiatan_${n}"
-                >${n.replace('-', '/')}</label
+                >${n.replace('-', '/')} <span class="badge text-bg-dark">*</span></label
             >
         `
         radio_periode_kegiatan_group.appendChild(div)
     }
 
-    const refresh_logbook = async (value: string) => {
+    const refresh_logbook = async (periode: string) => {
         let success = true
 
         logbook_container.innerHTML = `
@@ -38,14 +38,25 @@
 
         await common.sleep(100)
 
-        await db.ref(`verifikasi/kegiatan/logbook/${value}`)
+        let kegiatan_periode_count = 0
+
+        await db.ref(`verifikasi/kegiatan/logbook/${periode}`)
             .once<LogbookPeriode>('value')
             .then(snap => {
                 logbook_container.innerHTML = ''
                 if (snap.exists()) {
                     const logbook_periode = snap.val()
+
                     for (const organisasi_index in logbook_periode) {
                         const organisasi = Object.values(OrganisasiKegiatan)[Number(organisasi_index)]
+
+                        const list_item_organisasi = dom.c('div', {
+                            classes: ['d-flex', 'align-items-center'],
+                            html: `
+                                <span class="fs-4 pe-1">${organisasi}</span>
+                                <span class="badge text-bg-success"></span>
+                            `
+                        })
 
                         const list_group = dom.c('ul',
                             {
@@ -53,7 +64,7 @@
                                 children: [
                                     dom.c('li', {
                                         classes: ['list-group-item', 'list-group-item-success'],
-                                        children: [dom.c('div', { classes: ['fs-4'], html: organisasi })],
+                                        children: [list_item_organisasi],
                                     })
                                 ],
                             }
@@ -61,7 +72,10 @@
 
                         logbook_container.appendChild(list_group)
 
+                        let organisasi_verifikasi_selesai_count = 0
                         for (const uid in logbook_periode[organisasi_index]) {
+                            kegiatan_periode_count++
+
                             const log = logbook_periode[organisasi_index][uid]
                             const nama_kegiatan = log.split('@')[0]
 
@@ -86,6 +100,8 @@
                                     },
                                 },
                             }
+
+                            organisasi_verifikasi_selesai_count += main.is_status_verifikasi_selesai(status.verifikasi) ? 1 : 0
 
                             const list_item_kegiatan_title = dom.c('span', {
                                 attributes: { role: 'button' },
@@ -171,6 +187,11 @@
 
                             list_group.appendChild(list_item_kegiatan)
                         }
+
+                        dom.qe(list_item_organisasi, 'span.badge')!.innerHTML = `
+                            <span><i class="fa-solid fa-check-double"></i>:
+                            ${organisasi_verifikasi_selesai_count}</span>/${Object.values(logbook_periode[organisasi_index]).length}
+                        `
                     }
                 }
                 else {
@@ -184,6 +205,9 @@
         if (logbook_container.innerHTML === '') {
             logbook_container.innerHTML = '<i class="text-secondary">Tidak ada data.</i>'
         }
+
+        dom.qe(radio_periode_kegiatan_group, `label[for="radio_periode_kegiatan_${periode}"] span.badge`)!
+            .innerHTML = kegiatan_periode_count.toString()
 
         return success
     }

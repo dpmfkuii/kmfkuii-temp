@@ -148,6 +148,12 @@ const main = {
         return with_html_color
             ? `<span class="text-${state === 0 ? 'primary' : state > 0 ? 'success' : 'secondary'}">${text}</span>`
             : text
+    },
+    is_status_verifikasi_selesai(status_verifikasi: Kegiatan['status']['verifikasi']) {
+        return status_verifikasi.proposal.lem > 0
+            && status_verifikasi.proposal.dpm > 0
+            && status_verifikasi.lpj.lem > 0
+            && status_verifikasi.lpj.dpm > 0
     }
 }
 
