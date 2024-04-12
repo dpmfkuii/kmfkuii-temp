@@ -18,6 +18,7 @@ var _ = {
                 "nama_pendaftar": "Tai Lung",
                 "organisasi_index": 1,
                 "nama_kegiatan": "Konferensi ITAF 2024",
+                "periode_kegiatan": "2023/2024",
                 "penyelenggara_kegiatan_index": 0,
                 "lingkup_kegiatan_index": 3,
                 "tanggal_kegiatan": [
@@ -28,7 +29,7 @@ var _ = {
                     "diajukan": 1234567890,
                     "verifikasi": {
                         "proposal": {
-                            "lem": 1234567890,
+                            "lem": 1234567890, // -1 not started, 0 = in progress, timestamp = done
                             "dpm": 1234567890,
                         },
                         "lpj": {
@@ -44,19 +45,29 @@ var _ = {
             // db.ref('verifikasi/kegiatan/logs/{uid}')
             "logs": {
                 "{uid}": {
-                    "{timestamp}": "@success pendaftaran berhasil.",
-                    "{timestamp}": "@info pembaruan data kegiatan.",
-                    "{timestamp}": "@info penjadwalan rapat verifikasi proposal ke dpm dalam antrean.",
-                    "{timestamp}": "@success penjadwalan rapat verifikasi proposal ke dpm terkonfirmasi.",
-                    "{timestamp}": "@success verifikasi proposal ke dpm diterima dengan revisi.",
-                    "{timestamp}": "@info revisi proposal ke dpm #1 terkirim.",
-                    "{timestamp}": "@info revisi proposal ke dpm #1 diterima dengan revisi kembali.",
-                    "{timestamp}": "@info revisi proposal ke dpm #2 terkirim.",
-                    "{timestamp}": "@success verifikasi proposal ke dpm <strong>selesai</strong>.",
-                    "{timestamp}": "@info dana rkat telah cair.",
-                    "{timestamp}": "@info penjadwalan rapat verifikasi lpj ke lem dalam antrean.",
+                    "{timestamp}": "@success Pendaftaran berhasil.",
+                    "{timestamp}": "@info Pembaruan data kegiatan.",
+                    "{timestamp}": "@info Penjadwalan rapat verifikasi proposal ke DPM dalam antrean.",
+                    "{timestamp}": "@success Penjadwalan rapat verifikasi proposal ke DPM terkonfirmasi.",
+                    "{timestamp}": "@success Verifikasi proposal ke DPM diterima dengan revisi.",
+                    "{timestamp}": "@info Revisi proposal ke DPM #1 terkirim.",
+                    "{timestamp}": "@info Revisi proposal ke DPM #1 diterima dengan revisi kembali.",
+                    "{timestamp}": "@info Revisi proposal ke DPM #2 terkirim.",
+                    "{timestamp}": "@success @html Verifikasi proposal ke DPM <strong>selesai</strong>.",
+                    "{timestamp}": "@info Dana rkat telah cair.",
+                    "{timestamp}": "@info Penjadwalan rapat verifikasi lpj ke LEM dalam antrean.",
+                },
+            },
+
+            // db.ref('verifikasi/kegiatan/logbook')
+            "logbook": {
+                "2023-2024": {
+                    "{organisasi_index}": {
+                        // db.ref('verifikasi/kegiatan/logbook/2023-2024/{organisasi_index}/{uid}')
+                        "{uid}": "Konferensi ITAF 2024@proposal_lem@proposal_dpm@lpj_lem@lpj_dpm:p",
+                    },
                 }
-            }
+            },
         },
 
         "rapat": {

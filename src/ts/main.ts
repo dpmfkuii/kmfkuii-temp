@@ -30,6 +30,7 @@ interface Kegiatan {
     nama_pendaftar: string
     organisasi_index: number // index of enum
     nama_kegiatan: string
+    periode_kegiatan: string
     penyelenggara_kegiatan_index: number
     lingkup_kegiatan_index: number
     tanggal_kegiatan: string[]
@@ -37,12 +38,12 @@ interface Kegiatan {
         diajukan: number
         verifikasi: {
             proposal: {
-                lem: number
-                dpm: number
+                lem: KegiatanStatusVerifikasiState
+                dpm: KegiatanStatusVerifikasiState
             }
             lpj: {
-                lem: number
-                dpm: number
+                lem: KegiatanStatusVerifikasiState
+                dpm: KegiatanStatusVerifikasiState
             }
         }
     }
@@ -50,13 +51,26 @@ interface Kegiatan {
     updated_timestamp: number
 }
 
+/**
+ * -1 = not started
+ * 
+ * 0 = in progress
+ * 
+ * {timestamp} = done
+ */
+type KegiatanStatusVerifikasiState = -1 | 0 | number
+
 interface LogsKegiatan {
     [timestamp: string]: LogKegiatan
 }
 
 /**
  * Log kegiatan diawali dengan parameter '@info/@success/@warn/@danger'.
- * Gunakan '@html' untuk menandakan adanya element html
+ * 
+ * Gunakan '@html' untuk menandakan adanya element html.
+ * 
+ * @example
+ * `log = '@success @html Verifikasi proposal ke DPM <strong>selesai</strong>.'`
  */
 type LogKegiatan = string
 
@@ -87,6 +101,44 @@ enum LingkupKegiatan {
     WILAYAH = 'Wilayah',
     NASIONAL = 'Nasional',
     INTERNASIONAL = 'Internasional',
+}
+
+interface LogbookKegiatan {
+    [periode_kegiatan: string]: LogbookPeriode
+}
+
+interface LogbookPeriode {
+    [organisasi_index: string]: LogbookOrganisasi
+}
+
+interface LogbookOrganisasi {
+    [uid: string]: LogbookLog
+}
+
+/**
+ * Log pada logbook kegiatan diawali dengan nama kegiatan.
+ * 
+ * Gunakan '@proposal_lem/@proposal_dpm/@lpj_lem/@lpj_dpm' untuk menandakan status verifikasi.
+ * 
+ * Gunakan :p setelah parameter untuk menandakan in progress '@proposal_lem:p'.
+ * 
+ * @example
+ * `logbook_kegiatan[periode_kegiatan][organisasi_index][uid] = 'Konferensi ITAF 2024@proposal_lem@proposal_dpm@lpj_lem@lpj_dpm:p'`
+ */
+type LogbookLog = string
+
+const main = {
+    get_opsi_periode_kegiatan() {
+        const current_year = new Date().getFullYear()
+        return [
+            `${current_year - 2}-${current_year - 1}`,
+            `${current_year - 1}-${current_year}`,
+            `${current_year}-${current_year + 1}`,
+        ]
+    },
+    get_selected_periode_kegiatan() {
+        return this.get_opsi_periode_kegiatan()[new Date().getMonth() > 5 ? 0 : 1]
+    },
 }
 
 declare const swal: any

@@ -5,6 +5,12 @@ const dom = {
     qe<K extends keyof HTMLElementTagNameMap>(el: HTMLElement, selectors: K | string): HTMLElementTagNameMap[K] | null {
         return el.querySelector(selectors)
     },
+    qa<K extends keyof HTMLElementTagNameMap>(selectors: K | string): NodeListOf<HTMLElementTagNameMap[K]> {
+        return document.querySelectorAll(selectors)
+    },
+    qea<K extends keyof HTMLElementTagNameMap>(el: HTMLElement, selectors: K | string): NodeListOf<HTMLElementTagNameMap[K]> {
+        return el.querySelectorAll(selectors)
+    },
     disable(...elements: HTMLElement[]) {
         for (const el of elements) {
             el.setAttribute('disabled', '')
@@ -19,8 +25,25 @@ const dom = {
             el.classList.remove('disabled')
         }
     },
-    c<K extends keyof HTMLElementTagNameMap>(tag_name: K, options?: ElementCreationOptions): HTMLElementTagNameMap[K] {
-        return document.createElement(tag_name, options)
+    c<K extends keyof HTMLElementTagNameMap>(tag_name: K, options?: { classes?: string[], html?: string, children?: Node[] }): HTMLElementTagNameMap[K] {
+        const el = document.createElement(tag_name)
+        if (options) {
+            if (options.classes) el.classList.add(...options.classes)
+            if (options.html) el.innerHTML = options.html
+            if (options.children) {
+                for (const child of options.children) {
+                    el.appendChild(child)
+                }
+            }
+        }
+        return el
+    },
+    get_input_radio_value(name: string) {
+        let value = ''
+        this.qa<'input'>(`input[name="${name}"]`).forEach(n => {
+            if (n.checked) value = n.value
+        })
+        return value
     },
 }
 

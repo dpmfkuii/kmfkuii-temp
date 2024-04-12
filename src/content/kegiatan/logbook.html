@@ -19,4 +19,25 @@
     <div class="mb-3 animate animate-fade-on-enter animate-speed-50">
         <a role="button" href="/kegiatan/" class="btn btn-secondary">Kembali</a>
     </div>
+    <div class="card mb-3 animate animate-rise-on-enter">
+        <div class="card-header">
+            <div
+                class="input-group justify-content-center"
+                id="radio_periode_kegiatan_group"
+            ></div>
+        </div>
+        <div class="card-body" id="logbook_container"></div>
+    </div>
 </div>
+
+<style>
+    .badge > .fa-spinner {
+        animation: 1.5s linear infinite spinner-border;
+    }
+
+    #logbook_container > .list-group:last-child {
+        margin-bottom: 0 !important;
+    }
+</style>
+
+<script defer src="/assets/js/kegiatan/logbook.js"></script>

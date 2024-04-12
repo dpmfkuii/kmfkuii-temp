@@ -42,12 +42,12 @@ enum AuthRegisterStatus {
 const auth: AuthController = {
     seeded_uid(seed = Date.now()) {
         // https://en.wikipedia.org/wiki/Linear_congruential_generator
-        seed = ((seed * 9301 + 49297) % 233280) / 233280 * 10000000000
-        const n = seed.toString().split('.')[0].split('')
+        seed = ((seed * 9301 + 49297) % 233280) / 233280
+        const n = seed.toString().split('.')[1].split('')
         n.splice(7, 0, '-')
         n.splice(4, 0, '-')
 
-        const uid = common.scramble_numbers(n.join(''))
+        const uid = common.scramble_numbers(n.slice(0, 12).join(''))
         return uid
     },
     async register(user) {
