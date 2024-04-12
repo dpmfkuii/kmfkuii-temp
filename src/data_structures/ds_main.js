@@ -1,7 +1,7 @@
 var _ = {
     // db.ref('users')
     "users": {
-        // db.ref('users/{uid}')
+        // db.ref(`users/${uid}`)
         "{uid}": {
             "uid": "abc123",
             "role": "guest",
@@ -11,7 +11,7 @@ var _ = {
     "verifikasi": {
         // db.ref('verifikasi/kegiatan')
         "kegiatan": {
-            // db.ref('verifikasi/kegiatan/{uid}')
+            // db.ref(`verifikasi/kegiatan/${uid}`)
             "{uid}": {
                 "uid": "abc123",
                 "email_pendaftar": "me@tailung.com",
@@ -42,7 +42,7 @@ var _ = {
                 "updated_timestamp": 1234567890,
             },
 
-            // db.ref('verifikasi/kegiatan/logs/{uid}')
+            // db.ref(`verifikasi/kegiatan/logs/${uid}`)
             "logs": {
                 "{uid}": {
                     "{timestamp}": "@success Pendaftaran berhasil.",
@@ -63,7 +63,7 @@ var _ = {
             "logbook": {
                 "2023-2024": {
                     "{organisasi_index}": {
-                        // db.ref('verifikasi/kegiatan/logbook/2023-2024/{organisasi_index}/{uid}')
+                        // db.ref(`verifikasi/kegiatan/logbook/2023-2024/${organisasi_index}/${uid}`)
                         "{uid}": "Konferensi ITAF 2024@proposal_lem@proposal_dpm@lpj_lem@lpj_dpm:p",
                     },
                 }

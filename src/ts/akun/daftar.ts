@@ -130,7 +130,7 @@
             await auth.register(new_user).then(status => {
                 switch (status) {
                     case AuthRegisterStatus.SUCCESS:
-                        location.href = `/akun/daftar/berhasil/?uid=${new_user.uid}&nama_kegiatan=${new_kegiatan.nama_kegiatan}`
+                        location.href = `/akun/daftar/berhasil/?uid=${new_user.uid}&nama_kegiatan=${new_kegiatan.nama_kegiatan}#`
                         break
                     default:
                         // an unexpected error occurred

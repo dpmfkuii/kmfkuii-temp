@@ -139,6 +139,16 @@ const main = {
     get_selected_periode_kegiatan() {
         return this.get_opsi_periode_kegiatan()[new Date().getMonth() > 5 ? 0 : 1]
     },
+    get_status_verifikasi_state_text(state: KegiatanStatusVerifikasiState, with_html_color?: boolean): string {
+        const text = state === 0
+            ? 'sedang berlangsung'
+            : state > 0
+                ? `sudah selesai pada ${new Date(state).toLocaleDateString()}`
+                : 'belum dimulai'
+        return with_html_color
+            ? `<span class="text-${state === 0 ? 'primary' : state > 0 ? 'success' : 'secondary'}">${text}</span>`
+            : text
+    }
 }
 
 declare const swal: any

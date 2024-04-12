@@ -25,10 +25,20 @@ const dom = {
             el.classList.remove('disabled')
         }
     },
-    c<K extends keyof HTMLElementTagNameMap>(tag_name: K, options?: { classes?: string[], html?: string, children?: Node[] }): HTMLElementTagNameMap[K] {
+    c<K extends keyof HTMLElementTagNameMap>(tag_name: K, options?: {
+        classes?: string[],
+        attributes?: { [name: string]: string },
+        html?: string,
+        children?: Node[],
+    }): HTMLElementTagNameMap[K] {
         const el = document.createElement(tag_name)
         if (options) {
             if (options.classes) el.classList.add(...options.classes)
+            if (options.attributes) {
+                for (const name in options.attributes) {
+                    el.setAttribute(name, options.attributes[name])
+                }
+            }
             if (options.html) el.innerHTML = options.html
             if (options.children) {
                 for (const child of options.children) {

@@ -30,7 +30,7 @@
         logbook_container.innerHTML = `
             <div class="d-flex align-items-center">
                 <strong role="status" class="text-secondary fst-italic"
-                    >Loading...</strong
+                    >Memuat...</strong
                 >
                 <div class="spinner-border ms-auto" aria-hidden="true"></div>
             </div>
@@ -87,18 +87,71 @@
                                 },
                             }
 
-                            const list_item_kegiatan_title = dom.c('a', {
-                                classes: ['text-decoration-none', 'text-body'],
-                                html: `${nama_kegiatan} <i class="fa-solid fa-circle-info"></i>`,
+                            const list_item_kegiatan_title = dom.c('span', {
+                                attributes: { role: 'button' },
+                                html: `${nama_kegiatan} <small class="text-secondary">#${uid.substring(0, 4)}</small> <i class="fa-solid fa-circle-info"></i>`,
                             })
-                            list_item_kegiatan_title.href = '#'
+
+                            list_item_kegiatan_title.addEventListener('click', () => {
+                                swal.fire({
+                                    title: nama_kegiatan,
+                                    html: '<div><i>Memuat detail...</i></div>',
+                                    confirmButtonText: 'Tutup',
+                                    customClass: {
+                                        confirmButton: 'btn btn-primary',
+                                    },
+                                    buttonsStyling: false,
+                                    showCloseButton: true,
+                                    didOpen: () => {
+                                        swal.showLoading()
+                                        db.ref(`verifikasi/kegiatan/${uid}`)
+                                            .once<Kegiatan>('value')
+                                            .then(snap => {
+                                                const div = dom.qe<'div'>(swal.getPopup(), '#swal2-html-container > div')!
+                                                if (snap.exists()) {
+                                                    const kegiatan = snap.val()
+                                                    div.classList.add('text-start')
+                                                    div.innerHTML = `
+                                                        <h6>UID</h6>
+                                                        <p class="small">${kegiatan.uid.substring(0, 5)}***-***</p>
+                                                        <h6>Organisasi</h6>
+                                                        <p class="small">${Object.values(OrganisasiKegiatan)[kegiatan.organisasi_index]}</p>
+                                                        <h6>Nama Kegiatan</h6>
+                                                        <p class="small">${kegiatan.nama_kegiatan}</p>
+                                                        <h6>Periode Kegiatan</h6>
+                                                        <p class="small">${kegiatan.periode_kegiatan.replace('-', '/')}</p>
+                                                        <h6>Penyelenggara Kegiatan</h6>
+                                                        <p class="small">${Object.values(PenyelenggaraKegiatan)[kegiatan.penyelenggara_kegiatan_index]}</p>
+                                                        <h6>Lingkup Kegiatan</h6>
+                                                        <p class="small">${Object.values(LingkupKegiatan)[kegiatan.lingkup_kegiatan_index]}</p>
+                                                        <h6>Status Verifikasi</h6>
+                                                        <p class="small">Proposal ke LEM ${main.get_status_verifikasi_state_text(kegiatan.status.verifikasi.proposal.lem, true)}.<br />
+                                                        Proposal ke DPM ${main.get_status_verifikasi_state_text(kegiatan.status.verifikasi.proposal.dpm, true)}.<br />
+                                                        LPJ ke LEM ${main.get_status_verifikasi_state_text(kegiatan.status.verifikasi.lpj.lem, true)}.<br />
+                                                        LPJ ke DPM ${main.get_status_verifikasi_state_text(kegiatan.status.verifikasi.lpj.dpm, true)}.</p>
+                                                        <h6>Dibuat</h6>
+                                                        <p class="small">${new Date(kegiatan.created_timestamp).toLocaleString()}</p>
+                                                        <h6>Terakhir Diperbarui</h6>
+                                                        <p class="small">${new Date(kegiatan.updated_timestamp).toLocaleString()}</p>
+                                                    `
+                                                }
+                                                else {
+                                                    div.innerHTML = '<i class="text-secondary">Tidak ada data.</i>'
+                                                }
+                                                swal.hideLoading()
+                                            })
+                                    },
+                                })
+                            })
 
                             const create_badge = (text: string, state: KegiatanStatusVerifikasiState) => {
                                 const color = state === 0 ? 'primary' : state > 0 ? 'success' : 'secondary'
                                 const badge = dom.c('span', {
                                     classes: ['badge', `text-bg-${color}`, 'rounded-pill'],
+                                    attributes: { role: 'button' },
                                     html: `${text}${state === 0 ? ' <i class="fa-solid fa-spinner"></i>' : state > 0 ? ' <i class="fa-solid fa-check"></i>' : ''}`,
                                 })
+                                badge.addEventListener('click', () => list_item_kegiatan_title.click())
                                 return badge
                             }
 
