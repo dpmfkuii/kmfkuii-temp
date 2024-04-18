@@ -16,7 +16,7 @@
         input_uid.classList.remove('is-invalid')
     })
 
-    form.addEventListener('submit', async (ev) => {
+    form.addEventListener('submit', async ev => {
         ev.preventDefault()
 
         const disabled_elements = [
@@ -46,8 +46,8 @@
             }
             else {
                 swal.fire({
-                    icon: "success",
-                    title: "Berhasil masuk!",
+                    icon: 'success',
+                    title: 'Berhasil masuk!',
                     showConfirmButton: false,
                     timer: 1000,
                     timerProgressBar: true,

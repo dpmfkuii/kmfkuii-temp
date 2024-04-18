@@ -54,9 +54,7 @@
         }
     }
 
-    form.addEventListener('submit', async (ev) => {
-        let success = true
-
+    form.addEventListener('submit', async ev => {
         ev.preventDefault()
 
         const disabled_elements = [
@@ -114,50 +112,25 @@
             updated_timestamp: created_timestamp,
         }
 
-        await db.ref(`verifikasi/kegiatan/${new_user.uid}`)
-            .set(new_kegiatan)
-            .catch(() => {
-                // an unexpected error occurred
-                success = false
-            })
-
-        await db.ref(`verifikasi/kegiatan/logbook/${select_periode_kegiatan.value}/${new_kegiatan.organisasi_index}/${new_user.uid}`)
-            .set(new_kegiatan.nama_kegiatan)
-            .catch(() => {
-                // an unexpected error occurred
-                success = false
-            })
-
-        if (success) {
-            await auth.register(new_user).then(async status => {
-                switch (status) {
-                    case AuthRegisterStatus.SUCCESS:
-                        await main.add_log(new_user.uid, 'success', 'Pendaftaran berhasil.')
+        try {
+            await Promise.all([
+                db.set_kegiatan(new_kegiatan),
+                db.set_logbook(new_kegiatan),
+                db.add_kegiatan_log(new_user.uid, 'success', 'Pendaftaran berhasil.'),
+            ])
+            await auth.register(new_user)
+                .then(status => {
+                    if (status === AuthRegisterStatus.SUCCESS) {
                         location.href = `/akun/daftar/berhasil/?uid=${new_user.uid}&nama_kegiatan=${new_kegiatan.nama_kegiatan}#`
-                        break
-                    default:
-                        // an unexpected error occurred
-                        success = false
-                        break
-                }
-            })
+                    }
+                    else {
+                        throw new Error()
+                    }
+                })
         }
-
-        if (!success) {
-            swal.fire({
-                icon: 'error',
-                title: 'Ups...',
-                text: 'Terjadi kesalahan tak terduga! Coba hubungi sekretariat LEM atau DPM.',
-                confirmButtonText: 'Tutup',
-                customClass: {
-                    confirmButton: 'btn btn-primary',
-                },
-                buttonsStyling: false,
-                showCloseButton: true,
-            })
-
+        catch {
+            main.show_unexpected_error_message()
             dom.enable(...disabled_elements)
-
             button_submit.innerHTML = 'Daftar'
         }
 

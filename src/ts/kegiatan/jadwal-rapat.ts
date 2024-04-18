@@ -2,8 +2,7 @@
     const list_antrean_items = dom.q<'ol'>('#list_antrean_items')!
     const jadwal_verif_antrean_badge = dom.q<'span'>('#jadwal_verif_antrean_badge')!
 
-    db.ref('verifikasi/rapat/antrean')
-        .once<AntreanRapat>('value')
+    db.get_antrean_rapat()
         .then(snap => {
             if (!snap.exists()) return
 

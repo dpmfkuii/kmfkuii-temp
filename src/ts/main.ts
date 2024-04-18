@@ -10,9 +10,11 @@ interface FirebaseDatabase {
     set(value: any): Promise<any>
     get<T = any>(): Promise<FirebaseSnapshot<T>>
     push(value: any): Promise<{ key: string }>
+    update(value: any): Promise<any>
     on<T = any>(type: 'value', callback: (snapshot: FirebaseSnapshot<T>) => void): Promise<any>
     off(callback: () => void): void
     once<T = any>(type: 'value'): Promise<FirebaseSnapshot<T>>
+    remove(): Promise<any>
 }
 
 interface FirebaseSnapshot<T = any> {
@@ -21,7 +23,9 @@ interface FirebaseSnapshot<T = any> {
 }
 
 declare const firebase: Firebase
-const db = firebase.database()
+declare const swal: any
+
+const main_db = firebase.database()
 
 // kegiatan
 interface Kegiatan {
@@ -132,6 +136,7 @@ type LogbookLog = string
 interface Rapat {
     uid: string
     jenis_rapat: JenisRapat
+    rapat_dengan: string
     tanggal_rapat: string
     jam_rapat: string
 }
@@ -163,9 +168,11 @@ const JamRapat = [
 ]
 
 interface AntreanRapat {
-    [rapat_dengan: string]: {
-        [timestamp: string]: Rapat
-    }
+    [rapat_dengan: string]: RapatList
+}
+
+interface RapatList {
+    [timestamp: string]: Rapat
 }
 
 type LogColor = 'info' | 'success' | 'warning' | 'danger'
@@ -214,17 +221,92 @@ const main = {
         if (kegiatan.status.verifikasi.lpj.dpm === 0) status += ':p'
         return `${kegiatan.nama_kegiatan}${status}`
     },
-    set_kegiatan_updated_timestamp(uid: string) {
-        return db.ref(`verifikasi/kegiatan/${uid}/updated_timestamp`)
-            .set(common.timestamp())
-    },
-    add_log(uid: string, color: LogColor, log: string) {
-        return db.ref(`verifikasi/kegiatan/logs/${uid}/${common.timestamp()}`)
-            .set(`@${color} ${log}`)
-    },
+    show_unexpected_error_message() {
+        return swal.fire({
+            icon: 'error',
+            title: 'Ups...',
+            text: 'Terjadi kesalahan tak terduga! Coba hubungi sekretariat LEM atau DPM.',
+            confirmButtonText: 'Tutup',
+            customClass: {
+                confirmButton: 'btn btn-primary',
+            },
+            buttonsStyling: false,
+            showCloseButton: true,
+        })
+    }
 }
 
-declare const swal: any
+const db = {
+    get_kegiatan(uid: string): Promise<FirebaseSnapshot<Kegiatan>> {
+        return main_db.ref(`verifikasi/kegiatan/${uid}`)
+            .once<Kegiatan>('value')
+    },
+    set_kegiatan(kegiatan: Kegiatan) {
+        return main_db.ref(`verifikasi/kegiatan/${kegiatan.uid}`)
+            .set(kegiatan)
+    },
+    update_kegiatan(uid: string, kegiatan_values: Partial<Kegiatan>) {
+        return main_db.ref(`verifikasi/kegiatan/${uid}`)
+            .update(kegiatan_values)
+    },
+    get_kegiatan_status_verifikasi(uid: string): Promise<FirebaseSnapshot<Kegiatan['status']['verifikasi']>> {
+        return main_db.ref(`verifikasi/kegiatan/${uid}/status/verifikasi`)
+            .once<Kegiatan['status']['verifikasi']>('value')
+    },
+    set_kegiatan_status_verifikasi(uid: string, jenis_rapat: JenisRapat, rapat_dengan: Rapat['rapat_dengan'], value: StatusRapat | number) {
+        return main_db.ref(`verifikasi/kegiatan/${uid}/status/verifikasi/${jenis_rapat}/${rapat_dengan}`)
+            .set(value)
+    },
+    set_kegiatan_updated_timestamp(uid: string) {
+        return main_db.ref(`verifikasi/kegiatan/${uid}/updated_timestamp`)
+            .set(common.timestamp())
+    },
+    get_kegiatan_logs(uid: string): Promise<FirebaseSnapshot<{ [timestamp: string]: string }>> {
+        return main_db.ref(`verifikasi/kegiatan/logs/${uid}`)
+            .once<{ [timestamp: string]: string }>('value')
+    },
+    add_kegiatan_log(uid: string, color: LogColor, log: string) {
+        return main_db.ref(`verifikasi/kegiatan/logs/${uid}/${common.timestamp()}`)
+            .set(`@${color} ${log}`)
+    },
+    get_logbook_periode(periode: string): Promise<FirebaseSnapshot<LogbookPeriode>> {
+        return main_db.ref(`verifikasi/kegiatan/logbook/${periode}`)
+            .once<LogbookPeriode>('value')
+    },
+    set_logbook(kegiatan: Kegiatan) {
+        return main_db.ref(`verifikasi/kegiatan/logbook/${kegiatan.periode_kegiatan}/${kegiatan.organisasi_index}/${kegiatan.uid}`)
+            .set(main.kegiatan_to_logbook_text(kegiatan))
+    },
+    change_logbook(old_periode_kegiatan: string, new_kegiatan: Kegiatan) {
+        if (old_periode_kegiatan === new_kegiatan.periode_kegiatan) {
+            return this.set_logbook(new_kegiatan)
+        }
+        return Promise.all([
+            main_db.ref(`verifikasi/kegiatan/logbook/${old_periode_kegiatan}/${new_kegiatan.organisasi_index}/${new_kegiatan.uid}`).remove(),
+            this.set_logbook(new_kegiatan),
+        ])
+    },
+    get_antrean_rapat(): Promise<FirebaseSnapshot<AntreanRapat>> {
+        return main_db.ref('verifikasi/rapat/antrean')
+            .once<AntreanRapat>('value')
+    },
+    get_antrean_rapat_dengan(rapat_dengan: string): Promise<FirebaseSnapshot<RapatList>> {
+        return main_db.ref(`verifikasi/rapat/antrean/${rapat_dengan}`)
+            .once<RapatList>('value')
+    },
+    add_antrean_rapat(rapat: Rapat) {
+        return main_db.ref(`verifikasi/rapat/antrean/${rapat.rapat_dengan}/${common.timestamp()}`)
+            .set(rapat)
+    },
+    /**
+     * @param rapat_dengan 
+     * @param tanggal_rapat yyyy/mm/dd
+     */
+    get_jadwal_rapat_dengan(rapat_dengan: string, tanggal_rapat: string): Promise<FirebaseSnapshot<RapatList>> {
+        return main_db.ref(`verifikasi/rapat/jadwal/${rapat_dengan}/${tanggal_rapat}`)
+            .once<RapatList>('value')
+    },
+}
 
 // animate system
 setTimeout(() => {

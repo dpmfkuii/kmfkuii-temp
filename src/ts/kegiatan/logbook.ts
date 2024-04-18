@@ -40,8 +40,7 @@
 
         let kegiatan_periode_count = 0
 
-        await db.ref(`verifikasi/kegiatan/logbook/${periode}`)
-            .once<LogbookPeriode>('value')
+        await db.get_logbook_periode(periode)
             .then(snap => {
                 logbook_container.innerHTML = ''
                 if (snap.exists()) {
@@ -118,10 +117,9 @@
                                     },
                                     buttonsStyling: false,
                                     showCloseButton: true,
-                                    didOpen: () => {
+                                    didOpen() {
                                         swal.showLoading()
-                                        db.ref(`verifikasi/kegiatan/${uid}`)
-                                            .once<Kegiatan>('value')
+                                        db.get_kegiatan(uid)
                                             .then(snap => {
                                                 const div = dom.qe<'div'>(swal.getPopup(), '#swal2-html-container > div')!
                                                 if (snap.exists()) {

@@ -78,9 +78,9 @@
         // ambil dari antrean dan terkonfirmasi
 
         const taken_hours: string[] = []
+        const rapat_dengan = input_rapat_dengan.value.toLowerCase()
 
-        await db.ref(`verifikasi/rapat/jadwal/${input_rapat_dengan.value.toLowerCase()}/${input_tanggal_rapat.value.replaceAll('-', '/')}`)
-            .once<{ [timestamp: string]: Rapat }>('value')
+        await db.get_jadwal_rapat_dengan(rapat_dengan, input_tanggal_rapat.value.replaceAll('-', '/'))
             .then(snap => {
                 if (!snap.exists()) return
                 const val = snap.val()
@@ -89,8 +89,7 @@
                 }
             })
 
-        await db.ref(`verifikasi/rapat/antrean/${input_rapat_dengan.value.toLowerCase()}`)
-            .once<{ [timestamp: string]: Rapat }>('value')
+        await db.get_antrean_rapat_dengan(rapat_dengan)
             .then(snap => {
                 if (!snap.exists()) return
                 const val = snap.val()
@@ -111,9 +110,7 @@
 
     input_tanggal_rapat.addEventListener('change', () => validate_date_and_time())
 
-    form.addEventListener('submit', async (ev) => {
-        let success = true
-
+    form.addEventListener('submit', async ev => {
         ev.preventDefault()
 
         const disabled_elements = [
@@ -134,66 +131,28 @@
         await common.sleep(100)
 
         const uid = auth.get_logged_in_user()!.uid
-
-        const rapat_dengan = input_rapat_dengan.value.toLowerCase()
         const new_rapat: Rapat = {
             uid,
             jenis_rapat: input_jenis_rapat.value.toLowerCase() as JenisRapat,
+            rapat_dengan: input_rapat_dengan.value.toLowerCase(),
             tanggal_rapat: input_tanggal_rapat.value,
             jam_rapat: select_jam_rapat.value,
         }
 
-        await db.ref(`verifikasi/rapat/antrean/${rapat_dengan}/${common.timestamp()}`)
-            .set(new_rapat)
-            .catch(() => {
-                // an unexpected error occurred
-                success = false
-            })
-
-        await db.ref(`verifikasi/kegiatan/${uid}/status/verifikasi/${new_rapat.jenis_rapat}/${rapat_dengan}`)
-            .set(StatusRapat.IN_PROGRESS)
-            .catch(() => {
-                // an unexpected error occurred
-                success = false
-            })
-
-        await db.ref(`verifikasi/kegiatan/${uid}`)
-            .once<Kegiatan>('value')
-            .then(async snap => {
-                if (!snap.exists()) return
-                const kegiatan = snap.val()
-                await db.ref(`verifikasi/kegiatan/logbook/${kegiatan.periode_kegiatan}/${kegiatan.organisasi_index}/${uid}`)
-                    .set(main.kegiatan_to_logbook_text(kegiatan))
-                    .catch(() => {
-                        // an unexpected error occurred
-                        success = false
-                    })
-            })
-
-        const jenis_rapat_text = new_rapat.jenis_rapat === JenisRapat.LPJ ? 'LPJ' : JenisRapat.PROPOSAL
-        await main.add_log(uid, 'info', `Penjadwalan rapat verifikasi ${jenis_rapat_text} dengan ${input_rapat_dengan.value} dalam antrean.`)
-
-        await main.set_kegiatan_updated_timestamp(uid)
-
-        if (success) {
+        try {
+            const jenis_rapat_text = new_rapat.jenis_rapat === JenisRapat.LPJ ? 'LPJ' : JenisRapat.PROPOSAL
+            await Promise.all([
+                db.add_antrean_rapat(new_rapat),
+                db.set_kegiatan_status_verifikasi(uid, new_rapat.jenis_rapat, new_rapat.rapat_dengan, StatusRapat.IN_PROGRESS),
+                db.get_kegiatan(uid).then(snap => db.set_logbook(snap.val()!)),
+                db.add_kegiatan_log(uid, 'info', `Penjadwalan rapat verifikasi ${jenis_rapat_text} dengan ${input_rapat_dengan.value} dalam antrean.`),
+            ])
+            await db.set_kegiatan_updated_timestamp(uid)
             location.href = `/urus/`
         }
-
-        if (!success) {
-            swal.fire({
-                icon: 'error',
-                title: 'Ups...',
-                text: 'Terjadi kesalahan tak terduga! Coba hubungi sekretariat LEM atau DPM.',
-                confirmButtonText: 'Tutup',
-                customClass: {
-                    confirmButton: 'btn btn-primary',
-                },
-                buttonsStyling: false,
-                showCloseButton: true,
-            })
-
+        catch {
+            main.show_unexpected_error_message()
             dom.enable(...disabled_elements)
-
             button_submit.innerHTML = 'Daftar'
         }
 

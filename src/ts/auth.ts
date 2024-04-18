@@ -52,7 +52,7 @@ const auth: AuthController = {
     },
     async register(user) {
         let status: AuthRegisterStatus = AuthRegisterStatus.SUCCESS
-        const db_new_user = db.ref(`users/${user.uid}`)
+        const db_new_user = main_db.ref(`users/${user.uid}`)
         await db_new_user.once<User>('value').then(snap => {
             if (snap.exists()) {
                 status = AuthRegisterStatus.ALREADY_EXISTS
@@ -67,7 +67,7 @@ const auth: AuthController = {
     },
     async login(uid, auto_redirect = true) {
         let user = null
-        await db.ref(`users/${uid}`).once<User>('value').then(snap => {
+        await main_db.ref(`users/${uid}`).once<User>('value').then(snap => {
             if (snap.exists()) {
                 user = snap.val()
                 store.set_local_item(defines.store_key.user, JSON.stringify(user))

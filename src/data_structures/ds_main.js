@@ -78,6 +78,7 @@ var _ = {
                     "{timestamp}": {
                         "uid": "abc123",
                         "jenis_rapat": "proposal",
+                        "rapat_dengan": "lem",
                         "tanggal_rapat": "31-01-2024",
                         "jam_rapat": "16.00",
                     },
@@ -86,6 +87,7 @@ var _ = {
                     "{timestamp}": {
                         "uid": "abc123",
                         "jenis_rapat": "lpj",
+                        "rapat_dengan": "dpm",
                         "tanggal_rapat": "02-04-2024",
                         "jam_rapat": "20.00",
                     },
@@ -102,6 +104,7 @@ var _ = {
                                 "{timestamp}": {
                                     "uid": "abc123",
                                     "jenis_rapat": "proposal",
+                                    "rapat_dengan": "lem",
                                     "tanggal_rapat": "29-04-2024",
                                     "jam_rapat": "20.00",
                                 }
@@ -113,6 +116,7 @@ var _ = {
                                 "{timestamp}": {
                                     "uid": "def456",
                                     "jenis_rapat": "lpj",
+                                    "rapat_dengan": "lem",
                                     "tanggal_rapat": "22-05-2024",
                                     "jam_rapat": "16.00",
                                 }
@@ -128,6 +132,7 @@ var _ = {
                                 "{timestamp}": {
                                     "uid": "def456",
                                     "jenis_rapat": "lpj",
+                                    "rapat_dengan": "dpm",
                                     "tanggal_rapat": "18-01-2025",
                                     "jam_rapat": "16.00",
                                 }

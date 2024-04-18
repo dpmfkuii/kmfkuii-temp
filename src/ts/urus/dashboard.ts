@@ -7,9 +7,6 @@
     const button_ubah = dom.qe<'button'>(panel, 'button[aria-label="Ubah"]')!
     const button_batal = dom.qe<'button'>(panel, 'button[aria-label="Batal"]')!
 
-    const navbar_brand = dom.q<'a'>('.navbar .navbar-brand')!
-    const button_keluar = dom.q<'button'>('.navbar button[aria-label="Keluar"]')!
-
     const input_email_pendaftar = dom.q<'input'>('input[name="email_pendaftar"]')!
     const input_nama_pendaftar = dom.q<'input'>('input[name="nama_pendaftar"]')!
     const select_organisasi = dom.q<'select'>('select[name="organisasi"]')!
@@ -67,13 +64,16 @@
         select_penyelenggara_kegiatan,
         select_lingkup_kegiatan,
         // input_tanggal_kegiatan,
+        button_ubah,
     )
 
     const logged_in_user = auth.get_logged_in_user()
     if (!logged_in_user) return
 
-    db.ref(`verifikasi/kegiatan/${logged_in_user.uid}`)
-        .once<Kegiatan>('value')
+    const uid = logged_in_user.uid
+    let _kegiatan: Kegiatan = {} as any
+
+    db.get_kegiatan(uid)
         .then(snap => {
             if (!snap.exists()) return
             const kegiatan = snap.val()
@@ -84,6 +84,9 @@
             select_periode_kegiatan.value = kegiatan.periode_kegiatan
             select_penyelenggara_kegiatan.value = Object.values(PenyelenggaraKegiatan)[kegiatan.penyelenggara_kegiatan_index]
             select_lingkup_kegiatan.value = Object.values(LingkupKegiatan)[kegiatan.lingkup_kegiatan_index]
+
+            _kegiatan = kegiatan
+            dom.enable(button_ubah)
         })
 
     button_batal.addEventListener('click', () => {
@@ -104,7 +107,9 @@
         }
     })
 
-    button_ubah.addEventListener('click', () => {
+    form.addEventListener('submit', ev => {
+        ev.preventDefault()
+
         if (!button_ubah.hasAttribute('is-editing')) {
             dom.enable(
                 input_nama_kegiatan,
@@ -123,8 +128,47 @@
             return
         }
 
-        // submit()
-        // swal.fire
+        swal.fire({
+            title: 'Ubah Detail Kegiatan',
+            html: '<div><i>Memperbarui detail...</i></div>',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            async didOpen() {
+                swal.showLoading()
+
+                const kegiatan_values_to_update = {
+                    nama_kegiatan: input_nama_kegiatan.value,
+                    periode_kegiatan: select_periode_kegiatan.value,
+                    penyelenggara_kegiatan_index: Object.values(PenyelenggaraKegiatan).indexOf(select_penyelenggara_kegiatan.value as PenyelenggaraKegiatan),
+                    lingkup_kegiatan_index: Object.values(LingkupKegiatan).indexOf(select_lingkup_kegiatan.value as LingkupKegiatan),
+                } as Kegiatan
+
+                const old_periode_kegiatan = _kegiatan.periode_kegiatan
+                _kegiatan.nama_kegiatan = kegiatan_values_to_update.nama_kegiatan
+                _kegiatan.periode_kegiatan = kegiatan_values_to_update.periode_kegiatan
+                _kegiatan.penyelenggara_kegiatan_index = kegiatan_values_to_update.penyelenggara_kegiatan_index
+                _kegiatan.lingkup_kegiatan_index = kegiatan_values_to_update.lingkup_kegiatan_index
+
+                try {
+                    await db.update_kegiatan(uid, kegiatan_values_to_update)
+                    await db.change_logbook(old_periode_kegiatan, _kegiatan)
+                    swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil tersimpan!',
+                        showConfirmButton: false,
+                        timer: 1000,
+                        timerProgressBar: true,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                    })
+                }
+                catch {
+                    main.show_unexpected_error_message()
+                }
+            },
+        })
+
         button_batal.click()
     })
 })();
@@ -163,8 +207,7 @@
     }
 
     const uid = auth.get_logged_in_user()!.uid
-    db.ref(`verifikasi/kegiatan/${uid}/status/verifikasi`)
-        .once<Kegiatan['status']['verifikasi']>('value')
+    db.get_kegiatan_status_verifikasi(uid)
         .then(snap => {
             if (!snap.exists()) return
 
@@ -192,8 +235,7 @@
     }
 
     const uid = auth.get_logged_in_user()!.uid
-    db.ref(`verifikasi/kegiatan/logs/${uid}`)
-        .once<{ [timestamp: string]: string }>('value')
+    db.get_kegiatan_logs(uid)
         .then(snap => {
             if (!snap.exists()) return
 
