@@ -37,7 +37,7 @@
     const senin_depan = new Date()
     senin_depan.setDate(new Date().getDate() + (8 - new Date().getDay()))
 
-    input_tanggal_rapat.min = common.get_date_string(senin_depan)
+    input_tanggal_rapat.min = common.to_date_string(senin_depan)
 
     const validate_date_and_time = async () => {
         // reset jam

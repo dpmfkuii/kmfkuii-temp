@@ -109,7 +109,7 @@ const common = {
     /**
      * @returns yyyy-mm-dd
      */
-    get_date_string(date: Date) {
+    to_date_string(date: Date) {
         const m = date.getMonth() + 1
         const mm = m < 10 ? `0${m}` : m
         const d = date.getDate()
@@ -125,6 +125,10 @@ const common = {
         const sum1 = date1.getFullYear() + ((date1.getMonth() + 1) * 100) + date1.getDate()
         const sum2 = date2.getFullYear() + ((date2.getMonth() + 1) * 100) + date2.getDate()
         return sum1 < sum2
+    },
+    get_shortened_time(date: Date) {
+        const s = date.toLocaleTimeString()
+        return `${s.substring(0, 5)} ${s.split(' ')[1]}`
     },
 }
 

@@ -182,7 +182,7 @@
                 ] as (keyof Kegiatan)[]) {
                     if (kegiatan_changes[prop] !== _kegiatan[prop]) {
                         changes[prop] = [prop, prop_name[prop], _kegiatan[prop] as string, kegiatan_changes[prop] as string]
-                        Object.assign(_kegiatan, { prop: kegiatan_changes[prop] })
+                        Object.assign(_kegiatan, { [prop]: kegiatan_changes[prop] })
                     }
                 }
 
@@ -192,7 +192,11 @@
                     const prop_name = change[1]
                     let old_value = change[2]
                     let new_value = change[3]
-                    if (prop === 'penyelenggara_kegiatan_index') {
+                    if (prop === 'periode_kegiatan') {
+                        old_value = old_value.replace('-', '/')
+                        new_value = new_value.replace('-', '/')
+                    }
+                    else if (prop === 'penyelenggara_kegiatan_index') {
                         old_value = Object.values(PenyelenggaraKegiatan)[parseInt(old_value)]
                         new_value = Object.values(PenyelenggaraKegiatan)[parseInt(new_value)]
                     }
@@ -288,8 +292,13 @@
 
     const create_list_group_item = (log: LogKegiatan) => {
         const li = dom.c('li', {
-            classes: ['list-group-item', `list-group-item-${log.color}`],
-            html: `[${new Date(Number(log.timestamp)).toLocaleString()}]<br /><span></span>`
+            classes: ['list-group-item', `list-group-item-${log.color}`, 'pb-0'],
+            html: `
+                <span></span>
+                <div class="text-secondary small text-end">
+                    ${common.get_shortened_time(new Date(Number(log.timestamp)))}
+                </div>
+            `
         })
 
         const span = dom.qe(li, 'span')!
@@ -303,10 +312,19 @@
     db.on_kegiatan_logs(uid, snap => {
         if (!snap.exists()) return
 
-        list_group.innerHTML = '<li class="list-group-item list-group-item-dark">-- Awal log --</li>'
+        list_group.innerHTML = `<li class="list-group-item list-group-item-${defines.log_colors.awal_log} text-center rounded-bottom">-- Awal log --</li>`
 
         const logs = snap.val()
+        let _current_date_string = ''
         for (const timestamp in logs) {
+            const _date = new Date(Number(timestamp))
+            if (_date.toDateString() !== _current_date_string) {
+                list_group.prepend(dom.c('li', {
+                    classes: ['list-group-item', `list-group-item-${defines.log_colors.date}`, 'text-center'],
+                    html: common.convert_date_string_to_text(common.to_date_string(_date)),
+                }))
+                _current_date_string = _date.toDateString()
+            }
             const log = main.extract_log_kegiatan(timestamp, logs[timestamp])
             list_group.prepend(create_list_group_item(log))
         }

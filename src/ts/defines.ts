@@ -31,6 +31,8 @@ const defines = {
         user: 'user'
     },
     log_colors: {
+        awal_log: 'light' as LogColor,
+        date: 'light' as LogColor,
         pendaftaran_berhasil: 'success' as LogColor,
         pembaruan_data_kegiatan: 'light' as LogColor,
         jadwal_masuk_antrean: 'info' as LogColor,
