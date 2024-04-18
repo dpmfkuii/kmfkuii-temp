@@ -202,7 +202,7 @@
                 const log = logs[timestamp]
                 const color = log.split(' ')[0].substring(1) as LogColor
                 const text = log.split(`@${color} `)[1]
-                list_group.appendChild(create_list_group_item(color, new Date(Number(timestamp)).toLocaleString(), text))
+                list_group.prepend(create_list_group_item(color, new Date(Number(timestamp)).toLocaleString(), text))
             }
         })
 })()
