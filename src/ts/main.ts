@@ -66,8 +66,8 @@ interface Kegiatan {
  */
 type StatusRapatVerifikasiKegiatan = -1 | 0 | number
 
-interface LogsKegiatan {
-    [timestamp: string]: LogKegiatan
+interface LogsKegiatanText {
+    [timestamp: string]: LogKegiatanText
 }
 
 /**
@@ -78,7 +78,14 @@ interface LogsKegiatan {
  * @example
  * `log = '@success @html Verifikasi proposal dengan DPM <strong>selesai</strong>.'`
  */
-type LogKegiatan = string
+type LogKegiatanText = string
+
+interface LogKegiatan {
+    timestamp: number | string
+    color: LogColor
+    text: string
+    is_html: boolean
+}
 
 enum OrganisasiKegiatan {
     LEM = 'LEM',
@@ -175,7 +182,7 @@ interface RapatList {
     [timestamp: string]: Rapat
 }
 
-type LogColor = 'info' | 'success' | 'warning' | 'danger'
+type LogColor = 'light' | 'info' | 'success' | 'warning' | 'danger'
 
 const main = {
     get_opsi_periode_kegiatan() {
@@ -233,7 +240,18 @@ const main = {
             buttonsStyling: false,
             showCloseButton: true,
         })
-    }
+    },
+    extract_log_kegiatan(timestamp: LogKegiatan['timestamp'], log_kegiatan_text: LogKegiatanText): LogKegiatan {
+        const is_html = log_kegiatan_text.includes('@html ')
+        if (is_html) log_kegiatan_text = log_kegiatan_text.replace('@html ', '')
+        const color = log_kegiatan_text.split(' ')[0].substring(1) as LogColor
+        return {
+            timestamp,
+            color,
+            text: log_kegiatan_text.split(`@${color} `)[1],
+            is_html,
+        }
+    },
 }
 
 const db = {
@@ -261,13 +279,17 @@ const db = {
         return main_db.ref(`verifikasi/kegiatan/${uid}/updated_timestamp`)
             .set(common.timestamp())
     },
-    get_kegiatan_logs(uid: string): Promise<FirebaseSnapshot<{ [timestamp: string]: string }>> {
+    get_kegiatan_logs(uid: string): Promise<FirebaseSnapshot<LogsKegiatanText>> {
         return main_db.ref(`verifikasi/kegiatan/logs/${uid}`)
-            .once<{ [timestamp: string]: string }>('value')
+            .once<LogsKegiatanText>('value')
     },
-    add_kegiatan_log(uid: string, color: LogColor, log: string) {
+    on_kegiatan_logs(uid: string, callback: (snapshot: FirebaseSnapshot<LogsKegiatanText>) => void) {
+        return main_db.ref(`verifikasi/kegiatan/logs/${uid}`)
+            .on<LogsKegiatanText>('value', callback)
+    },
+    add_kegiatan_log(uid: string, color: LogColor, log: string, is_html?: boolean) {
         return main_db.ref(`verifikasi/kegiatan/logs/${uid}/${common.timestamp()}`)
-            .set(`@${color} ${log}`)
+            .set(`@${color} ${is_html ? '@html ' : ''}${log}`)
     },
     get_logbook_periode(periode: string): Promise<FirebaseSnapshot<LogbookPeriode>> {
         return main_db.ref(`verifikasi/kegiatan/logbook/${periode}`)

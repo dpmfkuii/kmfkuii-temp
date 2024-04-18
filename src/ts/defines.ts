@@ -1,3 +1,7 @@
+interface ObjectOf<T> {
+    [key: string]: T
+}
+
 // defines
 const defines = {
     day_names: [
@@ -25,5 +29,11 @@ const defines = {
     } as { [mm: string]: string },
     store_key: {
         user: 'user'
-    }
+    },
+    log_colors: {
+        pendaftaran_berhasil: 'success' as LogColor,
+        pembaruan_data_kegiatan: 'light' as LogColor,
+        jadwal_masuk_antrean: 'info' as LogColor,
+        jadwal_terkonfirmasi: 'success' as LogColor,
+    },
 }

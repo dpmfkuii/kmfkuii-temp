@@ -34,7 +34,7 @@
 
             }
             if (jadwal_verif_antrean_badge !== null) {
-                jadwal_verif_antrean_badge.innerText = antrean_count.toString()
+                jadwal_verif_antrean_badge.textContent = antrean_count.toString()
             }
             if (antrean_count === 0) {
                 list_antrean_items.innerHTML = '<i class="text-secondary">Tidak ada antrean.</i>'

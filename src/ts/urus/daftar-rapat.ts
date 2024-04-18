@@ -145,9 +145,11 @@
                 db.add_antrean_rapat(new_rapat),
                 db.set_kegiatan_status_verifikasi(uid, new_rapat.jenis_rapat, new_rapat.rapat_dengan, StatusRapat.IN_PROGRESS),
                 db.get_kegiatan(uid).then(snap => db.set_logbook(snap.val()!)),
-                db.add_kegiatan_log(uid, 'info', `Penjadwalan rapat verifikasi ${jenis_rapat_text} dengan ${input_rapat_dengan.value} dalam antrean.`),
             ])
-            await db.set_kegiatan_updated_timestamp(uid)
+            await Promise.all([
+                db.add_kegiatan_log(uid, defines.log_colors.jadwal_masuk_antrean, `Penjadwalan rapat verifikasi ${jenis_rapat_text} dengan ${input_rapat_dengan.value} dalam antrean.`),
+                db.set_kegiatan_updated_timestamp(uid),
+            ])
             location.href = `/urus/`
         }
         catch {

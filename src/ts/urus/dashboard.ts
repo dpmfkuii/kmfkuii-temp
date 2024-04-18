@@ -128,6 +128,33 @@
             return
         }
 
+        const kegiatan_changes = {
+            nama_kegiatan: input_nama_kegiatan.value,
+            periode_kegiatan: select_periode_kegiatan.value,
+            penyelenggara_kegiatan_index: Object.values(PenyelenggaraKegiatan).indexOf(select_penyelenggara_kegiatan.value as PenyelenggaraKegiatan),
+            lingkup_kegiatan_index: Object.values(LingkupKegiatan).indexOf(select_lingkup_kegiatan.value as LingkupKegiatan),
+        } as Kegiatan
+
+        let is_changed
+            = kegiatan_changes.nama_kegiatan !== _kegiatan.nama_kegiatan
+            || kegiatan_changes.periode_kegiatan !== _kegiatan.periode_kegiatan
+            || kegiatan_changes.penyelenggara_kegiatan_index !== _kegiatan.penyelenggara_kegiatan_index
+            || kegiatan_changes.lingkup_kegiatan_index !== _kegiatan.lingkup_kegiatan_index
+
+        if (!is_changed) {
+            swal.fire({
+                icon: 'info',
+                title: 'Tidak ada perubahan.',
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+            })
+            button_batal.click()
+            return
+        }
+
         swal.fire({
             title: 'Ubah Detail Kegiatan',
             html: '<div><i>Memperbarui detail...</i></div>',
@@ -137,22 +164,56 @@
             async didOpen() {
                 swal.showLoading()
 
-                const kegiatan_values_to_update = {
-                    nama_kegiatan: input_nama_kegiatan.value,
-                    periode_kegiatan: select_periode_kegiatan.value,
-                    penyelenggara_kegiatan_index: Object.values(PenyelenggaraKegiatan).indexOf(select_penyelenggara_kegiatan.value as PenyelenggaraKegiatan),
-                    lingkup_kegiatan_index: Object.values(LingkupKegiatan).indexOf(select_lingkup_kegiatan.value as LingkupKegiatan),
-                } as Kegiatan
-
+                const changes = {} as { [key in keyof Kegiatan]: string[] }
                 const old_periode_kegiatan = _kegiatan.periode_kegiatan
-                _kegiatan.nama_kegiatan = kegiatan_values_to_update.nama_kegiatan
-                _kegiatan.periode_kegiatan = kegiatan_values_to_update.periode_kegiatan
-                _kegiatan.penyelenggara_kegiatan_index = kegiatan_values_to_update.penyelenggara_kegiatan_index
-                _kegiatan.lingkup_kegiatan_index = kegiatan_values_to_update.lingkup_kegiatan_index
+
+                const prop_name = {
+                    nama_kegiatan: 'Nama Kegiatan',
+                    periode_kegiatan: 'Periode Kegiatan',
+                    penyelenggara_kegiatan_index: 'Penyelenggara Kegiatan',
+                    lingkup_kegiatan_index: 'Lingkup Kegiatan',
+                } as { [key in keyof Kegiatan]: string }
+
+                for (const prop of [
+                    'nama_kegiatan',
+                    'periode_kegiatan',
+                    'penyelenggara_kegiatan_index',
+                    'lingkup_kegiatan_index'
+                ] as (keyof Kegiatan)[]) {
+                    if (kegiatan_changes[prop] !== _kegiatan[prop]) {
+                        changes[prop] = [prop, prop_name[prop], _kegiatan[prop] as string, kegiatan_changes[prop] as string]
+                        Object.assign(_kegiatan, { prop: kegiatan_changes[prop] })
+                    }
+                }
+
+                const changes_text: string[] = []
+                for (const change of Object.values(changes)) {
+                    const prop = change[0] as keyof Kegiatan
+                    const prop_name = change[1]
+                    let old_value = change[2]
+                    let new_value = change[3]
+                    if (prop === 'penyelenggara_kegiatan_index') {
+                        old_value = Object.values(PenyelenggaraKegiatan)[parseInt(old_value)]
+                        new_value = Object.values(PenyelenggaraKegiatan)[parseInt(new_value)]
+                    }
+                    else if (prop === 'lingkup_kegiatan_index') {
+                        old_value = Object.values(LingkupKegiatan)[parseInt(old_value)]
+                        new_value = Object.values(LingkupKegiatan)[parseInt(new_value)]
+                    }
+                    changes_text.push(`<li>${prop_name}: "${new_value}" ← "${old_value}"</li>`)
+                }
+
+                const log_text = `@html Pembaruan data kegiatan.<ul>${changes_text.join('')}</ul>`
 
                 try {
-                    await db.update_kegiatan(uid, kegiatan_values_to_update)
-                    await db.change_logbook(old_periode_kegiatan, _kegiatan)
+                    await Promise.all([
+                        db.update_kegiatan(uid, kegiatan_changes),
+                        db.change_logbook(old_periode_kegiatan, _kegiatan),
+                    ])
+                    await Promise.all([
+                        db.add_kegiatan_log(uid, defines.log_colors.pembaruan_data_kegiatan, log_text),
+                        db.set_kegiatan_updated_timestamp(uid),
+                    ])
                     swal.fire({
                         icon: 'success',
                         title: 'Berhasil tersimpan!',
@@ -166,10 +227,10 @@
                 catch {
                     main.show_unexpected_error_message()
                 }
+
+                button_batal.click()
             },
         })
-
-        button_batal.click()
     })
 })();
 
@@ -225,26 +286,29 @@
 
     const list_group = dom.qe(panel, '.list-group')!
 
-    const create_list_group_item = (color: LogColor, timestamp: string, text: string) => {
+    const create_list_group_item = (log: LogKegiatan) => {
         const li = dom.c('li', {
-            classes: ['list-group-item', `list-group-item-${color}`],
-            html: `[${timestamp}]<br />${text}`
+            classes: ['list-group-item', `list-group-item-${log.color}`],
+            html: `[${new Date(Number(log.timestamp)).toLocaleString()}]<br /><span></span>`
         })
+
+        const span = dom.qe(li, 'span')!
+        if (log.is_html) span.innerHTML = log.text
+        else span.textContent = log.text
 
         return li
     }
 
     const uid = auth.get_logged_in_user()!.uid
-    db.get_kegiatan_logs(uid)
-        .then(snap => {
-            if (!snap.exists()) return
+    db.on_kegiatan_logs(uid, snap => {
+        if (!snap.exists()) return
 
-            const logs = snap.val()
-            for (const timestamp in logs) {
-                const log = logs[timestamp]
-                const color = log.split(' ')[0].substring(1) as LogColor
-                const text = log.split(`@${color} `)[1]
-                list_group.prepend(create_list_group_item(color, new Date(Number(timestamp)).toLocaleString(), text))
-            }
-        })
+        list_group.innerHTML = '<li class="list-group-item list-group-item-dark">-- Awal log --</li>'
+
+        const logs = snap.val()
+        for (const timestamp in logs) {
+            const log = main.extract_log_kegiatan(timestamp, logs[timestamp])
+            list_group.prepend(create_list_group_item(log))
+        }
+    })
 })()

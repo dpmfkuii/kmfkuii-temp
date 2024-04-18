@@ -47,7 +47,7 @@
                     const logbook_periode = snap.val()
 
                     for (const organisasi_index in logbook_periode) {
-                        const organisasi = Object.values(OrganisasiKegiatan)[Number(organisasi_index)]
+                        const organisasi = Object.values(OrganisasiKegiatan)[parseInt(organisasi_index)]
 
                         const list_item_organisasi = dom.c('div', {
                             classes: ['d-flex', 'align-items-center'],
