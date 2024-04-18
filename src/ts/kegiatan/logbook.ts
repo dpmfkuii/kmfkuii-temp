@@ -79,7 +79,7 @@
                             const log = logbook_periode[organisasi_index][uid]
                             const nama_kegiatan = log.split('@')[0]
 
-                            const get_state = (param: string): KegiatanStatusVerifikasiState => {
+                            const get_state = (param: string): StatusRapatVerifikasiKegiatan => {
                                 return log.indexOf(param) >= 0
                                     ? log.indexOf(`${param}:p`) >= 0
                                         ? 0
@@ -141,10 +141,10 @@
                                                         <h6>Lingkup Kegiatan</h6>
                                                         <p class="small">${Object.values(LingkupKegiatan)[kegiatan.lingkup_kegiatan_index]}</p>
                                                         <h6>Status Verifikasi</h6>
-                                                        <p class="small">Proposal ke LEM ${main.get_status_verifikasi_state_text(kegiatan.status.verifikasi.proposal.lem, true)}.<br />
-                                                        Proposal ke DPM ${main.get_status_verifikasi_state_text(kegiatan.status.verifikasi.proposal.dpm, true)}.<br />
-                                                        LPJ ke LEM ${main.get_status_verifikasi_state_text(kegiatan.status.verifikasi.lpj.lem, true)}.<br />
-                                                        LPJ ke DPM ${main.get_status_verifikasi_state_text(kegiatan.status.verifikasi.lpj.dpm, true)}.</p>
+                                                        <p class="small">Proposal LEM ${main.get_status_rapat_text(kegiatan.status.verifikasi.proposal.lem, true)}.<br />
+                                                        Proposal DPM ${main.get_status_rapat_text(kegiatan.status.verifikasi.proposal.dpm, true)}.<br />
+                                                        LPJ LEM ${main.get_status_rapat_text(kegiatan.status.verifikasi.lpj.lem, true)}.<br />
+                                                        LPJ DPM ${main.get_status_rapat_text(kegiatan.status.verifikasi.lpj.dpm, true)}.</p>
                                                         <h6>Dibuat</h6>
                                                         <p class="small">${new Date(kegiatan.created_timestamp).toLocaleString()}</p>
                                                         <h6>Terakhir Diperbarui</h6>
@@ -160,7 +160,7 @@
                                 })
                             })
 
-                            const create_badge = (text: string, state: KegiatanStatusVerifikasiState) => {
+                            const create_badge = (text: string, state: StatusRapatVerifikasiKegiatan) => {
                                 const color = state === 0 ? 'primary' : state > 0 ? 'success' : 'secondary'
                                 const badge = dom.c('span', {
                                     classes: ['badge', `text-bg-${color}`, 'rounded-pill'],

@@ -5,7 +5,14 @@ const dom = {
     qe<K extends keyof HTMLElementTagNameMap>(el: HTMLElement, selectors: K | string): HTMLElementTagNameMap[K] | null {
         return el.querySelector(selectors)
     },
-    qa<K extends keyof HTMLElementTagNameMap>(selectors: K | string): NodeListOf<HTMLElementTagNameMap[K]> {
+    qa<K extends keyof HTMLElementTagNameMap>(selectors: K | string, to_array?: boolean): NodeListOf<HTMLElementTagNameMap[K]> | HTMLElementTagNameMap[K][] {
+        if (to_array) {
+            const arr: HTMLElementTagNameMap[K][] = []
+            document.querySelectorAll(selectors).forEach(item => {
+                arr.push(item as HTMLElementTagNameMap[K])
+            })
+            return arr
+        }
         return document.querySelectorAll(selectors)
     },
     qea<K extends keyof HTMLElementTagNameMap>(el: HTMLElement, selectors: K | string): NodeListOf<HTMLElementTagNameMap[K]> {
@@ -90,6 +97,34 @@ const common = {
             }
         }
         return n.join('')
+    },
+    convert_date_string_to_text(date_string: string) {
+        const split = date_string.split('-')
+        const yyyy = split[0]
+        const mm = split[1]
+        const dd = split[2]
+        const d = new Date(date_string).getDay()
+        return `${defines.day_names[d]}, ${dd} ${defines.month_names[mm]} ${yyyy}`
+    },
+    /**
+     * @returns yyyy-mm-dd
+     */
+    get_date_string(date: Date) {
+        const m = date.getMonth() + 1
+        const mm = m < 10 ? `0${m}` : m
+        const d = date.getDate()
+        const dd = d < 10 ? `0${d}` : d
+        return `${date.getFullYear()}-${mm}-${dd}`
+    },
+    /**
+     * Returns true if `date1` < `date2`
+     * @param date1 
+     * @param date2 
+     */
+    is_date_before(date1: Date, date2: Date) {
+        const sum1 = date1.getFullYear() + ((date1.getMonth() + 1) * 100) + date1.getDate()
+        const sum2 = date2.getFullYear() + ((date2.getMonth() + 1) * 100) + date2.getDate()
+        return sum1 < sum2
     },
 }
 

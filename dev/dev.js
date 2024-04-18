@@ -65,6 +65,8 @@ const build_html = async () => {
             prerender_html(app_lines, 'content', 'content')
             prerender_html(app_lines, 'template', 'templates')
             prerender_html(app_lines, 'component', 'components')
+            prerender_html(app_lines, 'component', 'components')
+            prerender_html(app_lines, 'component', 'components')
 
             app_text = app_lines.join('')
 

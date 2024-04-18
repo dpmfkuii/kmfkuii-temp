@@ -47,15 +47,15 @@ var _ = {
                 "{uid}": {
                     "{timestamp}": "@success Pendaftaran berhasil.",
                     "{timestamp}": "@info Pembaruan data kegiatan.",
-                    "{timestamp}": "@info Penjadwalan rapat verifikasi proposal ke DPM dalam antrean.",
-                    "{timestamp}": "@success Penjadwalan rapat verifikasi proposal ke DPM terkonfirmasi.",
-                    "{timestamp}": "@success Verifikasi proposal ke DPM diterima dengan revisi.",
-                    "{timestamp}": "@info Revisi proposal ke DPM #1 terkirim.",
-                    "{timestamp}": "@info Revisi proposal ke DPM #1 diterima dengan revisi kembali.",
-                    "{timestamp}": "@info Revisi proposal ke DPM #2 terkirim.",
-                    "{timestamp}": "@success @html Verifikasi proposal ke DPM <strong>selesai</strong>.",
+                    "{timestamp}": "@info Penjadwalan rapat verifikasi proposal dengan DPM dalam antrean.",
+                    "{timestamp}": "@success Penjadwalan rapat verifikasi proposal dengan DPM terkonfirmasi.",
+                    "{timestamp}": "@success Verifikasi proposal dengan DPM diterima dengan revisi.",
+                    "{timestamp}": "@info Revisi proposal dengan DPM #1 terkirim.",
+                    "{timestamp}": "@info Revisi proposal dengan DPM #1 diterima dengan revisi kembali.",
+                    "{timestamp}": "@info Revisi proposal dengan DPM #2 terkirim.",
+                    "{timestamp}": "@success @html Verifikasi proposal dengan DPM <strong>selesai</strong>.",
                     "{timestamp}": "@info Dana rkat telah cair.",
-                    "{timestamp}": "@info Penjadwalan rapat verifikasi lpj ke LEM dalam antrean.",
+                    "{timestamp}": "@info Penjadwalan rapat verifikasi LPJ dengan LEM dalam antrean.",
                 },
             },
 
@@ -77,7 +77,7 @@ var _ = {
                 "lem": {
                     "{timestamp}": {
                         "uid": "abc123",
-                        "jenis_verifikasi": "proposal",
+                        "jenis_rapat": "proposal",
                         "tanggal_rapat": "31-01-2024",
                         "jam_rapat": "16.00",
                     },
@@ -85,7 +85,7 @@ var _ = {
                 "dpm": {
                     "{timestamp}": {
                         "uid": "abc123",
-                        "jenis_verifikasi": "lpj",
+                        "jenis_rapat": "lpj",
                         "tanggal_rapat": "02-04-2024",
                         "jam_rapat": "20.00",
                     },
@@ -101,7 +101,7 @@ var _ = {
                             "29": {
                                 "{timestamp}": {
                                     "uid": "abc123",
-                                    "jenis_verifikasi": "proposal",
+                                    "jenis_rapat": "proposal",
                                     "tanggal_rapat": "29-04-2024",
                                     "jam_rapat": "20.00",
                                 }
@@ -112,7 +112,7 @@ var _ = {
                             "22": {
                                 "{timestamp}": {
                                     "uid": "def456",
-                                    "jenis_verifikasi": "lpj",
+                                    "jenis_rapat": "lpj",
                                     "tanggal_rapat": "22-05-2024",
                                     "jam_rapat": "16.00",
                                 }
@@ -127,7 +127,7 @@ var _ = {
                             "18": {
                                 "{timestamp}": {
                                     "uid": "def456",
-                                    "jenis_verifikasi": "lpj",
+                                    "jenis_rapat": "lpj",
                                     "tanggal_rapat": "18-01-2025",
                                     "jam_rapat": "16.00",
                                 }

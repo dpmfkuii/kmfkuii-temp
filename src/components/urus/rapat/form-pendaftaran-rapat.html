@@ -1,0 +1,68 @@
+<div class="row row-cols-1 row-cols-sm-2">
+    <div class="col">
+        <div class="mb-3">
+            <div class="form-floating">
+                <input
+                    name="jenis_rapat"
+                    type="text"
+                    class="form-control"
+                    id="input_jenis_rapat"
+                    placeholder=""
+                    disabled
+                    required
+                />
+                <label for="input_jenis_rapat">Jenis Rapat</label>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="mb-3">
+            <div class="form-floating">
+                <input
+                    name="rapat_dengan"
+                    type="text"
+                    class="form-control"
+                    id="input_rapat_dengan"
+                    placeholder=""
+                    disabled
+                    required
+                />
+                <label for="input_rapat_dengan">dengan</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-sm-2">
+    <div class="col">
+        <div class="mb-3">
+            <div class="form-floating">
+                <input
+                    name="tanggal_rapat"
+                    type="date"
+                    class="form-control"
+                    id="input_tanggal_rapat"
+                    required
+                />
+                <label for="input_tanggal_rapat">Tanggal</label>
+                <div class="invalid-feedback"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="mb-3">
+            <div class="form-floating">
+                <select
+                    name="jam_rapat"
+                    class="form-select"
+                    id="input_jam_rapat"
+                    required
+                >
+                    <option disabled selected value>-- Pilih jam --</option>
+                </select>
+                <label for="input_jam_rapat">Jam</label>
+                <div class="invalid-feedback"></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -38,12 +38,12 @@ interface Kegiatan {
         diajukan: number
         verifikasi: {
             proposal: {
-                lem: KegiatanStatusVerifikasiState
-                dpm: KegiatanStatusVerifikasiState
+                lem: StatusRapatVerifikasiKegiatan
+                dpm: StatusRapatVerifikasiKegiatan
             }
             lpj: {
-                lem: KegiatanStatusVerifikasiState
-                dpm: KegiatanStatusVerifikasiState
+                lem: StatusRapatVerifikasiKegiatan
+                dpm: StatusRapatVerifikasiKegiatan
             }
         }
     }
@@ -56,9 +56,11 @@ interface Kegiatan {
  * 
  * 0 = in progress
  * 
+ * 1 = marked as done
+ * 
  * {timestamp} = done
  */
-type KegiatanStatusVerifikasiState = -1 | 0 | number
+type StatusRapatVerifikasiKegiatan = -1 | 0 | number
 
 interface LogsKegiatan {
     [timestamp: string]: LogKegiatan
@@ -70,7 +72,7 @@ interface LogsKegiatan {
  * Gunakan '@html' untuk menandakan adanya element html.
  * 
  * @example
- * `log = '@success @html Verifikasi proposal ke DPM <strong>selesai</strong>.'`
+ * `log = '@success @html Verifikasi proposal dengan DPM <strong>selesai</strong>.'`
  */
 type LogKegiatan = string
 
@@ -127,6 +129,45 @@ interface LogbookOrganisasi {
  */
 type LogbookLog = string
 
+interface Rapat {
+    uid: string
+    jenis_rapat: JenisRapat
+    tanggal_rapat: string
+    jam_rapat: string
+}
+
+enum JenisRapat {
+    PROPOSAL = 'proposal',
+    LPJ = 'lpj',
+}
+
+enum StatusRapat {
+    NOT_STARTED = -1,
+    IN_PROGRESS = 0,
+    MARKED_AS_DONE = 1,
+    DONE_TIMESTAMP = 2, // the value should be timestamp
+}
+
+const JamRapat = [
+    '15.30',
+    '16.00',
+    '16.30',
+    '-- Bukan bulan puasa --',
+    '17.00',
+    '18.30',
+    '19.30',
+    '20.00',
+    '-- Bulan puasa --',
+    '21.00',
+    '21.30',
+]
+
+interface AntreanRapat {
+    [rapat_dengan: string]: {
+        [timestamp: string]: Rapat
+    }
+}
+
 const main = {
     get_opsi_periode_kegiatan() {
         const current_year = new Date().getFullYear()
@@ -139,14 +180,18 @@ const main = {
     get_selected_periode_kegiatan() {
         return this.get_opsi_periode_kegiatan()[new Date().getMonth() > 5 ? 0 : 1]
     },
-    get_status_verifikasi_state_text(state: KegiatanStatusVerifikasiState, with_html_color?: boolean): string {
-        const text = state === 0
-            ? 'sedang berlangsung'
-            : state > 0
-                ? `sudah selesai pada ${new Date(state).toLocaleDateString()}`
-                : 'belum dimulai'
+    get_status_rapat_text(status: StatusRapat | StatusRapatVerifikasiKegiatan, with_html_color?: boolean): string {
+        const text =
+            status === StatusRapat.NOT_STARTED
+                ? 'belum dimulai'
+                : status === StatusRapat.IN_PROGRESS
+                    ? 'sedang berlangsung'
+                    : status === StatusRapat.MARKED_AS_DONE
+                        ? 'ditandai selesai'
+                        : `selesai pada ${new Date(status).toLocaleDateString()}`
+
         return with_html_color
-            ? `<span class="text-${state === 0 ? 'primary' : state > 0 ? 'success' : 'secondary'}">${text}</span>`
+            ? `<span class="text-${status === 0 ? 'primary' : status > 0 ? 'success' : 'secondary'}">${text}</span>`
             : text
     },
     is_status_verifikasi_selesai(status_verifikasi: Kegiatan['status']['verifikasi']) {
@@ -154,7 +199,27 @@ const main = {
             && status_verifikasi.proposal.dpm > 0
             && status_verifikasi.lpj.lem > 0
             && status_verifikasi.lpj.dpm > 0
-    }
+    },
+    kegiatan_to_logbook_text(kegiatan: Kegiatan) {
+        let status = ''
+        if (kegiatan.status.verifikasi.proposal.lem >= 0) status += '@proposal_lem'
+        if (kegiatan.status.verifikasi.proposal.lem === 0) status += ':p'
+        if (kegiatan.status.verifikasi.proposal.dpm >= 0) status += '@proposal_dpm'
+        if (kegiatan.status.verifikasi.proposal.dpm === 0) status += ':p'
+        if (kegiatan.status.verifikasi.lpj.lem >= 0) status += '@lpj_lem'
+        if (kegiatan.status.verifikasi.lpj.lem === 0) status += ':p'
+        if (kegiatan.status.verifikasi.lpj.dpm >= 0) status += '@lpj_dpm'
+        if (kegiatan.status.verifikasi.lpj.dpm === 0) status += ':p'
+        return `${kegiatan.nama_kegiatan}${status}`
+    },
+    set_kegiatan_updated_timestamp(uid: string) {
+        return db.ref(`verifikasi/kegiatan/${uid}/updated_timestamp`)
+            .set(common.timestamp())
+    },
+    add_log(uid: string, color: 'info' | 'success' | 'warning' | 'danger', log: string) {
+        return db.ref(`verifikasi/kegiatan/logs/${uid}/${common.timestamp()}`)
+            .set(`@${color} ${log}`)
+    },
 }
 
 declare const swal: any

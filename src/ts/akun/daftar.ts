@@ -1,7 +1,7 @@
 (() => {
-    const form = dom.q<'form'>('#form_akun_daftar')!
+    const form = dom.q<'form'>('#form_pendaftaran_kegiatan')!
     const button_submit = dom.qe<'button'>(form, 'button[type="submit"]')!
-    const button_back_home = dom.qe<'button'>(form, 'a[aria-label="Back home"]')!
+    const button_back_home = dom.qe<'a'>(form, 'a[aria-label="Back home"]')!
 
     const navbar_brand = dom.q<'a'>('.navbar .navbar-brand')!
     const button_masuk = dom.q<'button'>('.navbar button[aria-label="Masuk"]')!
@@ -15,6 +15,7 @@
     const select_lingkup_kegiatan = dom.q<'select'>('select[name="lingkup_kegiatan"]')!
     // const input_tanggal_kegiatan = dom.q<'input'>('input[name="tanggal_kegiatan"]')!
 
+    // fill in options
     select_organisasi.innerHTML = '<option disabled selected value>-- Pilih organisasi --</option>'
     for (const n of Object.values(OrganisasiKegiatan)) {
         const option = dom.c('option')
@@ -100,12 +101,12 @@
                 diajukan: created_timestamp,
                 verifikasi: {
                     proposal: {
-                        lem: -1,
-                        dpm: -1,
+                        lem: StatusRapat.NOT_STARTED,
+                        dpm: StatusRapat.NOT_STARTED,
                     },
                     lpj: {
-                        lem: -1,
-                        dpm: -1,
+                        lem: StatusRapat.NOT_STARTED,
+                        dpm: StatusRapat.NOT_STARTED,
                     },
                 },
             },
@@ -128,9 +129,10 @@
             })
 
         if (success) {
-            await auth.register(new_user).then(status => {
+            await auth.register(new_user).then(async status => {
                 switch (status) {
                     case AuthRegisterStatus.SUCCESS:
+                        await main.add_log(new_user.uid, 'success', 'Pendaftaran berhasil.')
                         location.href = `/akun/daftar/berhasil/?uid=${new_user.uid}&nama_kegiatan=${new_kegiatan.nama_kegiatan}#`
                         break
                     default:
