@@ -42,8 +42,8 @@ var _ = {
                 "updated_timestamp": 1234567890,
             },
 
-            // db.ref(`verifikasi/kegiatan/logs/${uid}`)
             "logs": {
+                // db.ref(`verifikasi/kegiatan/logs/${uid}`)
                 "{uid}": {
                     "{timestamp}": "@success Pendaftaran berhasil.",
                     "{timestamp}": "@info Pembaruan data kegiatan.",

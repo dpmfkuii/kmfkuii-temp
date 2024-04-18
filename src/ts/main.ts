@@ -168,6 +168,8 @@ interface AntreanRapat {
     }
 }
 
+type LogColor = 'info' | 'success' | 'warning' | 'danger'
+
 const main = {
     get_opsi_periode_kegiatan() {
         const current_year = new Date().getFullYear()
@@ -216,7 +218,7 @@ const main = {
         return db.ref(`verifikasi/kegiatan/${uid}/updated_timestamp`)
             .set(common.timestamp())
     },
-    add_log(uid: string, color: 'info' | 'success' | 'warning' | 'danger', log: string) {
+    add_log(uid: string, color: LogColor, log: string) {
         return db.ref(`verifikasi/kegiatan/logs/${uid}/${common.timestamp()}`)
             .set(`@${color} ${log}`)
     },

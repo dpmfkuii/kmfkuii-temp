@@ -174,5 +174,35 @@
             list_group.appendChild(create_list_group_item('LPJ LEM', status_verifikasi.lpj.lem))
             list_group.appendChild(create_list_group_item('LPJ DPM', status_verifikasi.lpj.dpm))
         })
+})();
 
+// panel log kegiatan
+(() => {
+    const panel = dom.q<'div'>('#panel_urus_log_kegiatan')!
+
+    const list_group = dom.qe(panel, '.list-group')!
+
+    const create_list_group_item = (color: LogColor, timestamp: string, text: string) => {
+        const li = dom.c('li', {
+            classes: ['list-group-item', `list-group-item-${color}`],
+            html: `[${timestamp}]<br />${text}`
+        })
+
+        return li
+    }
+
+    const uid = auth.get_logged_in_user()!.uid
+    db.ref(`verifikasi/kegiatan/logs/${uid}`)
+        .once<{ [timestamp: string]: string }>('value')
+        .then(snap => {
+            if (!snap.exists()) return
+
+            const logs = snap.val()
+            for (const timestamp in logs) {
+                const log = logs[timestamp]
+                const color = log.split(' ')[0].substring(1) as LogColor
+                const text = log.split(`@${color} `)[1]
+                list_group.appendChild(create_list_group_item(color, new Date(Number(timestamp)).toLocaleString(), text))
+            }
+        })
 })()
