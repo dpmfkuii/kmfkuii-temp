@@ -1,0 +1,28 @@
+<ul class="list-group text-center" id="admin_nav">
+    <a
+        class="list-group-item list-group-item-secondary"
+        href="/admin/"
+        role="button"
+        aria-label="Kegiatan"
+    >
+        Kegiatan
+    </a>
+    <a
+        class="list-group-item list-group-item-secondary"
+        href="/admin/rapat/"
+        role="button"
+        aria-label="Rapat"
+    >
+        Rapat
+    </a>
+</ul>
+
+<script defer>
+    const admin_nav_select_label = (nav_id, label) => {
+        const a = dom.q(`#${nav_id} a[aria-label="${label}"]`);
+        a.classList.remove("list-group-item-secondary");
+        a.classList.add("list-group-item-primary");
+        a.removeAttribute("href");
+        a.removeAttribute("role");
+    };
+</script>

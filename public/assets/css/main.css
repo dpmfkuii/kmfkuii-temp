@@ -33,6 +33,24 @@ a.disabled {
     --bs-btn-disabled-border-color: #042188;
 }
 
+.text-bg-jadwal {
+    color: #fff !important;
+    background-color: #68cb6b !important;
+}
+
+.border-jadwal {
+    border-color: #68cb6b !important;
+}
+
+.text-bg-antrean {
+    color: #fff !important;
+    background-color: #6868cb !important;
+}
+
+.border-antrean {
+    border-color: #6868cb !important;
+}
+
 /* animate system */
 .animate {
     transition: all 500ms;
@@ -53,4 +71,12 @@ a.disabled {
 
 .animate.animate-delay-100 {
     transition-delay: 100ms;
+}
+
+.animate.animate-delay-200 {
+    transition-delay: 200ms;
+}
+
+.animate.animate-delay-300 {
+    transition-delay: 300ms;
 }

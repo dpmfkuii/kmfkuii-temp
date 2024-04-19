@@ -126,9 +126,13 @@ const common = {
         const sum2 = date2.getFullYear() + ((date2.getMonth() + 1) * 100) + date2.getDate()
         return sum1 < sum2
     },
-    get_shortened_time(date: Date) {
-        const s = date.toLocaleTimeString()
-        return `${s.substring(0, 5)} ${s.split(' ')[1]}`
+    to_12h_format(date: Date) {
+        let hh = date.getHours()
+        const mm = date.getMinutes()
+        const f = hh >= 12 ? 'PM' : 'AM'
+        hh = hh % 12
+        hh = hh ? hh : 12
+        return `${hh}:${mm < 10 ? '0' : ''}${mm} ${f}`
     },
 }
 

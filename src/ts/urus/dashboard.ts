@@ -296,7 +296,7 @@
             html: `
                 <span></span>
                 <div class="text-secondary small text-end">
-                    ${common.get_shortened_time(new Date(Number(log.timestamp)))}
+                    ${common.to_12h_format(new Date(Number(log.timestamp)))}
                 </div>
             `
         })

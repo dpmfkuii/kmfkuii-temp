@@ -1,0 +1,261 @@
+<div class="container" id="main_container">
+    <div class="row">
+        <div class="col-12 col-lg-3 mb-3">
+            <insert-template-admin-nav />
+            <script defer>
+                document.addEventListener("DOMContentLoaded", () => {
+                    admin_nav_select_label("admin_nav", "Rapat");
+                });
+            </script>
+        </div>
+        <div class="col-12 col-lg-9 animate animate-rise-on-enter">
+            <div class="card">
+                <div class="card-header">
+                    <span class="fs-4">Rapat</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-lg-3 mb-3">
+                            <div class="card">
+                                <div class="card-header">Dengan</div>
+                                <div class="card-body p-1">
+                                    <ul
+                                        class="list-group"
+                                        id="admin_rapat_dengan_nav"
+                                    >
+                                        <li
+                                            class="list-group-item list-group-item-primary"
+                                            aria-label="LEM"
+                                        >
+                                            LEM
+                                        </li>
+                                        <li
+                                            class="list-group-item list-group-item-secondary"
+                                            role="button"
+                                            aria-label="DPM"
+                                        >
+                                            DPM
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-9 text-break">
+                            <div
+                                class="card border-jadwal mb-3 animate animate-rise-on-enter animate-delay-100"
+                                id="temp1"
+                            >
+                                <div
+                                    class="card-header border-0 text-bg-jadwal"
+                                >
+                                    Jadwal
+                                </div>
+                                <div class="card-body p-0" id="temp2">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <td colspan="6" class="p-0">
+                                                    <div
+                                                        class="btn-group d-flex"
+                                                        role="group"
+                                                    >
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-light rounded-0"
+                                                        >
+                                                            <i
+                                                                class="fa-solid fa-chevron-left"
+                                                            ></i>
+                                                        </button>
+                                                        <span
+                                                            type="button"
+                                                            class="btn btn-light disabled opacity-100 fw-bold"
+                                                            >1 April 2024—5
+                                                            April 2024</span
+                                                        >
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-light rounded-0"
+                                                        >
+                                                            <i
+                                                                class="fa-solid fa-chevron-right"
+                                                            ></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <div class="table-responsive">
+                                        <table
+                                            class="table table-striped align-middle table-sm small text-center"
+                                            style="min-width: 400px"
+                                        >
+                                            <thead
+                                                class="table-light align-middle small"
+                                            >
+                                                <tr>
+                                                    <td
+                                                        style="
+                                                            min-width: 50px;
+                                                            width: 10%;
+                                                        "
+                                                    ></td>
+                                                    <td style="width: 18%">
+                                                        Senin<br />1 November
+                                                        2024
+                                                    </td>
+                                                    <td style="width: 18%">
+                                                        Selasa<br />2 November
+                                                        2024
+                                                    </td>
+                                                    <td style="width: 18%">
+                                                        Rabu<br />3 November
+                                                        2024
+                                                    </td>
+                                                    <td style="width: 18%">
+                                                        Kamis<br />4 November
+                                                        2024
+                                                    </td>
+                                                    <td style="width: 18%">
+                                                        Jum’at<br />5 November
+                                                        2024
+                                                    </td>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="small">
+                                                <tr>
+                                                    <td class="table-light">
+                                                        15.30
+                                                    </td>
+                                                    <td></td>
+                                                    <td class="text-bg-jadwal">
+                                                        example
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="table-light">
+                                                        16.00
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td
+                                                        class="text-bg-antrean"
+                                                        style="
+                                                            animation: placeholder-glow
+                                                                2s ease-in-out
+                                                                infinite;
+                                                        "
+                                                    >
+                                                        example
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="table-light">
+                                                        16.30
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="table-light">
+                                                        17.00
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="table-light">
+                                                        18.30
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="table-light">
+                                                        19.30
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="table-light">
+                                                        20.00
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="table-light">
+                                                        21.00
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="table-light">
+                                                        21.30
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="card border-antrean animate animate-rise-on-enter animate-delay-200"
+                            >
+                                <div
+                                    class="card-header border-0 text-bg-antrean"
+                                >
+                                    Antrean
+                                </div>
+                                <div class="card-body">do stuff here</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media (min-width: 992px) {
+        #main_container .row > *:nth-child(1) {
+            padding-right: calc(var(--bs-gutter-x) * 0.25);
+        }
+
+        #main_container .row > *:nth-child(2) {
+            padding-left: calc(var(--bs-gutter-x) * 0.25);
+        }
+    }
+</style>
