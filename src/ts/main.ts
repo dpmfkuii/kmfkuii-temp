@@ -258,6 +258,12 @@ const main = {
             is_html,
         }
     },
+    get_nama_rapat(rapat: Rapat) {
+        return `${defines.jenis_rapat_text[rapat.jenis_rapat]}_${rapat.nama_kegiatan} (${defines.rapat_dengan_text[rapat.rapat_dengan]})`
+    },
+    get_waktu_rapat(rapat: Rapat) {
+        return `hari ${common.date_string_to_date_text(rapat.tanggal_rapat)} pukul ${rapat.jam_rapat} WIB`
+    },
 }
 
 const db = {
@@ -339,7 +345,7 @@ const db = {
      * @param rapat_dengan 
      * @param tanggal_rapat yyyy/mm/dd
      */
-    get_jadwal_rapat_dengan(rapat_dengan: string, tanggal_rapat: string): Promise<FirebaseSnapshot<RapatList>> {
+    get_jadwal_rapat_dengan_tanggal(rapat_dengan: string, tanggal_rapat: string): Promise<FirebaseSnapshot<RapatList>> {
         return main_db.ref(`verifikasi/rapat/jadwal/${rapat_dengan}/${tanggal_rapat}`)
             .once<RapatList>('value')
     },

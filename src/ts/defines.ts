@@ -56,4 +56,15 @@ const defines = {
         lem: 'LEM',
         dpm: 'DPM',
     },
+    log_text: {
+        rapat_dalam_antrean(nama_rapat: string, waktu_rapat: string) {
+            return `Penjadwalan rapat ${nama_rapat} pada ${waktu_rapat} dalam antrean.`
+        },
+        rapat_terkonfirmasi(nama_rapat: string, waktu_rapat: string) {
+            return `Penjadwalan rapat ${nama_rapat} pada ${waktu_rapat} terkonfirmasi.`
+        },
+        rapat_ditolak(nama_rapat: string, waktu_rapat: string) {
+            return `Penjadwalan rapat ${nama_rapat} pada ${waktu_rapat} ditolak.`
+        },
+    },
 }

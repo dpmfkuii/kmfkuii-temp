@@ -317,7 +317,7 @@
             if (_date.toDateString() !== _current_date_string) {
                 list_group.prepend(dom.c('li', {
                     classes: ['list-group-item', `list-group-item-${defines.log_colors.date}`, 'text-center'],
-                    html: common.convert_date_string_to_text(common.to_date_string(_date)),
+                    html: common.to_date_text(_date),
                 }))
                 _current_date_string = _date.toDateString()
             }

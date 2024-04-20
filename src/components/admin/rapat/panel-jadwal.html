@@ -1,0 +1,78 @@
+<div
+    class="card border-jadwal mb-3 animate animate-rise-on-enter animate-delay-100"
+>
+    <div class="card-header border-0 text-bg-jadwal">
+        <span id="jadwal_header_title">Jadwal</span>
+    </div>
+    <div class="card-body p-0">
+        <table class="table m-0">
+            <thead>
+                <tr>
+                    <td colspan="6" class="p-0">
+                        <div
+                            class="btn-group d-flex"
+                            role="group"
+                            id="jadwal_pagination_group"
+                        >
+                            <button
+                                type="button"
+                                class="btn btn-light rounded-0"
+                                aria-label="Previous"
+                            >
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+                            <span
+                                class="btn btn-light disabled opacity-100 fw-bold"
+                                >-</span
+                            >
+                            <button
+                                type="button"
+                                class="btn btn-light rounded-0"
+                                aria-label="Next"
+                            >
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+        </table>
+        <div class="table-responsive">
+            <table
+                class="table table-striped align-middle table-sm small text-center"
+                style="min-width: 400px"
+                id="jadwal_table"
+            >
+                <thead class="table-light align-middle small">
+                    <tr>
+                        <td style="min-width: 50px; width: 10%"></td>
+                        <td style="width: 18%">-</td>
+                        <td style="width: 18%">-</td>
+                        <td style="width: 18%">-</td>
+                        <td style="width: 18%">-</td>
+                        <td style="width: 18%">-</td>
+                    </tr>
+                </thead>
+                <tbody class="small">
+                    <tr>
+                        <td class="table-light">-</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    #jadwal_pagination_group button.disabled {
+        opacity: 1;
+    }
+    #jadwal_pagination_group button.disabled i {
+        opacity: 0;
+    }
+</style>

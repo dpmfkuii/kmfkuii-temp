@@ -98,13 +98,16 @@ const common = {
         }
         return n.join('')
     },
-    convert_date_string_to_text(date_string: string) {
+    date_string_to_date_text(date_string: string) {
         const split = date_string.split('-')
         const yyyy = split[0]
         const mm = split[1]
         const dd = split[2]
         const d = new Date(date_string).getDay()
         return `${defines.day_names[d]}, ${dd} ${defines.month_names[mm]} ${yyyy}`
+    },
+    date_string_to_date_text_date(date_string: string) {
+        return this.date_string_to_date_text(date_string).split(', ')[1]
     },
     /**
      * @returns yyyy-mm-dd
@@ -115,6 +118,12 @@ const common = {
         const d = date.getDate()
         const dd = d < 10 ? `0${d}` : d
         return `${date.getFullYear()}-${mm}-${dd}`
+    },
+    to_date_text(date: Date) {
+        return this.date_string_to_date_text(this.to_date_string(date))
+    },
+    to_date_text_date(date: Date) {
+        return this.date_string_to_date_text_date(this.to_date_string(date))
     },
     /**
      * Returns true if `date1` < `date2`
@@ -133,6 +142,16 @@ const common = {
         hh = hh % 12
         hh = hh ? hh : 12
         return `${hh}:${mm < 10 ? '0' : ''}${mm} ${f}`
+    },
+    get_next_monday(from_date: Date = new Date(), multiply: number = 1) {
+        const d = new Date(from_date)
+        d.setDate(d.getDate() + (((1 + 7 - d.getDay()) % 7) || 7) + (7 * (multiply - 1)))
+        return d
+    },
+    new_date_add(date: Date, value: number) {
+        const d = new Date(date)
+        d.setDate(d.getDate() + value)
+        return d
     },
 }
 

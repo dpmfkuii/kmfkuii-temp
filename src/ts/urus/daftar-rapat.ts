@@ -36,8 +36,7 @@
 
     set_jam_rapat_options()
 
-    const senin_depan = new Date()
-    senin_depan.setDate(new Date().getDate() + (8 - new Date().getDay()))
+    const senin_depan = common.get_next_monday()
 
     input_tanggal_rapat.min = common.to_date_string(senin_depan)
 
@@ -82,7 +81,7 @@
         const taken_hours: string[] = []
         const rapat_dengan: RapatDengan = input_rapat_dengan.value.toLowerCase() as RapatDengan
 
-        await db.get_jadwal_rapat_dengan(rapat_dengan, input_tanggal_rapat.value.replaceAll('-', '/'))
+        await db.get_jadwal_rapat_dengan_tanggal(rapat_dengan, input_tanggal_rapat.value.replaceAll('-', '/'))
             .then(snap => {
                 if (!snap.exists()) return
                 const val = snap.val()
@@ -144,6 +143,9 @@
             jam_rapat: select_jam_rapat.value,
         }
 
+        const nama_rapat = main.get_nama_rapat(new_rapat)
+        const waktu_rapat = main.get_waktu_rapat(new_rapat)
+
         try {
             await Promise.all([
                 db.add_antrean_rapat(new_rapat),
@@ -153,7 +155,7 @@
             await Promise.all([
                 db.add_kegiatan_log(uid,
                     defines.log_colors.jadwal_masuk_antrean,
-                    `Penjadwalan rapat verifikasi ${defines.jenis_rapat_text_mid[new_rapat.jenis_rapat]} dengan ${defines.rapat_dengan_text[new_rapat.rapat_dengan]} dalam antrean.`
+                    defines.log_text.rapat_dalam_antrean(nama_rapat, waktu_rapat),
                 ),
                 db.set_kegiatan_updated_timestamp(uid),
             ])
