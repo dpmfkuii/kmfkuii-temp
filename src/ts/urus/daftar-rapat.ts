@@ -6,7 +6,6 @@
     const navbar_brand = dom.q<'a'>('.navbar .navbar-brand')!
     const button_keluar = dom.q<'button'>('.navbar button[aria-label="Keluar"]')!
     const all_a_breadcrumb = dom.qa<'a'>('ol.breadcrumb a', true)! as HTMLAnchorElement[]
-    const a_jadwal_rapat = dom.q<'a'>('a[aria-label="Jadwal Rapat"]')!
 
     const input_jenis_rapat = dom.q<'input'>('input[name="jenis_rapat"]')!
     const input_rapat_dengan = dom.q<'input'>('input[name="rapat_dengan"]')!
@@ -120,7 +119,6 @@
             navbar_brand,
             button_keluar,
             ...all_a_breadcrumb,
-            a_jadwal_rapat,
             input_tanggal_rapat,
             select_jam_rapat,
         ]

@@ -213,6 +213,13 @@
         const confirm_button = dom.qe<'button'>(li, '.btn.btn-success')!
         const reject_button = dom.qe<'button'>(li, '.btn.btn-danger')!
 
+        const role = auth.get_logged_in_user()?.role
+        if (role !== UserRole.ADMIN) {
+            confirm_button.classList.add('visually-hidden')
+            reject_button.classList.add('visually-hidden')
+            return li
+        }
+
         confirm_button.addEventListener('click', () => {
             swal.fire({
                 icon: 'question',
