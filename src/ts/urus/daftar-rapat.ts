@@ -15,6 +15,8 @@
     const input_tanggal_rapat_invalid_feedback = dom.qe<'div'>(input_tanggal_rapat.parentElement!, '.invalid-feedback')!
     const select_jam_rapat_invalid_feedback = dom.qe<'div'>(select_jam_rapat.parentElement!, '.invalid-feedback')!
 
+    const uid = auth.get_logged_in_user()!.uid
+
     input_jenis_rapat.value = common.url_params.get('jenis') || ''
     input_rapat_dengan.value = common.url_params.get('dengan') || ''
 
@@ -78,7 +80,7 @@
         // ambil dari antrean dan terkonfirmasi
 
         const taken_hours: string[] = []
-        const rapat_dengan = input_rapat_dengan.value.toLowerCase()
+        const rapat_dengan: RapatDengan = input_rapat_dengan.value.toLowerCase() as RapatDengan
 
         await db.get_jadwal_rapat_dengan(rapat_dengan, input_tanggal_rapat.value.replaceAll('-', '/'))
             .then(snap => {
@@ -130,30 +132,35 @@
 
         await common.sleep(100)
 
-        const uid = auth.get_logged_in_user()!.uid
+        let nama_kegiatan = ''
+        await db.get_kegiatan_nama_kegiatan(uid).then(snap => nama_kegiatan = snap.val()!)
+
         const new_rapat: Rapat = {
             uid,
+            nama_kegiatan,
             jenis_rapat: input_jenis_rapat.value.toLowerCase() as JenisRapat,
-            rapat_dengan: input_rapat_dengan.value.toLowerCase(),
+            rapat_dengan: input_rapat_dengan.value.toLowerCase() as RapatDengan,
             tanggal_rapat: input_tanggal_rapat.value,
             jam_rapat: select_jam_rapat.value,
         }
 
         try {
-            const jenis_rapat_text = new_rapat.jenis_rapat === JenisRapat.LPJ ? 'LPJ' : JenisRapat.PROPOSAL
             await Promise.all([
                 db.add_antrean_rapat(new_rapat),
                 db.set_kegiatan_status_verifikasi(uid, new_rapat.jenis_rapat, new_rapat.rapat_dengan, StatusRapat.IN_PROGRESS),
                 db.get_kegiatan(uid).then(snap => db.set_logbook(snap.val()!)),
             ])
             await Promise.all([
-                db.add_kegiatan_log(uid, defines.log_colors.jadwal_masuk_antrean, `Penjadwalan rapat verifikasi ${jenis_rapat_text} dengan ${input_rapat_dengan.value} dalam antrean.`),
+                db.add_kegiatan_log(uid,
+                    defines.log_colors.jadwal_masuk_antrean,
+                    `Penjadwalan rapat verifikasi ${defines.jenis_rapat_text_mid[new_rapat.jenis_rapat]} dengan ${defines.rapat_dengan_text[new_rapat.rapat_dengan]} dalam antrean.`
+                ),
                 db.set_kegiatan_updated_timestamp(uid),
             ])
             location.href = `/urus/`
         }
-        catch {
-            main.show_unexpected_error_message()
+        catch (err) {
+            main.show_unexpected_error_message(err)
             dom.enable(...disabled_elements)
             button_submit.innerHTML = 'Daftar'
         }

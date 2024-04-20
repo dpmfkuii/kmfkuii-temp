@@ -228,26 +228,23 @@
                         allowEscapeKey: false,
                     })
                 }
-                catch {
-                    main.show_unexpected_error_message()
+                catch (err) {
+                    main.show_unexpected_error_message(err)
                 }
 
                 button_batal.click()
             },
         })
     })
-})();
 
-// panel rapat verifikasi
-(() => {
-    const panel = dom.q<'div'>('#panel_urus_rapat_verifikasi')!
+    const panel_rapat_verifikasi = dom.q<'div'>('#panel_urus_rapat_verifikasi')!
 
-    const list_group = dom.qe(panel, '.list-group')!
+    const rapat_list_group = dom.qe(panel_rapat_verifikasi, '.list-group')!
 
-    const create_list_group_item = (nama_rapat: string, status: StatusRapat) => {
+    const create_rapat_list_group_item = (jenis: string, dengan: string, status: StatusRapat) => {
         const li = dom.c('li', {
             classes: ['list-group-item', 'd-flex', 'align-items-center'],
-            html: `<div class="flex-grow-1 pe-2">${nama_rapat}</div>`
+            html: `<div class="flex-grow-1 pe-2">${jenis} ${dengan}</div>`
         })
 
         if (status === StatusRapat.NOT_STARTED) {
@@ -256,7 +253,7 @@
                 attributes: {
                     role: 'button',
                     style: 'min-width: max-content',
-                    href: `/urus/daftar-rapat/?jenis=${nama_rapat.split(' ')[0]}&dengan=${nama_rapat.split(' ')[1]}`,
+                    href: `/urus/daftar-rapat/?jenis=${jenis}&dengan=${dengan}`,
                 },
                 html: 'Daftar',
             }))
@@ -271,16 +268,15 @@
         return li
     }
 
-    const uid = auth.get_logged_in_user()!.uid
     db.get_kegiatan_status_verifikasi(uid)
         .then(snap => {
             if (!snap.exists()) return
 
             const status_verifikasi = snap.val()
-            list_group.appendChild(create_list_group_item('Proposal LEM', status_verifikasi.proposal.lem))
-            list_group.appendChild(create_list_group_item('Proposal DPM', status_verifikasi.proposal.dpm))
-            list_group.appendChild(create_list_group_item('LPJ LEM', status_verifikasi.lpj.lem))
-            list_group.appendChild(create_list_group_item('LPJ DPM', status_verifikasi.lpj.dpm))
+            rapat_list_group.appendChild(create_rapat_list_group_item('Proposal', 'LEM', status_verifikasi.proposal.lem))
+            rapat_list_group.appendChild(create_rapat_list_group_item('Proposal', 'DPM', status_verifikasi.proposal.dpm))
+            rapat_list_group.appendChild(create_rapat_list_group_item('LPJ', 'LEM', status_verifikasi.lpj.lem))
+            rapat_list_group.appendChild(create_rapat_list_group_item('LPJ', 'DPM', status_verifikasi.lpj.dpm))
         })
 })();
 

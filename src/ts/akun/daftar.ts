@@ -128,8 +128,8 @@
                     }
                 })
         }
-        catch {
-            main.show_unexpected_error_message()
+        catch (err) {
+            main.show_unexpected_error_message(err)
             dom.enable(...disabled_elements)
             button_submit.innerHTML = 'Daftar'
         }

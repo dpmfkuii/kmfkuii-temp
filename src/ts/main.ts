@@ -64,7 +64,7 @@ interface Kegiatan {
  * 
  * {timestamp} = done
  */
-type StatusRapatVerifikasiKegiatan = -1 | 0 | number
+type StatusRapatVerifikasiKegiatan = -1 | 0 | 1 | number
 
 interface LogsKegiatanText {
     [timestamp: string]: LogKegiatanText
@@ -142,8 +142,9 @@ type LogbookLog = string
 
 interface Rapat {
     uid: string
+    nama_kegiatan: string
     jenis_rapat: JenisRapat
-    rapat_dengan: string
+    rapat_dengan: RapatDengan
     tanggal_rapat: string
     jam_rapat: string
 }
@@ -151,6 +152,11 @@ interface Rapat {
 enum JenisRapat {
     PROPOSAL = 'proposal',
     LPJ = 'lpj',
+}
+
+enum RapatDengan {
+    LEM = 'lem',
+    DPM = 'dpm',
 }
 
 enum StatusRapat {
@@ -228,11 +234,11 @@ const main = {
         if (kegiatan.status.verifikasi.lpj.dpm === 0) status += ':p'
         return `${kegiatan.nama_kegiatan}${status}`
     },
-    show_unexpected_error_message() {
+    show_unexpected_error_message(error: any) {
         return swal.fire({
             icon: 'error',
             title: 'Ups...',
-            text: 'Terjadi kesalahan tak terduga! Coba hubungi sekretariat LEM atau DPM.',
+            html: `Terjadi kesalahan tak terduga! Coba hubungi sekretariat LEM atau DPM.<br /><code>${error}</code>`,
             confirmButtonText: 'Tutup',
             customClass: {
                 confirmButton: 'btn btn-primary',
@@ -266,6 +272,10 @@ const db = {
     update_kegiatan(uid: string, kegiatan_values: Partial<Kegiatan>) {
         return main_db.ref(`verifikasi/kegiatan/${uid}`)
             .update(kegiatan_values)
+    },
+    get_kegiatan_nama_kegiatan(uid: string): Promise<FirebaseSnapshot<Kegiatan['nama_kegiatan']>> {
+        return main_db.ref(`verifikasi/kegiatan/${uid}/nama_kegiatan`)
+            .once<Kegiatan['nama_kegiatan']>('value')
     },
     get_kegiatan_status_verifikasi(uid: string): Promise<FirebaseSnapshot<Kegiatan['status']['verifikasi']>> {
         return main_db.ref(`verifikasi/kegiatan/${uid}/status/verifikasi`)
@@ -304,7 +314,8 @@ const db = {
             return this.set_logbook(new_kegiatan)
         }
         return Promise.all([
-            main_db.ref(`verifikasi/kegiatan/logbook/${old_periode_kegiatan}/${new_kegiatan.organisasi_index}/${new_kegiatan.uid}`).remove(),
+            main_db.ref(`verifikasi/kegiatan/logbook/${old_periode_kegiatan}/${new_kegiatan.organisasi_index}/${new_kegiatan.uid}`)
+                .remove(),
             this.set_logbook(new_kegiatan),
         ])
     },
@@ -312,13 +323,17 @@ const db = {
         return main_db.ref('verifikasi/rapat/antrean')
             .once<AntreanRapat>('value')
     },
-    get_antrean_rapat_dengan(rapat_dengan: string): Promise<FirebaseSnapshot<RapatList>> {
+    get_antrean_rapat_dengan(rapat_dengan: RapatDengan): Promise<FirebaseSnapshot<RapatList>> {
         return main_db.ref(`verifikasi/rapat/antrean/${rapat_dengan}`)
             .once<RapatList>('value')
     },
     add_antrean_rapat(rapat: Rapat) {
         return main_db.ref(`verifikasi/rapat/antrean/${rapat.rapat_dengan}/${common.timestamp()}`)
             .set(rapat)
+    },
+    remove_antrean_rapat(rapat: Rapat, timestamp: number | string) {
+        return main_db.ref(`verifikasi/rapat/antrean/${rapat.rapat_dengan}/${timestamp}`)
+            .remove()
     },
     /**
      * @param rapat_dengan 
@@ -327,6 +342,16 @@ const db = {
     get_jadwal_rapat_dengan(rapat_dengan: string, tanggal_rapat: string): Promise<FirebaseSnapshot<RapatList>> {
         return main_db.ref(`verifikasi/rapat/jadwal/${rapat_dengan}/${tanggal_rapat}`)
             .once<RapatList>('value')
+    },
+    add_jadwal_rapat(rapat: Rapat) {
+        return main_db.ref(`verifikasi/rapat/jadwal/${rapat.rapat_dengan}/${rapat.tanggal_rapat.replaceAll('-', '/')}/${common.timestamp()}`)
+            .set(rapat)
+    },
+    move_rapat_from_antrean_to_jadwal(rapat_in_antrean: Rapat, timestamp: number | string) {
+        return Promise.all([
+            this.remove_antrean_rapat(rapat_in_antrean, timestamp),
+            this.add_jadwal_rapat(rapat_in_antrean),
+        ])
     },
 }
 

@@ -77,6 +77,7 @@ var _ = {
                 "lem": {
                     "{timestamp}": {
                         "uid": "abc123",
+                        "nama_kegiatan": "Konferensi ITAF 2024",
                         "jenis_rapat": "proposal",
                         "rapat_dengan": "lem",
                         "tanggal_rapat": "31-01-2024",
@@ -86,6 +87,7 @@ var _ = {
                 "dpm": {
                     "{timestamp}": {
                         "uid": "abc123",
+                        "nama_kegiatan": "Konferensi ITAF 2024",
                         "jenis_rapat": "lpj",
                         "rapat_dengan": "dpm",
                         "tanggal_rapat": "02-04-2024",
@@ -103,6 +105,7 @@ var _ = {
                             "29": {
                                 "{timestamp}": {
                                     "uid": "abc123",
+                                    "nama_kegiatan": "Konferensi ITAF 2024",
                                     "jenis_rapat": "proposal",
                                     "rapat_dengan": "lem",
                                     "tanggal_rapat": "29-04-2024",
@@ -115,6 +118,7 @@ var _ = {
                             "22": {
                                 "{timestamp}": {
                                     "uid": "def456",
+                                    "nama_kegiatan": "Konferensi ITAF 2024",
                                     "jenis_rapat": "lpj",
                                     "rapat_dengan": "lem",
                                     "tanggal_rapat": "22-05-2024",
@@ -131,6 +135,7 @@ var _ = {
                             "18": {
                                 "{timestamp}": {
                                     "uid": "def456",
+                                    "nama_kegiatan": "Konferensi ITAF 2024",
                                     "jenis_rapat": "lpj",
                                     "rapat_dengan": "dpm",
                                     "tanggal_rapat": "18-01-2025",

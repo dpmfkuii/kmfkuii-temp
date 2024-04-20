@@ -16,42 +16,19 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-12 col-lg-3 mb-3">
-                            <div class="card">
-                                <div class="card-header">Dengan</div>
-                                <div class="card-body p-1">
-                                    <ul
-                                        class="list-group"
-                                        id="admin_rapat_dengan_nav"
-                                    >
-                                        <li
-                                            class="list-group-item list-group-item-primary"
-                                            aria-label="LEM"
-                                        >
-                                            LEM
-                                        </li>
-                                        <li
-                                            class="list-group-item list-group-item-secondary"
-                                            role="button"
-                                            aria-label="DPM"
-                                        >
-                                            DPM
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+                            <insert-component-admin/rapat/panel-rapat-dengan />
                         </div>
                         <div class="col-12 col-lg-9 text-break">
                             <div
                                 class="card border-jadwal mb-3 animate animate-rise-on-enter animate-delay-100"
-                                id="temp1"
                             >
                                 <div
                                     class="card-header border-0 text-bg-jadwal"
                                 >
                                     Jadwal
                                 </div>
-                                <div class="card-body p-0" id="temp2">
-                                    <table class="table">
+                                <div class="card-body p-0">
+                                    <table class="table m-0">
                                         <thead>
                                             <tr>
                                                 <td colspan="6" class="p-0">
@@ -130,7 +107,7 @@
                                                     </td>
                                                     <td></td>
                                                     <td class="text-bg-jadwal">
-                                                        example
+                                                        LPJ_Magang XIX
                                                     </td>
                                                     <td></td>
                                                     <td></td>
@@ -230,16 +207,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div
-                                class="card border-antrean animate animate-rise-on-enter animate-delay-200"
-                            >
-                                <div
-                                    class="card-header border-0 text-bg-antrean"
-                                >
-                                    Antrean
-                                </div>
-                                <div class="card-body">do stuff here</div>
-                            </div>
+                            <insert-component-admin/rapat/panel-antrean />
                         </div>
                     </div>
                 </div>
@@ -259,3 +227,5 @@
         }
     }
 </style>
+
+<script defer src="/assets/js/admin/rapat.js"></script>

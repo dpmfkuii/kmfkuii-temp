@@ -37,5 +37,23 @@ const defines = {
         pembaruan_data_kegiatan: 'light' as LogColor,
         jadwal_masuk_antrean: 'info' as LogColor,
         jadwal_terkonfirmasi: 'success' as LogColor,
+        jadwal_ditolak: 'danger' as LogColor,
+        jadwal_diubah: 'info' as LogColor,
+        jadwal_dibatalkan: 'danger' as LogColor,
+    },
+    jenis_rapat_text: {
+        proposal: 'Proposal',
+        lpj: 'LPJ',
+    },
+    /**
+     * jenis rapat text in the middle of a sentence
+     */
+    jenis_rapat_text_mid: {
+        proposal: 'proposal',
+        lpj: 'LPJ',
+    },
+    rapat_dengan_text: {
+        lem: 'LEM',
+        dpm: 'DPM',
     },
 }
