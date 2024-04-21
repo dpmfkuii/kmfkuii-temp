@@ -75,7 +75,8 @@ var _ = {
             "antrean": {
                 // db.ref('verifikasi/rapat/antrean/lem')
                 "lem": {
-                    "{timestamp}": {
+                    "{tanggal_rapat+jam_rapat}": {
+                        "t": 1234567890,
                         "uid": "abc123",
                         "nama_kegiatan": "Konferensi ITAF 2024",
                         "jenis_rapat": "proposal",
@@ -85,7 +86,8 @@ var _ = {
                     },
                 },
                 "dpm": {
-                    "{timestamp}": {
+                    "{tanggal_rapat+jam_rapat}": {
+                        "t": 1234567890,
                         "uid": "abc123",
                         "nama_kegiatan": "Konferensi ITAF 2024",
                         "jenis_rapat": "lpj",

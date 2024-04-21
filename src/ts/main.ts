@@ -141,6 +141,10 @@ interface LogbookOrganisasi {
 type LogbookLog = string
 
 interface Rapat {
+    /**
+     * created timestamp, for antrean
+     */
+    t: number
     uid: string
     nama_kegiatan: string
     jenis_rapat: JenisRapat
@@ -264,6 +268,14 @@ const main = {
     get_waktu_rapat(rapat: Rapat) {
         return `hari ${common.date_string_to_date_text(rapat.tanggal_rapat)} pukul ${rapat.jam_rapat} WIB`
     },
+    get_min_tanggal_rapat() {
+        const d = common.get_next_monday()
+        if (common.today_is(Day.Sunday)) {
+            // udah hari minggu (tutup), minimal daftar mingdepnya lagi yah
+            d.setDate(d.getDate() + 7)
+        }
+        return d
+    },
 }
 
 const db = {
@@ -286,6 +298,10 @@ const db = {
     get_kegiatan_status_verifikasi(uid: string): Promise<FirebaseSnapshot<Kegiatan['status']['verifikasi']>> {
         return main_db.ref(`verifikasi/kegiatan/${uid}/status/verifikasi`)
             .once<Kegiatan['status']['verifikasi']>('value')
+    },
+    on_kegiatan_status_verifikasi(uid: string, callback: (snapshot: FirebaseSnapshot<Kegiatan['status']['verifikasi']>) => void) {
+        return main_db.ref(`verifikasi/kegiatan/${uid}/status/verifikasi`)
+            .on<Kegiatan['status']['verifikasi']>('value', callback)
     },
     set_kegiatan_status_verifikasi(uid: string, jenis_rapat: JenisRapat, rapat_dengan: Rapat['rapat_dengan'], value: StatusRapat | number) {
         return main_db.ref(`verifikasi/kegiatan/${uid}/status/verifikasi/${jenis_rapat}/${rapat_dengan}`)
@@ -333,12 +349,15 @@ const db = {
         return main_db.ref(`verifikasi/rapat/antrean/${rapat_dengan}`)
             .once<RapatList>('value')
     },
+    get_antrean_key(rapat: Rapat) {
+        return `${rapat.tanggal_rapat}${rapat.jam_rapat.replace('.', '')}`
+    },
     add_antrean_rapat(rapat: Rapat) {
-        return main_db.ref(`verifikasi/rapat/antrean/${rapat.rapat_dengan}/${common.timestamp()}`)
+        return main_db.ref(`verifikasi/rapat/antrean/${rapat.rapat_dengan}/${this.get_antrean_key(rapat)}`)
             .set(rapat)
     },
-    remove_antrean_rapat(rapat: Rapat, timestamp: number | string) {
-        return main_db.ref(`verifikasi/rapat/antrean/${rapat.rapat_dengan}/${timestamp}`)
+    remove_antrean_rapat(rapat: Rapat) {
+        return main_db.ref(`verifikasi/rapat/antrean/${rapat.rapat_dengan}/${this.get_antrean_key(rapat)}`)
             .remove()
     },
     /**
@@ -353,10 +372,19 @@ const db = {
         return main_db.ref(`verifikasi/rapat/jadwal/${rapat.rapat_dengan}/${rapat.tanggal_rapat.replaceAll('-', '/')}/${common.timestamp()}`)
             .set(rapat)
     },
-    move_rapat_from_antrean_to_jadwal(rapat_in_antrean: Rapat, timestamp: number | string) {
+    move_rapat_from_antrean_to_jadwal(rapat_in_antrean: Rapat) {
         return Promise.all([
-            this.remove_antrean_rapat(rapat_in_antrean, timestamp),
+            this.remove_antrean_rapat(rapat_in_antrean),
             this.add_jadwal_rapat(rapat_in_antrean),
+        ])
+    },
+    /**
+     * Set status verifikasi and the logbook text
+     */
+    async sequence_set_status_verifikasi(uid: string, jenis_rapat: JenisRapat, rapat_dengan: RapatDengan, value: StatusRapat | number = common.timestamp()) {
+        await Promise.all([
+            db.set_kegiatan_status_verifikasi(uid, jenis_rapat, rapat_dengan, value),
+            db.get_kegiatan(uid).then(snap => db.set_logbook(snap.val()!)),
         ])
     },
 }

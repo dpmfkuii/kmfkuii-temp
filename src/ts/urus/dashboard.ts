@@ -268,16 +268,17 @@
         return li
     }
 
-    db.get_kegiatan_status_verifikasi(uid)
-        .then(snap => {
-            if (!snap.exists()) return
+    db.on_kegiatan_status_verifikasi(uid, snap => {
+        if (!snap.exists()) return
 
-            const status_verifikasi = snap.val()
-            rapat_list_group.appendChild(create_rapat_list_group_item('Proposal', 'LEM', status_verifikasi.proposal.lem))
-            rapat_list_group.appendChild(create_rapat_list_group_item('Proposal', 'DPM', status_verifikasi.proposal.dpm))
-            rapat_list_group.appendChild(create_rapat_list_group_item('LPJ', 'LEM', status_verifikasi.lpj.lem))
-            rapat_list_group.appendChild(create_rapat_list_group_item('LPJ', 'DPM', status_verifikasi.lpj.dpm))
-        })
+        rapat_list_group.innerHTML = ''
+
+        const status_verifikasi = snap.val()
+        rapat_list_group.appendChild(create_rapat_list_group_item('Proposal', 'LEM', status_verifikasi.proposal.lem))
+        rapat_list_group.appendChild(create_rapat_list_group_item('Proposal', 'DPM', status_verifikasi.proposal.dpm))
+        rapat_list_group.appendChild(create_rapat_list_group_item('LPJ', 'LEM', status_verifikasi.lpj.lem))
+        rapat_list_group.appendChild(create_rapat_list_group_item('LPJ', 'DPM', status_verifikasi.lpj.dpm))
+    })
 })();
 
 // panel log kegiatan

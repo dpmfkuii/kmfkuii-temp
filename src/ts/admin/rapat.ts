@@ -5,8 +5,10 @@
     const jadwal_days: string[] = []
     let jadwal_pagination_index = 0
     const jadwal_pagination_items: Date[] = [
+        common.get_current_monday(),
         common.get_next_monday(),
         common.get_next_monday(new Date(), 2),
+        common.get_next_monday(new Date(), 3),
     ]
 
     const jadwal_pagination_prev = () => {
@@ -36,6 +38,9 @@
     const list_group_rapat_dengan = dom.q<'ul'>('#list_group_rapat_dengan')!
 
     const span_jadwal_header_title = dom.q<'span'>('#jadwal_header_title')!
+    const jadwal_info_row = dom.q<'div'>('#jadwal_info_row')!
+    const jadwal_info_row_icon = dom.qe<'i'>(jadwal_info_row, 'i')!
+    const jadwal_info_row_text = dom.qe<'span'>(jadwal_info_row, 'span')!
     const jadwal_pagination_group = dom.q<'div'>('#jadwal_pagination_group')!
     const jadwal_pagination_text = dom.qe<'span'>(jadwal_pagination_group, 'span')!
     const jadwal_pagination_prev_button = dom.qe<'button'>(jadwal_pagination_group, 'button[aria-label="Previous"]')!
@@ -45,6 +50,7 @@
     const jadwal_table_tbody = dom.qe<'tbody'>(jadwal_table, 'tbody')!
 
     const list_group_antrean = dom.q<'ul'>('#list_group_antrean')!
+    const antrean_card = dom.q<'div'>('#antrean_card')!
     const span_antrean_header_title = dom.q<'span'>('#antrean_header_title')!
     const span_antrean_badge = dom.q<'span'>('#antrean_badge')!
 
@@ -77,7 +83,7 @@
 
     const update_jadwal_pagination_elements = () => {
         const first_day = jadwal_pagination_items[jadwal_pagination_index]
-        const last_day = common.new_date_add(first_day, jadwal_days_amount - 1)
+        const last_day = common.add_date_new(first_day, jadwal_days_amount - 1)
         jadwal_pagination_text.textContent = `${common.to_date_text_date(first_day)}—${common.to_date_text_date(last_day)}`
 
         jadwal_pagination_prev_button.classList.remove('disabled')
@@ -90,11 +96,32 @@
         }
     }
 
+    const update_jadwal_info_row = () => {
+        const first_day = jadwal_pagination_items[jadwal_pagination_index]
+        const min_tanggal_rapat = main.get_min_tanggal_rapat()
+
+        let text = 'Terbuka untuk pendaftaran.'
+        jadwal_info_row.classList.add('text-bg-jadwal')
+        jadwal_info_row.classList.remove('text-bg-dark')
+        jadwal_info_row_icon.classList.add('fa-circle-check')
+        jadwal_info_row_icon.classList.remove('fa-circle-exclamation')
+
+        if (common.is_date_before(first_day, min_tanggal_rapat)) {
+            text = 'Pendaftaran di minggu ini sudah tutup.'
+            jadwal_info_row.classList.remove('text-bg-jadwal')
+            jadwal_info_row.classList.add('text-bg-dark')
+            jadwal_info_row_icon.classList.remove('fa-circle-check')
+            jadwal_info_row_icon.classList.add('fa-circle-exclamation')
+        }
+
+        jadwal_info_row_text.textContent = text
+    }
+
     const update_jadwal_table_thead = () => {
         const current_pagination_item = jadwal_pagination_items[jadwal_pagination_index]
         jadwal_table_thead_tr.innerHTML = `<td style="min-width: 50px; width: 10%"></td>`
         for (let i = 0; i < jadwal_days_amount; i++) {
-            const date_text = common.to_date_text(common.new_date_add(current_pagination_item, i))
+            const date_text = common.to_date_text(common.add_date_new(current_pagination_item, i))
             jadwal_table_thead_tr.innerHTML += `<td style="width: ${90 / jadwal_days_amount}%">${date_text.replace(', ', '<br />')}</td>`
         }
     }
@@ -102,7 +129,16 @@
     const update_jadwal_table_tbody = async () => {
         const current_pagination_item = jadwal_pagination_items[jadwal_pagination_index]
 
-        jadwal_table_tbody.innerHTML = ''
+        jadwal_table_tbody.innerHTML = `
+            <tr><td colspan=${jadwal_days_amount + 1}>
+            <div class="d-flex flex-column gap-1 align-items-center text-center">
+                <div class="spinner-border" aria-hidden="true"></div>
+                <strong role="status" class="text-secondary fst-italic"
+                    >Memuat...</strong
+                >
+            </div>
+            </td></tr>
+        `
 
         const list_jadwal_rapat_by_jam: { [jam_rapat: string]: Rapat[] } = {}
         const list_antrean_rapat_by_jam: { [jam_rapat: string]: Rapat[] } = {}
@@ -116,7 +152,7 @@
         // filling the lists
         try {
             for (let i = 0; i < jadwal_days_amount; i++) {
-                const tanggal_rapat = common.to_date_string(common.new_date_add(current_pagination_item, i))
+                const tanggal_rapat = common.to_date_string(common.add_date_new(current_pagination_item, i))
                 await db.get_jadwal_rapat_dengan_tanggal(rapat_dengan, tanggal_rapat.replaceAll('-', '/'))
                     .then(snap => {
                         if (!snap.exists()) return
@@ -133,8 +169,8 @@
                         if (!snap.exists()) return
 
                         const rapat_list = snap.val()
-                        for (const timestamp in rapat_list) {
-                            const rapat = rapat_list[timestamp]
+                        for (const antrean_key in rapat_list) {
+                            const rapat = rapat_list[antrean_key]
                             if (rapat.tanggal_rapat === tanggal_rapat) {
                                 list_antrean_rapat_by_jam[rapat.jam_rapat][i] = rapat
                             }
@@ -145,6 +181,8 @@
         catch (err) {
             main.show_unexpected_error_message(err)
         }
+
+        jadwal_table_tbody.innerHTML = ''
 
         for (const jam of JamRapat) {
             if (jam.includes('--')) continue
@@ -179,11 +217,12 @@
         span_jadwal_header_title.textContent = `Jadwal (${defines.rapat_dengan_text[rapat_dengan]})`
 
         update_jadwal_pagination_elements()
+        update_jadwal_info_row()
         update_jadwal_table_thead()
         update_jadwal_table_tbody()
     }
 
-    const create_antrean_list_group_item = (rapat: Rapat, timestamp: number | string) => {
+    const create_antrean_list_group_item = (rapat: Rapat) => {
         const nama_rapat = main.get_nama_rapat(rapat)
         const waktu_rapat = main.get_waktu_rapat(rapat)
 
@@ -196,7 +235,7 @@
                         <span class="fw-bold"
                             ><i class="fa-regular fa-clock"></i> ${rapat.jam_rapat}</span
                         >
-                        · Dibuat ${new Date(Number(timestamp)).toLocaleString()}
+                        · Dibuat ${new Date(Number(rapat.t)).toLocaleString()}
                     </div>
                 </div>
                 <div class="d-flex gap-1 justify-content-center">
@@ -247,7 +286,7 @@
                             swal.showLoading()
                             try {
                                 await Promise.all([
-                                    db.move_rapat_from_antrean_to_jadwal(rapat, timestamp),
+                                    db.move_rapat_from_antrean_to_jadwal(rapat),
                                 ])
                                 await Promise.all([
                                     db.add_kegiatan_log(rapat.uid,
@@ -306,7 +345,7 @@
                             swal.showLoading()
                             try {
                                 await Promise.all([
-                                    db.remove_antrean_rapat(rapat, timestamp),
+                                    db.remove_antrean_rapat(rapat),
                                     db.set_kegiatan_status_verifikasi(rapat.uid, rapat.jenis_rapat, rapat.rapat_dengan, StatusRapat.NOT_STARTED),
                                     db.get_kegiatan(rapat.uid).then(snap => db.set_logbook(snap.val()!)),
                                 ])
@@ -322,6 +361,7 @@
                                 main.show_unexpected_error_message(err)
                             }
 
+                            update_jadwal()
                             update_antrean()
 
                             swal.fire({
@@ -343,29 +383,44 @@
     }
 
     const update_antrean = async () => {
+        if (globals.rapat.hide_antrean) return
+
         span_antrean_header_title.textContent = `Antrean (${defines.rapat_dengan_text[rapat_dengan]})`
-        list_group_antrean.innerHTML = ''
-        let count = 0
+
+        list_group_antrean.innerHTML = `
+            <div class="d-flex align-items-center p-3">
+                <strong role="status" class="text-secondary fst-italic"
+                    >Memuat...</strong
+                >
+                <div class="spinner-border ms-auto" aria-hidden="true"></div>
+            </div>
+        `
+
+        let rapat_list: RapatList = {}
 
         await db.get_antrean_rapat_dengan(rapat_dengan)
             .then(snap => {
                 if (!snap.exists()) return
 
-                const rapat_list = snap.val()
-                let _current_date_string = ''
-                for (const timestamp in rapat_list) {
-                    const rapat = rapat_list[timestamp]
-                    if (rapat.tanggal_rapat !== _current_date_string) {
-                        list_group_antrean.appendChild(dom.c('li', {
-                            classes: ['list-group-item', 'list-group-item-light', 'fs-6'],
-                            html: `<i class="fa-regular fa-calendar"></i> ${common.date_string_to_date_text(rapat.tanggal_rapat)}`,
-                        }))
-                        _current_date_string = rapat.tanggal_rapat
-                    }
-                    list_group_antrean.appendChild(create_antrean_list_group_item(rapat, timestamp))
-                    count++
-                }
+                rapat_list = snap.val()
             })
+
+        list_group_antrean.innerHTML = ''
+
+        let count = 0
+        let _current_date_string = ''
+        for (const key in rapat_list) {
+            const rapat = rapat_list[key]
+            if (rapat.tanggal_rapat !== _current_date_string) {
+                list_group_antrean.appendChild(dom.c('li', {
+                    classes: ['list-group-item', 'list-group-item-light', 'fs-6'],
+                    html: `<i class="fa-regular fa-calendar"></i> ${common.date_string_to_date_text(rapat.tanggal_rapat)}`,
+                }))
+                _current_date_string = rapat.tanggal_rapat
+            }
+            list_group_antrean.appendChild(create_antrean_list_group_item(rapat))
+            count++
+        }
 
         if (list_group_antrean.innerHTML === '') {
             list_group_antrean.innerHTML = '<div class="p-3 fs-6"><i class="text-secondary">Tidak ada antrean.</i></div>'
@@ -410,6 +465,31 @@
         list_group_rapat_dengan.appendChild(li)
     }
 
-    jadwal_pagination_prev()
-    select_rapat_dengan(RapatDengan.LEM)
+    if (common.today_is(Day.Saturday) || common.today_is(Day.Sunday)) {
+        jadwal_pagination_next()
+    }
+    else {
+        jadwal_pagination_prev()
+    }
+
+    if (globals.rapat.hide_antrean) {
+        antrean_card.classList.add('visually-hidden')
+    }
+
+    if (globals.rapat.show_available_week_onstart) {
+        const min_tanggal_rapat = main.get_min_tanggal_rapat()
+        for (let i = 0; i < jadwal_pagination_items.length; i++) {
+            const first_day = jadwal_pagination_items[i]
+            const last_day = common.add_date_new(first_day, jadwal_days_amount - 1)
+
+            if (common.is_date_before(last_day, min_tanggal_rapat)) {
+                continue
+            }
+
+            jadwal_pagination_index = i
+            break
+        }
+    }
+
+    select_rapat_dengan(globals.rapat.show_dpm_onstart ? RapatDengan.DPM : RapatDengan.LEM)
 })()

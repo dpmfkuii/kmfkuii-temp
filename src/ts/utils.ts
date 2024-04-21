@@ -64,10 +64,23 @@ const dom = {
     },
 }
 
+enum Day {
+    Sunday = 0,
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday,
+}
+
 const common = {
     url_params: new URLSearchParams(window.location.search),
     timestamp() {
         return Date.now()
+    },
+    today_is(day: Day) {
+        return new Date().getDay() === day
     },
     sleep(ms: number) {
         return new Promise(r => setTimeout(r, ms))
@@ -143,12 +156,18 @@ const common = {
         hh = hh ? hh : 12
         return `${hh}:${mm < 10 ? '0' : ''}${mm} ${f}`
     },
+    get_current_monday(from_date: Date = new Date()) {
+        const d = new Date(from_date)
+        const day = d.getDay()
+        d.setDate(d.getDate() - (day === 0 ? 6 : day - 1))
+        return d
+    },
     get_next_monday(from_date: Date = new Date(), multiply: number = 1) {
         const d = new Date(from_date)
         d.setDate(d.getDate() + (((1 + 7 - d.getDay()) % 7) || 7) + (7 * (multiply - 1)))
         return d
     },
-    new_date_add(date: Date, value: number) {
+    add_date_new(date: Date, value: number) {
         const d = new Date(date)
         d.setDate(d.getDate() + value)
         return d

@@ -5,38 +5,34 @@
         <span id="jadwal_header_title">Jadwal</span>
     </div>
     <div class="card-body p-0">
-        <table class="table m-0">
-            <thead>
-                <tr>
-                    <td colspan="6" class="p-0">
-                        <div
-                            class="btn-group d-flex"
-                            role="group"
-                            id="jadwal_pagination_group"
-                        >
-                            <button
-                                type="button"
-                                class="btn btn-light rounded-0"
-                                aria-label="Previous"
-                            >
-                                <i class="fa-solid fa-chevron-left"></i>
-                            </button>
-                            <span
-                                class="btn btn-light disabled opacity-100 fw-bold"
-                                >-</span
-                            >
-                            <button
-                                type="button"
-                                class="btn btn-light rounded-0"
-                                aria-label="Next"
-                            >
-                                <i class="fa-solid fa-chevron-right"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </thead>
-        </table>
+        <div
+            class="btn-group d-flex border-bottom rounded-0"
+            role="group"
+            id="jadwal_pagination_group"
+        >
+            <button
+                type="button"
+                class="btn btn-light rounded-0"
+                aria-label="Previous"
+            >
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <span class="btn btn-light disabled opacity-100 fw-bold">-</span>
+            <button
+                type="button"
+                class="btn btn-light rounded-0"
+                aria-label="Next"
+            >
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+        <div
+            class="d-flex gap-1 justify-content-center align-items-center border-bottom px-3 py-1 text-center small"
+            id="jadwal_info_row"
+        >
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Terbuka untuk pendaftaran.</span>
+        </div>
         <div class="table-responsive">
             <table
                 class="table table-striped align-middle table-sm small text-center"

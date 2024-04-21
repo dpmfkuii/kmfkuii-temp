@@ -43,6 +43,12 @@
                                 Daftar
                             </button>
                         </div>
+                        <script defer>
+                            globals.rapat.show_available_week_onstart = true;
+                            if (common.url_params.get("dengan") === "DPM") {
+                                globals.rapat.show_dpm_onstart = true;
+                            }
+                        </script>
                         <insert-component-urus/jadwal-rapat />
                     </div>
                 </div>

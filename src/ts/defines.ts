@@ -40,6 +40,7 @@ const defines = {
         jadwal_ditolak: 'danger' as LogColor,
         jadwal_diubah: 'info' as LogColor,
         jadwal_dibatalkan: 'danger' as LogColor,
+        verifikasi_selesai: 'success' as LogColor,
     },
     jenis_rapat_text: {
         proposal: 'Proposal',
@@ -66,5 +67,16 @@ const defines = {
         rapat_ditolak(nama_rapat: string, waktu_rapat: string) {
             return `Penjadwalan rapat ${nama_rapat} pada ${waktu_rapat} ditolak.`
         },
+        verifikasi_selesai(jenis_rapat: JenisRapat, rapat_dengan: RapatDengan) {
+            return `@html Verifikasi ${defines.jenis_rapat_text_mid[jenis_rapat]} dengan ${defines.rapat_dengan_text[rapat_dengan]} <strong>selesai</strong>.`
+        },
+    },
+}
+
+const globals = {
+    rapat: {
+        hide_antrean: false,
+        show_available_week_onstart: false,
+        show_dpm_onstart: false,
     },
 }

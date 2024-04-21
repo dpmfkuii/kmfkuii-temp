@@ -35,9 +35,9 @@
 
     set_jam_rapat_options()
 
-    const senin_depan = common.get_next_monday()
+    const min_tanggal_rapat = main.get_min_tanggal_rapat()
 
-    input_tanggal_rapat.min = common.to_date_string(senin_depan)
+    input_tanggal_rapat.min = common.to_date_string(min_tanggal_rapat)
 
     const validate_date_and_time = async () => {
         // reset jam
@@ -54,16 +54,14 @@
         }
 
         if (date_tanggal_rapat !== null) {
-            // cek ini sebelum minggu depan atau ngga
-            if (common.is_date_before(date_tanggal_rapat, senin_depan)) {
-                // gabole, minimal senin depan
-                input_tanggal_rapat_invalid_feedback.innerHTML = 'Pilih waktu verif mulai <strong>Senin</strong> depan!'
+            // cek itu hari weekend atau ngga
+            if (date_tanggal_rapat.getDay() === Day.Saturday || date_tanggal_rapat.getDay() === Day.Sunday) {
+                input_tanggal_rapat_invalid_feedback.innerHTML = 'Pilih waktu <strong>Senin—Jum’at</strong>!'
                 input_tanggal_rapat.classList.add('is-invalid')
             }
-            // cek ini hari weekend atau ngga
-            else if (date_tanggal_rapat.getDay() === 0 || date_tanggal_rapat?.getDay() === 6) {
-                // gabole kalau weekend
-                input_tanggal_rapat_invalid_feedback.innerHTML = 'Pilih waktu verif <strong>Senin—Jum’at</strong>!'
+            // cek itu dah tutup atau belum
+            else if (common.is_date_before(date_tanggal_rapat, min_tanggal_rapat)) {
+                input_tanggal_rapat_invalid_feedback.innerHTML = 'Pendaftaran di tanggal itu sudah <strong>tutup</strong>!'
                 input_tanggal_rapat.classList.add('is-invalid')
             }
         }
@@ -139,6 +137,7 @@
             rapat_dengan: input_rapat_dengan.value.toLowerCase() as RapatDengan,
             tanggal_rapat: input_tanggal_rapat.value,
             jam_rapat: select_jam_rapat.value,
+            t: common.timestamp(),
         }
 
         const nama_rapat = main.get_nama_rapat(new_rapat)
