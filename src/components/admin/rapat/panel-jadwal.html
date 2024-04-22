@@ -41,7 +41,11 @@
             >
                 <thead class="table-light align-middle small">
                     <tr>
-                        <td style="min-width: 50px; width: 10%"></td>
+                        <td style="min-width: 50px; width: 10%">
+                            Tgl
+                            <hr class="m-0" />
+                            Jam
+                        </td>
                         <td style="width: 18%">-</td>
                         <td style="width: 18%">-</td>
                         <td style="width: 18%">-</td>
@@ -51,7 +55,7 @@
                 </thead>
                 <tbody class="small">
                     <tr>
-                        <td class="table-light">-</td>
+                        <td>-</td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -70,5 +74,11 @@
     }
     #jadwal_pagination_group button.disabled i {
         opacity: 0;
+    }
+    #jadwal_table thead td:first-child,
+    #jadwal_table tbody td:first-child {
+        position: sticky;
+        left: 0px;
+        z-index: 1;
     }
 </style>

@@ -119,7 +119,7 @@
 
     const update_jadwal_table_thead = () => {
         const current_pagination_item = jadwal_pagination_items[jadwal_pagination_index]
-        jadwal_table_thead_tr.innerHTML = `<td style="min-width: 50px; width: 10%"></td>`
+        jadwal_table_thead_tr.innerHTML = `<td style="min-width: 50px; width: 10%">Tgl<hr class="m-0" />Jam</td>`
         for (let i = 0; i < jadwal_days_amount; i++) {
             const date_text = common.to_date_text(common.add_date_new(current_pagination_item, i))
             jadwal_table_thead_tr.innerHTML += `<td style="width: ${90 / jadwal_days_amount}%">${date_text.replace(', ', '<br />')}</td>`
@@ -188,7 +188,7 @@
             if (jam.includes('--')) continue
 
             const tr = dom.c('tr', {
-                html: `<td class="table-light">${jam}</td>`
+                html: `<td>${jam}</td>`
             })
 
             for (let i = 0; i < jadwal_days_amount; i++) {
