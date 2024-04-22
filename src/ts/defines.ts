@@ -81,3 +81,10 @@ const globals = {
         show_dpm_onstart: false,
     },
 }
+
+const sistem = {
+    data: {
+        link_berkas_lem: 'https://drive.google.com/drive/folders/1iwwJJ4WUT8R12fwMdhATC7e_gLRGlYz5?usp=sharing',
+        link_berkas_dpm: 'https://drive.google.com/drive/folders/1xZ8mS5auho8IH4omtOqBXBrZDThIdFER?usp=sharing',
+    },
+}

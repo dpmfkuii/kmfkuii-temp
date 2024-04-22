@@ -238,7 +238,6 @@
     })
 
     const panel_rapat_verifikasi = dom.q<'div'>('#panel_urus_rapat_verifikasi')!
-
     const rapat_list_group = dom.qe(panel_rapat_verifikasi, '.list-group')!
 
     const create_rapat_list_group_item = (jenis: string, dengan: string, status: StatusRapat) => {
@@ -268,17 +267,125 @@
         return li
     }
 
+    rapat_list_group.innerHTML = `
+        <div class="d-flex align-items-center">
+            <strong role="status" class="text-secondary fst-italic"
+                >Memuat...</strong
+            >
+            <div class="spinner-border ms-auto" aria-hidden="true"></div>
+        </div>
+    `
+
     db.on_kegiatan_status_verifikasi(uid, snap => {
         if (!snap.exists()) return
+        const status_verifikasi = snap.val()
 
         rapat_list_group.innerHTML = ''
-
-        const status_verifikasi = snap.val()
         rapat_list_group.appendChild(create_rapat_list_group_item('Proposal', 'LEM', status_verifikasi.proposal.lem))
         rapat_list_group.appendChild(create_rapat_list_group_item('Proposal', 'DPM', status_verifikasi.proposal.dpm))
         rapat_list_group.appendChild(create_rapat_list_group_item('LPJ', 'LEM', status_verifikasi.lpj.lem))
         rapat_list_group.appendChild(create_rapat_list_group_item('LPJ', 'DPM', status_verifikasi.lpj.dpm))
     })
+
+    const panel_berkas = dom.q<'div'>('#panel_urus_berkas')!
+    const berkas_list_group = dom.qe(panel_berkas, 'ul.list-group')!
+    const berkas_ketentuan_table = dom.q<'table'>('#berkas_ketentuan_table')!
+    const berkas_ketentuan_table_tbody = dom.qe<'tbody'>(berkas_ketentuan_table, 'tbody')!
+
+    const get_berkas_ketentuan_table_rows = (dengan: RapatDengan, organisasi: OrganisasiKegiatan, nama_kegiatan: string) => {
+        const dengan_text = defines.rapat_dengan_text[dengan]
+        const main_folder_path = `BERKAS VERIFIKASI (${dengan_text}) / ${organisasi} / `
+        const pre_path = `${main_folder_path}<strong class="text-danger">${nama_kegiatan} / `
+        const post_path = ' / </strong><em>unggah berkas disini</em>'
+        return [
+            [
+                `<td rowspan="6" class="text-center">${dengan_text}</td>`,
+                `<td>Proposal</td>`,
+                `<td>${pre_path}PROPOSAL${post_path}</td>`,
+            ],
+            [
+                `<td>Revisi Proposal</td>`,
+                `<td>${pre_path}PROPOSAL / REVISI${post_path}</td>`,
+            ],
+            [
+                `<td>Revisi Proposal #2</td>`,
+                `<td>${pre_path}PROPOSAL / REVISI 2${post_path}</td>`,
+            ],
+            [
+                `<td>LPJ</td>`,
+                `<td>${pre_path}LPJ${post_path}</td>`,
+            ],
+            [
+                `<td>Revisi LPJ</td>`,
+                `<td>${pre_path}LPJ / REVISI${post_path}</td>`,
+            ],
+            [
+                `<td>Revisi LPJ #2</td>`,
+                `<td>${pre_path}LPJ / REVISI 2${post_path}</td>`,
+            ],
+        ]
+    }
+
+    const update_berkas_ketentuan_table = (organisasi: OrganisasiKegiatan, nama_kegiatan: string) => {
+        berkas_ketentuan_table_tbody.innerHTML = ''
+
+        const lem_rows = get_berkas_ketentuan_table_rows(RapatDengan.LEM, organisasi, nama_kegiatan)
+        const dpm_rows = get_berkas_ketentuan_table_rows(RapatDengan.DPM, organisasi, nama_kegiatan)
+        for (const row of [...lem_rows, ...dpm_rows]) {
+            const tr = dom.c('tr', { html: row.join('') })
+            berkas_ketentuan_table_tbody.appendChild(tr)
+        }
+    }
+
+    const create_berkas_list_group_item = (dengan: RapatDengan, link_berkas: string) => {
+        const li = dom.c('li', {
+            classes: ['list-group-item', 'd-flex', 'align-items-center'],
+            html: `<div class="flex-grow-1 pe-2">Unggah Berkas ${defines.rapat_dengan_text[dengan]}</div>`
+        })
+
+        li.appendChild(dom.c('a', {
+            classes: ['btn', 'btn-km-primary'],
+            attributes: {
+                role: 'button',
+                target: '_blank',
+                style: 'min-width: max-content',
+                href: link_berkas,
+            },
+            html: `BERKAS VERIFIKASI (${defines.rapat_dengan_text[dengan]}) <i class="fa-solid fa-arrow-up-right-from-square"></i>`,
+        }))
+
+        return li
+    }
+
+    const update_berkas_list_group = () => {
+        berkas_list_group.innerHTML = ''
+        berkas_list_group.appendChild(create_berkas_list_group_item(RapatDengan.LEM, sistem.data.link_berkas_lem))
+        berkas_list_group.appendChild(create_berkas_list_group_item(RapatDengan.DPM, sistem.data.link_berkas_dpm))
+    }
+
+    berkas_list_group.innerHTML = `
+        <div class="d-flex align-items-center">
+            <strong role="status" class="text-secondary fst-italic"
+                >Memuat...</strong
+            >
+            <div class="spinner-border ms-auto" aria-hidden="true"></div>
+        </div>
+    `
+
+    db.get_kegiatan(uid)
+        .then(snap => {
+            if (!snap.exists()) return
+            const kegiatan = snap.val()
+            const organisasi = Object.values(OrganisasiKegiatan)[kegiatan.organisasi_index]
+            const nama_kegiatan = kegiatan.nama_kegiatan
+
+            // update ketentuan
+            update_berkas_ketentuan_table(organisasi, nama_kegiatan)
+
+            // ga butuh db sebenarnya, tapi nunggu update ketentuan selesai
+            update_berkas_list_group()
+        })
+
 })();
 
 // panel log kegiatan
