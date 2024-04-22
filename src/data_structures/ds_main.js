@@ -45,7 +45,7 @@ var _ = {
             "logs": {
                 // db.ref(`verifikasi/kegiatan/logs/${uid}`)
                 "{uid}": {
-                    "{timestamp}": "@success Pendaftaran berhasil.",
+                    "{timestamp}": "@light Akun berhasil dibuat.",
                     "{timestamp}": "@info Pembaruan data kegiatan.",
                     "{timestamp}": "@info Penjadwalan rapat verifikasi proposal dengan DPM dalam antrean.",
                     "{timestamp}": "@success Penjadwalan rapat verifikasi proposal dengan DPM terkonfirmasi.",

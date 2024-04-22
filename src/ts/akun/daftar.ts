@@ -116,7 +116,7 @@
             await Promise.all([
                 db.set_kegiatan(new_kegiatan),
                 db.set_logbook(new_kegiatan),
-                db.add_kegiatan_log(new_user.uid, defines.log_colors.pendaftaran_berhasil, 'Pendaftaran berhasil.'),
+                db.add_kegiatan_log(new_user.uid, defines.log_colors.akun_berhasil_dibuat, defines.log_text.akun_berhasil_dibuat),
             ])
             await auth.register(new_user)
                 .then(status => {

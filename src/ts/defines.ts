@@ -33,7 +33,7 @@ const defines = {
     log_colors: {
         awal_log: 'light' as LogColor,
         date: 'light' as LogColor,
-        pendaftaran_berhasil: 'success' as LogColor,
+        akun_berhasil_dibuat: 'light' as LogColor,
         pembaruan_data_kegiatan: 'light' as LogColor,
         jadwal_masuk_antrean: 'info' as LogColor,
         jadwal_terkonfirmasi: 'success' as LogColor,
@@ -70,6 +70,7 @@ const defines = {
         verifikasi_selesai(jenis_rapat: JenisRapat, rapat_dengan: RapatDengan) {
             return `@html Verifikasi ${defines.jenis_rapat_text_mid[jenis_rapat]} dengan ${defines.rapat_dengan_text[rapat_dengan]} <strong>selesai</strong>.`
         },
+        akun_berhasil_dibuat: 'Akun berhasil dibuat.',
     },
 }
 
