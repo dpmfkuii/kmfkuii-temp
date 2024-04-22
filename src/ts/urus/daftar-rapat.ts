@@ -16,8 +16,22 @@
 
     const uid = auth.get_logged_in_user()!.uid
 
-    input_jenis_rapat.value = common.url_params.get('jenis') || ''
-    input_rapat_dengan.value = common.url_params.get('dengan') || ''
+    const jenis: string = common.url_params.get('jenis') || ''
+    const dengan: string = common.url_params.get('dengan') || ''
+    const tanggal_rapat_lem = common.url_params.get('pv') || ''
+
+    if (!jenis || !dengan) {
+        location.replace('/urus/')
+        return
+    }
+
+    if (dengan === RapatDengan.DPM && !tanggal_rapat_lem) {
+        location.replace('/urus/')
+        return
+    }
+
+    input_jenis_rapat.value = (defines.jenis_rapat_text as any)[jenis]
+    input_rapat_dengan.value = (defines.rapat_dengan_text as any)[dengan]
 
     // fill in options
     const set_jam_rapat_options = (_taken_hours?: string[]) => {
@@ -43,17 +57,17 @@
         // reset jam
         select_jam_rapat.value = ''
 
-        const date_tanggal_rapat = input_tanggal_rapat.valueAsDate!
+        const date_tanggal_rapat = input_tanggal_rapat.valueAsDate
 
-        if (input_tanggal_rapat.classList.contains('is-invalid')) {
-            input_tanggal_rapat.classList.remove('is-invalid')
-        }
+        if (date_tanggal_rapat) {
+            if (input_tanggal_rapat.classList.contains('is-invalid')) {
+                input_tanggal_rapat.classList.remove('is-invalid')
+            }
 
-        if (select_jam_rapat.classList.contains('is-invalid')) {
-            select_jam_rapat.classList.remove('is-invalid')
-        }
+            if (select_jam_rapat.classList.contains('is-invalid')) {
+                select_jam_rapat.classList.remove('is-invalid')
+            }
 
-        if (date_tanggal_rapat !== null) {
             // cek itu hari weekend atau ngga
             if (date_tanggal_rapat.getDay() === Day.Saturday || date_tanggal_rapat.getDay() === Day.Sunday) {
                 input_tanggal_rapat_invalid_feedback.innerHTML = 'Pilih waktu <strong>Senin—Jum’at</strong>!'
@@ -64,17 +78,31 @@
                 input_tanggal_rapat_invalid_feedback.innerHTML = 'Pendaftaran di tanggal itu sudah <strong>tutup</strong>!'
                 input_tanggal_rapat.classList.add('is-invalid')
             }
+            else if (dengan === RapatDengan.DPM && tanggal_rapat_lem) {
+                const pv = new Date(tanggal_rapat_lem)
+                const cr = new Date(common.to_date_string(date_tanggal_rapat))
+                const diff = common.get_difference_in_days(pv, cr)
+                if (diff < 2) {
+                    input_tanggal_rapat_invalid_feedback.innerHTML = 'Jarak antar rapat LEM ke DPM <strong>minimal 2 hari</strong>!'
+                    input_tanggal_rapat.classList.add('is-invalid')
+                }
+            }
+        }
+        else {
+            input_tanggal_rapat_invalid_feedback.innerHTML = 'Tanggal tidak ditemukan!'
+            input_tanggal_rapat.classList.add('is-invalid')
         }
 
         if (input_tanggal_rapat.classList.contains('is-invalid')) {
-            set_jam_rapat_options(JamRapat)
             select_jam_rapat_invalid_feedback.innerHTML = 'Pilih tanggal yang sesuai!'
             select_jam_rapat.classList.add('is-invalid')
+            set_jam_rapat_options(JamRapat)
+
+            return
         }
 
         // cek jam berapa yg avail di tanggal segitu
         // ambil dari antrean dan terkonfirmasi
-
         const taken_hours: string[] = []
         const rapat_dengan: RapatDengan = input_rapat_dengan.value.toLowerCase() as RapatDengan
 
@@ -98,12 +126,7 @@
                 }
             })
 
-        if (input_tanggal_rapat.classList.contains('is-invalid')) {
-            set_jam_rapat_options(JamRapat)
-        }
-        else {
-            set_jam_rapat_options(taken_hours)
-        }
+        set_jam_rapat_options(taken_hours)
     }
 
     input_tanggal_rapat.addEventListener('change', () => validate_date_and_time())

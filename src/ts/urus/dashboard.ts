@@ -1,11 +1,11 @@
 // panel detail kegiatan
 (() => {
-    const panel = dom.q<'div'>('#panel_urus_detail_kegiatan')!
+    const panel_detail = dom.q<'div'>('#panel_urus_detail_kegiatan')!
 
-    const form = dom.q<'form'>('#form_pendaftaran_kegiatan')!
+    const form_edit_detail = dom.q<'form'>('#form_pendaftaran_kegiatan')!
 
-    const button_ubah = dom.qe<'button'>(panel, 'button[aria-label="Ubah"]')!
-    const button_batal = dom.qe<'button'>(panel, 'button[aria-label="Batal"]')!
+    const button_ubah = dom.qe<'button'>(panel_detail, 'button[aria-label="Ubah"]')!
+    const button_batal = dom.qe<'button'>(panel_detail, 'button[aria-label="Batal"]')!
 
     const input_email_pendaftar = dom.q<'input'>('input[name="email_pendaftar"]')!
     const input_nama_pendaftar = dom.q<'input'>('input[name="nama_pendaftar"]')!
@@ -63,7 +63,6 @@
         select_periode_kegiatan,
         select_penyelenggara_kegiatan,
         select_lingkup_kegiatan,
-        // input_tanggal_kegiatan,
         button_ubah,
     )
 
@@ -73,29 +72,12 @@
     const uid = logged_in_user.uid
     let _kegiatan: Kegiatan = {} as any
 
-    db.get_kegiatan(uid)
-        .then(snap => {
-            if (!snap.exists()) return
-            const kegiatan = snap.val()
-            input_email_pendaftar.value = kegiatan.email_pendaftar
-            input_nama_pendaftar.value = kegiatan.nama_pendaftar
-            select_organisasi.value = Object.values(OrganisasiKegiatan)[kegiatan.organisasi_index]
-            input_nama_kegiatan.value = kegiatan.nama_kegiatan
-            select_periode_kegiatan.value = kegiatan.periode_kegiatan
-            select_penyelenggara_kegiatan.value = Object.values(PenyelenggaraKegiatan)[kegiatan.penyelenggara_kegiatan_index]
-            select_lingkup_kegiatan.value = Object.values(LingkupKegiatan)[kegiatan.lingkup_kegiatan_index]
-
-            _kegiatan = kegiatan
-            dom.enable(button_ubah)
-        })
-
     button_batal.addEventListener('click', () => {
         dom.disable(
             input_nama_kegiatan,
             select_periode_kegiatan,
             select_penyelenggara_kegiatan,
             select_lingkup_kegiatan,
-            // input_tanggal_kegiatan,
         )
 
         button_batal.classList.add('visually-hidden')
@@ -107,7 +89,7 @@
         }
     })
 
-    form.addEventListener('submit', ev => {
+    form_edit_detail.addEventListener('submit', ev => {
         ev.preventDefault()
 
         if (!button_ubah.hasAttribute('is-editing')) {
@@ -116,7 +98,6 @@
                 select_periode_kegiatan,
                 select_penyelenggara_kegiatan,
                 select_lingkup_kegiatan,
-                // input_tanggal_kegiatan,
             )
 
             button_batal.classList.remove('visually-hidden')
@@ -240,31 +221,38 @@
     const panel_rapat_verifikasi = dom.q<'div'>('#panel_urus_rapat_verifikasi')!
     const rapat_list_group = dom.qe(panel_rapat_verifikasi, '.list-group')!
 
-    const create_rapat_list_group_item = (jenis: string, dengan: string, status: StatusRapat) => {
-        const li = dom.c('li', {
-            classes: ['list-group-item', 'd-flex', 'align-items-center'],
-            html: `<div class="flex-grow-1 pe-2">${jenis} ${dengan}</div>`
-        })
+    /**
+     * @param pv tanggal lem buat dicari diff nya dg dpm
+     * @returns 
+     */
+    const create_rapat_list_group_item = (jenis: JenisRapat, dengan: RapatDengan, status: StatusRapat, pv: string = '') => {
+        const children: Node[] = []
 
         if (status === StatusRapat.NOT_STARTED) {
-            li.appendChild(dom.c('a', {
-                classes: ['btn', 'btn-km-primary'],
-                attributes: {
-                    role: 'button',
-                    style: 'min-width: max-content',
-                    href: `/urus/daftar-rapat/?jenis=${jenis}&dengan=${dengan}`,
-                },
-                html: 'Daftar',
-            }))
+            if (dengan === RapatDengan.DPM && !pv) {
+                children.push(dom.c('span', { classes: ['text-secondary'], html: 'belum daftar LEM' }))
+            }
+            else {
+                children.push(dom.c('a', {
+                    classes: ['btn', 'btn-km-primary'],
+                    attributes: {
+                        role: 'button',
+                        style: 'min-width: max-content',
+                        href: `/urus/daftar-rapat/?jenis=${jenis}&dengan=${dengan}&pv=${pv}`,
+                    },
+                    html: 'Daftar',
+                }))
+            }
         }
         else {
-            li.appendChild(dom.c('span', {
-                classes: ['text-secondary'],
-                html: main.get_status_rapat_text(status),
-            }))
+            children.push(dom.c('span', { classes: ['text-secondary'], html: main.get_status_rapat_text(status) }))
         }
 
-        return li
+        return dom.c('li', {
+            classes: ['list-group-item', 'd-flex', 'align-items-center'],
+            html: `<div class="flex-grow-1 pe-2">${defines.jenis_rapat_text[jenis]} ${defines.rapat_dengan_text[dengan]}</div>`,
+            children,
+        })
     }
 
     rapat_list_group.innerHTML = `
@@ -275,17 +263,6 @@
             <div class="spinner-border ms-auto" aria-hidden="true"></div>
         </div>
     `
-
-    db.on_kegiatan_status_verifikasi(uid, snap => {
-        if (!snap.exists()) return
-        const status_verifikasi = snap.val()
-
-        rapat_list_group.innerHTML = ''
-        rapat_list_group.appendChild(create_rapat_list_group_item('Proposal', 'LEM', status_verifikasi.proposal.lem))
-        rapat_list_group.appendChild(create_rapat_list_group_item('Proposal', 'DPM', status_verifikasi.proposal.dpm))
-        rapat_list_group.appendChild(create_rapat_list_group_item('LPJ', 'LEM', status_verifikasi.lpj.lem))
-        rapat_list_group.appendChild(create_rapat_list_group_item('LPJ', 'DPM', status_verifikasi.lpj.dpm))
-    })
 
     const panel_berkas = dom.q<'div'>('#panel_urus_berkas')!
     const berkas_list_group = dom.qe(panel_berkas, 'ul.list-group')!
@@ -377,15 +354,54 @@
             if (!snap.exists()) return
             const kegiatan = snap.val()
             const organisasi = Object.values(OrganisasiKegiatan)[kegiatan.organisasi_index]
-            const nama_kegiatan = kegiatan.nama_kegiatan
 
+            // detail update
+            input_email_pendaftar.value = kegiatan.email_pendaftar
+            input_nama_pendaftar.value = kegiatan.nama_pendaftar
+            select_organisasi.value = organisasi
+            input_nama_kegiatan.value = kegiatan.nama_kegiatan
+            select_periode_kegiatan.value = kegiatan.periode_kegiatan
+            select_penyelenggara_kegiatan.value = Object.values(PenyelenggaraKegiatan)[kegiatan.penyelenggara_kegiatan_index]
+            select_lingkup_kegiatan.value = Object.values(LingkupKegiatan)[kegiatan.lingkup_kegiatan_index]
+
+            // rapat update
+            // start listening to status verifikasi
+            db.on_kegiatan_status_verifikasi(uid, async snap_stat => {
+                if (!snap_stat.exists()) return
+                const status_verifikasi = snap_stat.val()
+
+                const pv = {
+                    [JenisRapat.PROPOSAL]: '',
+                    [JenisRapat.LPJ]: '',
+                }
+                await db.get_antrean_rapat_dengan(RapatDengan.LEM)
+                    .then(snap => {
+                        if (!snap.exists()) return
+                        const rapat_list = snap.val()
+                        for (const key in rapat_list) {
+                            const rapat = rapat_list[key]
+                            if (rapat.uid === uid) {
+                                pv[rapat.jenis_rapat] = rapat.tanggal_rapat
+                            }
+                        }
+                    })
+
+                rapat_list_group.innerHTML = ''
+                rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.PROPOSAL, RapatDengan.LEM, status_verifikasi.proposal.lem))
+                rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.PROPOSAL, RapatDengan.DPM, status_verifikasi.proposal.dpm, pv[JenisRapat.PROPOSAL]))
+                rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.LPJ, RapatDengan.LEM, status_verifikasi.lpj.lem))
+                rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.LPJ, RapatDengan.DPM, status_verifikasi.lpj.dpm, pv[JenisRapat.LPJ]))
+            })
+
+            // berkas update
             // update ketentuan
-            update_berkas_ketentuan_table(organisasi, nama_kegiatan)
-
+            update_berkas_ketentuan_table(organisasi, kegiatan.nama_kegiatan)
             // ga butuh db sebenarnya, tapi nunggu update ketentuan selesai
             update_berkas_list_group()
-        })
 
+            _kegiatan = kegiatan
+            dom.enable(button_ubah)
+        })
 })();
 
 // panel log kegiatan

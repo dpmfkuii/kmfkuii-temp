@@ -172,6 +172,9 @@ const common = {
         d.setDate(d.getDate() + value)
         return d
     },
+    get_difference_in_days(date1: Date, date2: Date) {
+        return Math.round((date2.getTime() - date1.getTime()) / (1000 * 3600 * 24))
+    },
 }
 
 declare const CryptoJS: any
