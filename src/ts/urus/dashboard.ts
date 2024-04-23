@@ -246,11 +246,11 @@
      * @param pv tanggal lem buat dicari diff nya dg dpm
      * @returns 
      */
-    const create_rapat_list_group_item = (jenis: JenisRapat, dengan: RapatDengan, status: StatusRapat, pv: string = '') => {
+    const create_rapat_list_group_item = (jenis: JenisRapat, dengan: RapatDengan, status: StatusRapat, status_lem?: StatusRapat, pv: string = '') => {
         const children: Node[] = []
 
         if (status === StatusRapat.NOT_STARTED) {
-            if (dengan === RapatDengan.DPM && !pv) {
+            if (dengan === RapatDengan.DPM && status === StatusRapat.NOT_STARTED && status_lem === StatusRapat.NOT_STARTED) {
                 children.push(dom.c('span', { classes: ['text-secondary'], html: 'belum daftar LEM' }))
             }
             else {
@@ -403,9 +403,9 @@
 
                 rapat_list_group.innerHTML = ''
                 rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.PROPOSAL, RapatDengan.LEM, status_verifikasi.proposal.lem))
-                rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.PROPOSAL, RapatDengan.DPM, status_verifikasi.proposal.dpm, pv[JenisRapat.PROPOSAL]))
+                rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.PROPOSAL, RapatDengan.DPM, status_verifikasi.proposal.dpm, status_verifikasi.proposal.lem, pv[JenisRapat.PROPOSAL]))
                 rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.LPJ, RapatDengan.LEM, status_verifikasi.lpj.lem))
-                rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.LPJ, RapatDengan.DPM, status_verifikasi.lpj.dpm, pv[JenisRapat.LPJ]))
+                rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.LPJ, RapatDengan.DPM, status_verifikasi.lpj.dpm, status_verifikasi.lpj.lem, pv[JenisRapat.LPJ]))
             })
 
             // berkas update

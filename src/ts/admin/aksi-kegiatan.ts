@@ -105,11 +105,12 @@
             status_text = main.get_status_rapat_text(status, true)
         }
 
+        const nama_rapat = `${defines.jenis_rapat_text[jenis]} ${defines.rapat_dengan_text[dengan]}`
         const li = dom.c('li', {
             classes: ['list-group-item', 'd-flex', 'gap-1', 'align-items-center'],
             html: `
                 <div class="flex-grow-1">
-                    <strong>${defines.jenis_rapat_text[jenis]} ${defines.rapat_dengan_text[dengan]}</strong>
+                    <strong>${nama_rapat}</strong>
                     <div class="text-secondary small">
                         ${status_text}
                     </div>
@@ -136,6 +137,123 @@
         else if (status === StatusRapat.IN_PROGRESS) {
             dom.enable(li_button_success)
         }
+
+        li_button_success.addEventListener('click', () => {
+            let next_status = common.timestamp()
+            if (status === StatusRapat.NOT_STARTED) {
+                next_status = StatusRapat.MARKED_AS_DONE
+            }
+
+            swal.fire({
+                icon: 'question',
+                title: `Verifikasi ${nama_rapat} selesai?`,
+                html: `<small>Status akan berubah dari ${status_text} menjadi ${main.get_status_rapat_text(next_status, true)}.</small>`,
+                showDenyButton: true,
+                confirmButtonText: 'Selesai',
+                denyButtonText: 'Nanti',
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    denyButton: 'btn btn-secondary ms-2',
+                },
+                buttonsStyling: false,
+                showCloseButton: true,
+                footer: '<i>Alhamdulillah</i>',
+            }).then((result: any) => {
+                if (result.isConfirmed) {
+                    swal.fire({
+                        title: 'Verifikasi Selesai',
+                        html: '<div><i>Memproses...</i></div>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        async didOpen() {
+                            swal.showLoading()
+                            try {
+                                await db.sequence_set_status_verifikasi(uid, jenis, dengan, next_status)
+                                await Promise.all([
+                                    db.add_kegiatan_log(uid,
+                                        defines.log_colors.verifikasi_selesai,
+                                        defines.log_text.verifikasi_selesai(jenis, dengan),
+                                    ),
+                                    db.set_kegiatan_updated_timestamp(uid),
+                                ])
+                            }
+                            catch (err) {
+                                main.show_unexpected_error_message(err)
+                                return
+                            }
+
+                            swal.fire({
+                                icon: 'success',
+                                title: 'Status berhasil diubah!',
+                                showConfirmButton: false,
+                                timer: 1000,
+                                timerProgressBar: true,
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                            })
+                        },
+                    })
+                }
+            })
+        })
+
+        li_button_danger.addEventListener('click', () => {
+            const next_status = StatusRapat.NOT_STARTED
+
+            swal.fire({
+                icon: 'warning',
+                title: `Verifikasi ${nama_rapat} batal?`,
+                html: `<small>Status akan berubah dari ${status_text} menjadi ${main.get_status_rapat_text(next_status, true)}.</small>`,
+                showDenyButton: true,
+                confirmButtonText: 'Batal',
+                denyButtonText: 'Nanti',
+                customClass: {
+                    confirmButton: 'btn btn-danger',
+                    denyButton: 'btn btn-secondary ms-2',
+                },
+                buttonsStyling: false,
+                showCloseButton: true,
+                footer: '<i>Subhanallah</i>',
+            }).then((result: any) => {
+                if (result.isConfirmed) {
+                    swal.fire({
+                        title: 'Verifikasi Batal',
+                        html: '<div><i>Memproses...</i></div>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        async didOpen() {
+                            swal.showLoading()
+                            try {
+                                await db.sequence_set_status_verifikasi(uid, jenis, dengan, next_status)
+                                await Promise.all([
+                                    db.add_kegiatan_log(uid,
+                                        defines.log_colors.verifikasi_dibatalkan,
+                                        defines.log_text.verifikasi_dibatalkan(jenis, dengan),
+                                    ),
+                                    db.set_kegiatan_updated_timestamp(uid),
+                                ])
+                            }
+                            catch (err) {
+                                main.show_unexpected_error_message(err)
+                                return
+                            }
+
+                            swal.fire({
+                                icon: 'success',
+                                title: 'Status berhasil diubah!',
+                                showConfirmButton: false,
+                                timer: 1000,
+                                timerProgressBar: true,
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                            })
+                        },
+                    })
+                }
+            })
+        })
 
         return li
     }
@@ -195,4 +313,51 @@
         main.show_unexpected_error_message(err)
     }
     //#endregion
+})();
+
+// panel log kegiatan
+(() => {
+    const panel = dom.q<'div'>('#panel_log_kegiatan')!
+
+    const list_group = dom.qe(panel, '.list-group')!
+
+    const create_list_group_item = (log: LogKegiatan) => {
+        const li = dom.c('li', {
+            classes: ['list-group-item', `list-group-item-${log.color}`, 'pb-0'],
+            html: `
+                <span></span>
+                <div class="text-secondary small text-end">
+                    ${common.to_12h_format(new Date(Number(log.timestamp)))}
+                </div>
+            `
+        })
+
+        const span = dom.qe(li, 'span')!
+        if (log.is_html) span.innerHTML = log.text
+        else span.textContent = log.text
+
+        return li
+    }
+
+    const uid = common.url_params.get('uid') || ''
+    db.on_kegiatan_logs(uid, snap => {
+        if (!snap.exists()) return
+
+        list_group.innerHTML = `<li class="list-group-item list-group-item-${defines.log_colors.awal_log} text-center rounded-bottom">-- Awal log --</li>`
+
+        const logs = snap.val()
+        let _current_date_string = ''
+        for (const timestamp in logs) {
+            const _date = new Date(Number(timestamp))
+            if (_date.toDateString() !== _current_date_string) {
+                list_group.prepend(dom.c('li', {
+                    classes: ['list-group-item', `list-group-item-${defines.log_colors.date}`, 'text-center'],
+                    html: common.to_date_text(_date),
+                }))
+                _current_date_string = _date.toDateString()
+            }
+            const log = main.extract_log_kegiatan(timestamp, logs[timestamp])
+            list_group.prepend(create_list_group_item(log))
+        }
+    })
 })()

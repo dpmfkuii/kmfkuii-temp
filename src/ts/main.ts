@@ -337,6 +337,10 @@ const db = {
         return main_db.ref(`verifikasi/kegiatan/${uid}`)
             .update(kegiatan_values)
     },
+    remove_kegiatan(uid: string) {
+        return main_db.ref(`verifikasi/kegiatan/${uid}`)
+            .remove()
+    },
     get_kegiatan_nama_kegiatan(uid: string): Promise<FirebaseSnapshot<Kegiatan['nama_kegiatan']>> {
         return main_db.ref(`verifikasi/kegiatan/${uid}/nama_kegiatan`)
             .once<Kegiatan['nama_kegiatan']>('value')
@@ -369,6 +373,10 @@ const db = {
         return main_db.ref(`verifikasi/kegiatan/logs/${uid}/${common.timestamp()}`)
             .set(`@${color} ${is_html ? '@html ' : ''}${log}`)
     },
+    remove_kegiatan_logs(uid: string) {
+        return main_db.ref(`verifikasi/kegiatan/logs/${uid}`)
+            .remove()
+    },
     get_logbook(): Promise<FirebaseSnapshot<LogbookKegiatan>> {
         return main_db.ref(`verifikasi/kegiatan/logbook`)
             .once<LogbookKegiatan>('value')
@@ -380,6 +388,10 @@ const db = {
     set_logbook(kegiatan: Kegiatan) {
         return main_db.ref(`verifikasi/kegiatan/logbook/${kegiatan.periode_kegiatan}/${kegiatan.organisasi_index}/${kegiatan.uid}`)
             .set(main.kegiatan_to_logbook_text(kegiatan))
+    },
+    remove_logbook(kegiatan: Kegiatan) {
+        return main_db.ref(`verifikasi/kegiatan/logbook/${kegiatan.periode_kegiatan}/${kegiatan.organisasi_index}/${kegiatan.uid}`)
+            .remove()
     },
     change_logbook(old_periode_kegiatan: string, new_kegiatan: Kegiatan) {
         if (old_periode_kegiatan === new_kegiatan.periode_kegiatan) {
@@ -436,6 +448,14 @@ const db = {
             db.set_kegiatan_status_verifikasi(uid, jenis_rapat, rapat_dengan, value),
             db.get_kegiatan(uid).then(snap => db.set_logbook(snap.val()!)),
         ])
+    },
+    async sequence_hapus_akun_kegiatan(uid: string) {
+        await Promise.all([
+            db.get_kegiatan(uid).then(snap => db.remove_logbook(snap.val()!)),
+            db.remove_kegiatan_logs(uid),
+        ])
+        await db.remove_kegiatan(uid)
+        await main_db.ref(`users/${uid}`).remove()
     },
 }
 

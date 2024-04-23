@@ -25,15 +25,72 @@
                         <td>${main.get_status_rapat_icon(status.verifikasi.lpj.lem)}</td>
                         <td>${main.get_status_rapat_icon(status.verifikasi.lpj.dpm)}</td>
                         <td>
-                            <a
-                                href="/admin/kegiatan/aksi/?uid=${uid}"
-                                class="text-km-primary"
-                                role="button"
-                            >
-                                <i class="fa-solid fa-gear"></i>
-                            </a>
+                            <div class="d-flex gap-1 justify-content-center">
+                                <a
+                                    href="/admin/kegiatan/aksi/?uid=${uid}"
+                                    class="text-km-primary"
+                                    role="button"
+                                >
+                                    <i class="fa-solid fa-gear"></i>
+                                </a>
+                                ·
+                                <span class="text-danger" role="button">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </span>
+                            </div>
                         </td>
                     `
+
+                    const aksi_button_danger = dom.qe<'span'>(tr, 'td:last-child span.text-danger')!
+                    aksi_button_danger.addEventListener('click', () => {
+                        swal.fire({
+                            icon: 'warning',
+                            title: `Hapus akun kegiatan?`,
+                            html: `<small>Pastikan tidak ada yang sedang masuk akun kegiatan ${nama_kegiatan} dengan uid ${uid}.</small>`,
+                            showDenyButton: true,
+                            confirmButtonText: 'Hapus',
+                            denyButtonText: 'Nanti',
+                            customClass: {
+                                confirmButton: 'btn btn-danger',
+                                denyButton: 'btn btn-secondary ms-2',
+                            },
+                            buttonsStyling: false,
+                            showCloseButton: true,
+                        }).then((result: any) => {
+                            if (result.isConfirmed) {
+                                swal.fire({
+                                    title: 'Hapus Akun',
+                                    html: '<div><i>Memproses...</i></div>',
+                                    showConfirmButton: false,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    async didOpen() {
+                                        swal.showLoading()
+                                        try {
+                                            await db.sequence_hapus_akun_kegiatan(uid)
+                                        }
+                                        catch (err) {
+                                            main.show_unexpected_error_message(err)
+                                            return
+                                        }
+
+                                        location.reload()
+
+                                        swal.fire({
+                                            icon: 'success',
+                                            title: 'Hapus berhasil!',
+                                            showConfirmButton: false,
+                                            timer: 1000,
+                                            timerProgressBar: true,
+                                            allowOutsideClick: false,
+                                            allowEscapeKey: false,
+                                        })
+                                    },
+                                })
+                            }
+                        })
+                    })
+
                     table_logbook_kegiatan_tbody.appendChild(tr)
                 }
             }
