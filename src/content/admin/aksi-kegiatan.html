@@ -1,0 +1,38 @@
+<div class="card-header d-flex align-items-center">
+    <nav aria-label="breadcrumb" class="fs-4">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a style="color: var(--bs-card-cap-color)" href="/admin/"
+                    >Kegiatan</a
+                >
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Aksi</li>
+        </ol>
+    </nav>
+    <div class="animate animate-fade-on-enter animate-speed-50 ms-auto">
+        <a role="button" href="/admin/" class="btn btn-secondary">Kembali</a>
+    </div>
+</div>
+<div class="card-body p-0">
+    <div class="accordion animate animate-rise-on-enter">
+        <insert-component-admin/aksi-kegiatan/panel-detail-kegiatan />
+        <insert-component-admin/aksi-kegiatan/panel-rapat-verifikasi />
+        <insert-component-admin/aksi-kegiatan/panel-berkas />
+        <insert-component-admin/aksi-kegiatan/panel-komunikasi />
+        <insert-component-admin/aksi-kegiatan/panel-log-kegiatan />
+    </div>
+</div>
+
+<style>
+    @media (min-width: 992px) {
+        #main_container .row > *:nth-child(1) {
+            padding-right: calc(var(--bs-gutter-x) * 0.25);
+        }
+
+        #main_container .row > *:nth-child(2) {
+            padding-left: calc(var(--bs-gutter-x) * 0.25);
+        }
+    }
+</style>
+
+<script defer src="/assets/js/admin/aksi-kegiatan.js"></script>

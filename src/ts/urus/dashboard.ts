@@ -7,6 +7,7 @@
     const button_ubah = dom.qe<'button'>(panel_detail, 'button[aria-label="Ubah"]')!
     const button_batal = dom.qe<'button'>(panel_detail, 'button[aria-label="Batal"]')!
 
+    const input_uid_kegiatan = dom.qe<'input'>(panel_detail, 'input[name="uid_kegiatan"]')!
     const input_email_pendaftar = dom.q<'input'>('input[name="email_pendaftar"]')!
     const input_nama_pendaftar = dom.q<'input'>('input[name="nama_pendaftar"]')!
     const select_organisasi = dom.q<'select'>('select[name="organisasi"]')!
@@ -15,6 +16,8 @@
     const select_penyelenggara_kegiatan = dom.q<'select'>('select[name="penyelenggara_kegiatan"]')!
     const select_lingkup_kegiatan = dom.q<'select'>('select[name="lingkup_kegiatan"]')!
     // const input_tanggal_kegiatan = dom.q<'input'>('input[name="tanggal_kegiatan"]')!
+
+    input_uid_kegiatan.value = auth.get_logged_in_user()?.uid || ''
 
     // fill in options
     select_organisasi.innerHTML = '<option disabled selected value>-- Pilih organisasi --</option>'
@@ -66,11 +69,22 @@
         button_ubah,
     )
 
+    const update_detail_kegiatan = (kegiatan: Kegiatan) => {
+        input_email_pendaftar.value = kegiatan.email_pendaftar
+        input_nama_pendaftar.value = kegiatan.nama_pendaftar
+        select_organisasi.value = Object.values(OrganisasiKegiatan)[kegiatan.organisasi_index]
+        input_nama_kegiatan.value = kegiatan.nama_kegiatan
+        select_periode_kegiatan.value = kegiatan.periode_kegiatan
+        select_penyelenggara_kegiatan.value = Object.values(PenyelenggaraKegiatan)[kegiatan.penyelenggara_kegiatan_index]
+        select_lingkup_kegiatan.value = Object.values(LingkupKegiatan)[kegiatan.lingkup_kegiatan_index]
+    }
+
     const logged_in_user = auth.get_logged_in_user()
     if (!logged_in_user) return
 
     const uid = logged_in_user.uid
     let _kegiatan: Kegiatan = {} as any
+    let _form_edit_prev_kegiatan: Kegiatan = {} as any
 
     button_batal.addEventListener('click', () => {
         dom.disable(
@@ -87,6 +101,8 @@
         if (button_ubah.hasAttribute('is-editing')) {
             button_ubah.removeAttribute('is-editing')
         }
+
+        update_detail_kegiatan(_form_edit_prev_kegiatan)
     })
 
     form_edit_detail.addEventListener('submit', ev => {
@@ -105,6 +121,11 @@
             button_ubah.classList.add('btn-success')
             button_ubah.classList.remove('btn-km-primary')
             button_ubah.setAttribute('is-editing', '')
+
+            _form_edit_prev_kegiatan.nama_kegiatan = input_nama_kegiatan.value
+            _form_edit_prev_kegiatan.periode_kegiatan = select_periode_kegiatan.value
+            _form_edit_prev_kegiatan.penyelenggara_kegiatan_index = Object.values(PenyelenggaraKegiatan).indexOf(select_penyelenggara_kegiatan.value as PenyelenggaraKegiatan)
+            _form_edit_prev_kegiatan.lingkup_kegiatan_index = Object.values(LingkupKegiatan).indexOf(select_lingkup_kegiatan.value as LingkupKegiatan)
 
             return
         }
@@ -277,15 +298,15 @@
         return [
             [
                 `<td rowspan="6" class="text-center">${dengan_text}</td>`,
-                `<td>Proposal</td>`,
+                `<td>Proposal & SPD</td>`,
                 `<td>${pre_path}PROPOSAL${post_path}</td>`,
             ],
             [
-                `<td>Revisi Proposal</td>`,
+                `<td>Revisi Proposal & SPD</td>`,
                 `<td>${pre_path}PROPOSAL / REVISI${post_path}</td>`,
             ],
             [
-                `<td>Revisi Proposal #2</td>`,
+                `<td>Revisi Proposal & SPD #2</td>`,
                 `<td>${pre_path}PROPOSAL / REVISI 2${post_path}</td>`,
             ],
             [
@@ -356,13 +377,7 @@
             const organisasi = Object.values(OrganisasiKegiatan)[kegiatan.organisasi_index]
 
             // detail update
-            input_email_pendaftar.value = kegiatan.email_pendaftar
-            input_nama_pendaftar.value = kegiatan.nama_pendaftar
-            select_organisasi.value = organisasi
-            input_nama_kegiatan.value = kegiatan.nama_kegiatan
-            select_periode_kegiatan.value = kegiatan.periode_kegiatan
-            select_penyelenggara_kegiatan.value = Object.values(PenyelenggaraKegiatan)[kegiatan.penyelenggara_kegiatan_index]
-            select_lingkup_kegiatan.value = Object.values(LingkupKegiatan)[kegiatan.lingkup_kegiatan_index]
+            update_detail_kegiatan(kegiatan)
 
             // rapat update
             // start listening to status verifikasi
@@ -400,6 +415,7 @@
             update_berkas_list_group()
 
             _kegiatan = kegiatan
+            _form_edit_prev_kegiatan = kegiatan
             dom.enable(button_ubah)
         })
 })();

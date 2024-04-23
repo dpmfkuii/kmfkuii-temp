@@ -220,6 +220,18 @@ const main = {
             ? `<span class="text-${status === 0 ? 'primary' : status > 0 ? 'success' : 'secondary'}">${text}</span>`
             : text
     },
+    get_status_rapat_icon(status: StatusRapatVerifikasiKegiatan) {
+        switch (status) {
+            case StatusRapat.NOT_STARTED:
+                return '<i class="fa-solid fa-asterisk text-secondary"></i>'
+            case StatusRapat.IN_PROGRESS:
+                return '<i class="fa-solid fa-spinner text-primary"></i>'
+            case StatusRapat.MARKED_AS_DONE:
+            case StatusRapat.DONE_TIMESTAMP:
+            default:
+                return '<i class="fa-solid fa-check text-success"></i>'
+        }
+    },
     is_status_verifikasi_selesai(status_verifikasi: Kegiatan['status']['verifikasi']) {
         return status_verifikasi.proposal.lem > 0
             && status_verifikasi.proposal.dpm > 0
@@ -276,12 +288,46 @@ const main = {
         }
         return d
     },
+    extract_logbook_text(uid: string, log: string) {
+        const nama_kegiatan = log.split('@')[0]
+
+        const get_state = (param: string): StatusRapatVerifikasiKegiatan => {
+            return log.indexOf(param) >= 0
+                ? log.indexOf(`${param}:p`) >= 0
+                    ? 0
+                    : 1
+                : -1
+        }
+
+        const status: Kegiatan['status'] = {
+            diajukan: 0,
+            verifikasi: {
+                proposal: {
+                    lem: get_state('@proposal_lem'),
+                    dpm: get_state('@proposal_dpm'),
+                },
+                lpj: {
+                    lem: get_state('@lpj_lem'),
+                    dpm: get_state('@lpj_dpm'),
+                },
+            },
+        }
+
+        return {
+            nama_kegiatan,
+            status,
+        }
+    },
 }
 
 const db = {
     get_kegiatan(uid: string): Promise<FirebaseSnapshot<Kegiatan>> {
         return main_db.ref(`verifikasi/kegiatan/${uid}`)
             .once<Kegiatan>('value')
+    },
+    on_kegiatan(uid: string, callback: (snapshot: FirebaseSnapshot<Kegiatan>) => void) {
+        return main_db.ref(`verifikasi/kegiatan/${uid}`)
+            .on<Kegiatan>('value', callback)
     },
     set_kegiatan(kegiatan: Kegiatan) {
         return main_db.ref(`verifikasi/kegiatan/${kegiatan.uid}`)
@@ -322,6 +368,10 @@ const db = {
     add_kegiatan_log(uid: string, color: LogColor, log: string, is_html?: boolean) {
         return main_db.ref(`verifikasi/kegiatan/logs/${uid}/${common.timestamp()}`)
             .set(`@${color} ${is_html ? '@html ' : ''}${log}`)
+    },
+    get_logbook(): Promise<FirebaseSnapshot<LogbookKegiatan>> {
+        return main_db.ref(`verifikasi/kegiatan/logbook`)
+            .once<LogbookKegiatan>('value')
     },
     get_logbook_periode(periode: string): Promise<FirebaseSnapshot<LogbookPeriode>> {
         return main_db.ref(`verifikasi/kegiatan/logbook/${periode}`)

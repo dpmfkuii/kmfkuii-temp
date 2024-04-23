@@ -1,0 +1,43 @@
+<div class="accordion-item bg-white rounded-0 border-0">
+    <h2 class="accordion-header rounded-0">
+        <button
+            class="accordion-button rounded-0"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#panel_detail_kegiatan"
+            aria-expanded="true"
+            aria-controls="panel_detail_kegiatan"
+        >
+            <span class="fs-4">Detail Kegiatan</span>
+        </button>
+    </h2>
+    <div id="panel_detail_kegiatan" class="accordion-collapse collapse show">
+        <div class="accordion-body">
+            <form id="form_pendaftaran_kegiatan">
+                <insert-component-akun/form-pendaftaran-kegiatan />
+                <div class="text-end">
+                    <button
+                        type="submit"
+                        class="btn btn-km-primary"
+                        aria-label="Ubah"
+                    >
+                        <i class="fa-regular fa-pen-to-square"></i> Ubah
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-danger visually-hidden"
+                        aria-label="Batal"
+                    >
+                        Batal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    #panel_detail_kegiatan .form-floating > :disabled {
+        border: 0;
+    }
+</style>

@@ -19,6 +19,8 @@
     form.addEventListener('submit', async ev => {
         ev.preventDefault()
 
+        input_uid.value = input_uid.value.trim()
+
         const disabled_elements = [
             input_uid,
             button_close,

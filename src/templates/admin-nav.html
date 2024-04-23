@@ -34,11 +34,13 @@
 </ul>
 
 <script defer>
-    const admin_nav_select_label = (nav_id, label) => {
+    const admin_nav_select_label = (nav_id, label, disable_click = true) => {
         const a = dom.q(`#${nav_id} a[aria-label="${label}"]`);
         a.classList.remove("list-group-item-secondary");
         a.classList.add("list-group-item-primary");
-        a.removeAttribute("href");
-        a.removeAttribute("role");
+        if (disable_click) {
+            a.removeAttribute("href");
+            a.removeAttribute("role");
+        }
     };
 </script>

@@ -13,6 +13,7 @@ a.disabled {
 }
 
 .text-bg-km-primary {
+    color: #fff;
     background-color: #042188;
 }
 
@@ -49,6 +50,10 @@ a.disabled {
 
 .border-antrean {
     border-color: #6868cb !important;
+}
+
+.fa-spinner {
+    animation: 1.5s linear infinite spinner-border;
 }
 
 /* animate system */

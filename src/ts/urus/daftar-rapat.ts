@@ -21,12 +21,12 @@
     const tanggal_rapat_lem = common.url_params.get('pv') || ''
 
     if (!jenis || !dengan) {
-        location.replace('/urus/')
+        auth.redirect_home(UserRole.PENGURUS)
         return
     }
 
     if (dengan === RapatDengan.DPM && !tanggal_rapat_lem) {
-        location.replace('/urus/')
+        auth.redirect_home(UserRole.PENGURUS)
         return
     }
 

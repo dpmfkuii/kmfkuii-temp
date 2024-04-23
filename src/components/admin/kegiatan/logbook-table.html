@@ -1,0 +1,42 @@
+<div class="table-responsive">
+    <table
+        class="table table-striped align-middle text-center"
+        style="min-width: max-content"
+        id="table_logbook_kegiatan"
+    >
+        <thead class="table-light align-middle small">
+            <tr>
+                <th rowspan="3" class="text-end">UID</th>
+                <th rowspan="3" class="text-start">Nama Kegiatan</th>
+                <th colspan="4">Status Verifikasi</th>
+                <th rowspan="3">Aksi</th>
+            </tr>
+            <tr class="text-center">
+                <th colspan="2">Proposal</th>
+                <th colspan="2">LPJ</th>
+            </tr>
+            <tr class="text-center">
+                <th>LEM</th>
+                <th>DPM</th>
+                <th>LEM</th>
+                <th>DPM</th>
+            </tr>
+        </thead>
+        <tbody class="small"></tbody>
+    </table>
+</div>
+
+<style>
+    #table_logbook_kegiatan tbody tr td:nth-child(2) {
+        text-align: start !important;
+    }
+    #table_logbook_kegiatan tbody tr td:first-child {
+        text-align: end !important;
+    }
+    #table_logbook_kegiatan thead tr:first-child th:last-child,
+    #table_logbook_kegiatan tbody tr td:last-child {
+        position: sticky;
+        right: 0px;
+        z-index: 1;
+    }
+</style>

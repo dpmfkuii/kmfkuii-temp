@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <insert-template-head />
+        <insert-component-auth/as-admin />
+    </head>
+    <body>
+        <insert-template-nav />
+        <div class="container" id="main_container">
+            <div class="row">
+                <div class="col-12 col-lg-3 mb-3">
+                    <insert-template-admin-nav />
+                </div>
+                <div class="col-12 col-lg-9 animate animate-rise-on-enter">
+                    <div class="card">
+                        <insert-content-admin/aksi-kegiatan />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <insert-template-footer />
+    </body>
+</html>
