@@ -28,7 +28,8 @@ const defines = {
         "12": "Desember",
     } as { [mm: string]: string },
     store_key: {
-        user: 'user'
+        user: 'user',
+        daftar_rapat: '',
     },
     log_colors: {
         awal_log: 'light' as LogColor,

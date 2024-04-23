@@ -16,16 +16,26 @@
 
     const uid = auth.get_logged_in_user()!.uid
 
-    const jenis: string = common.url_params.get('jenis') || ''
-    const dengan: string = common.url_params.get('dengan') || ''
-    const tanggal_rapat_lem = common.url_params.get('pv') || ''
+    let params = store.get_item(defines.store_key.daftar_rapat) as any
+
+    if (params === null) {
+        auth.redirect_home(UserRole.PENGURUS)
+        return
+    }
+
+    params = JSON.parse(params)
+
+    const jenis: string = params.jenis || ''
+    const dengan: string = params.dengan || ''
+    const status_lem: StatusRapat = params.status_lem || ''
+    const antrean_lem: string = params.antrean_lem || ''
 
     if (!jenis || !dengan) {
         auth.redirect_home(UserRole.PENGURUS)
         return
     }
 
-    if (dengan === RapatDengan.DPM && !tanggal_rapat_lem) {
+    if (dengan === RapatDengan.DPM && status_lem === StatusRapat.NOT_STARTED) {
         auth.redirect_home(UserRole.PENGURUS)
         return
     }
@@ -78,10 +88,18 @@
                 input_tanggal_rapat_invalid_feedback.innerHTML = 'Pendaftaran di tanggal itu sudah <strong>tutup</strong>!'
                 input_tanggal_rapat.classList.add('is-invalid')
             }
-            else if (dengan === RapatDengan.DPM && tanggal_rapat_lem) {
-                const pv = new Date(tanggal_rapat_lem)
-                const cr = new Date(common.to_date_string(date_tanggal_rapat))
-                const diff = common.get_difference_in_days(pv, cr)
+            // cek jarak lem ke dpm
+            else if (dengan === RapatDengan.DPM) {
+                // lem udah selesai, lanjut dpm sendiri
+                if (status_lem >= StatusRapat.MARKED_AS_DONE) return
+
+                // lem belum selesai, tapi gaada di antrean, lanjut dpm sendiri
+                if (!antrean_lem) return
+
+                // lem belum selesai dan lem ada di antrean, pastikan jaraknya sesuai
+                const lem_date = new Date(antrean_lem)
+                const selected_date = new Date(common.to_date_string(date_tanggal_rapat))
+                const diff = common.get_difference_in_days(lem_date, selected_date)
                 if (diff < 2) {
                     input_tanggal_rapat_invalid_feedback.innerHTML = 'Jarak antar rapat LEM ke DPM <strong>minimal 2 hari</strong>!'
                     input_tanggal_rapat.classList.add('is-invalid')

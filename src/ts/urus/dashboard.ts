@@ -243,10 +243,10 @@
     const rapat_list_group = dom.qe(panel_rapat_verifikasi, '.list-group')!
 
     /**
-     * @param pv tanggal lem buat dicari diff nya dg dpm
+     * @param antrean_lem tanggal lem buat dicari diff nya dg dpm
      * @returns 
      */
-    const create_rapat_list_group_item = (jenis: JenisRapat, dengan: RapatDengan, status: StatusRapat, status_lem?: StatusRapat, pv: string = '') => {
+    const create_rapat_list_group_item = (jenis: JenisRapat, dengan: RapatDengan, status: StatusRapat, status_lem?: StatusRapat, antrean_lem: string = '') => {
         const children: Node[] = []
 
         if (status === StatusRapat.NOT_STARTED) {
@@ -254,15 +254,19 @@
                 children.push(dom.c('span', { classes: ['text-secondary'], html: 'belum daftar LEM' }))
             }
             else {
-                children.push(dom.c('a', {
+                const daftar_button = dom.c('button', {
                     classes: ['btn', 'btn-km-primary'],
                     attributes: {
-                        role: 'button',
                         style: 'min-width: max-content',
-                        href: `/urus/daftar-rapat/?jenis=${jenis}&dengan=${dengan}&pv=${pv}`,
                     },
                     html: 'Daftar',
-                }))
+                })
+                daftar_button.addEventListener('click', () => {
+                    const params = { jenis, dengan, status_lem, antrean_lem }
+                    store.set_item(defines.store_key.daftar_rapat, JSON.stringify(params))
+                    location.href = `/urus/daftar-rapat/`
+                })
+                children.push(daftar_button)
             }
         }
         else {
@@ -385,7 +389,7 @@
                 if (!snap_stat.exists()) return
                 const status_verifikasi = snap_stat.val()
 
-                const pv = {
+                const antrean_lem = {
                     [JenisRapat.PROPOSAL]: '',
                     [JenisRapat.LPJ]: '',
                 }
@@ -396,16 +400,16 @@
                         for (const key in rapat_list) {
                             const rapat = rapat_list[key]
                             if (rapat.uid === uid) {
-                                pv[rapat.jenis_rapat] = rapat.tanggal_rapat
+                                antrean_lem[rapat.jenis_rapat] = rapat.tanggal_rapat
                             }
                         }
                     })
 
                 rapat_list_group.innerHTML = ''
                 rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.PROPOSAL, RapatDengan.LEM, status_verifikasi.proposal.lem))
-                rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.PROPOSAL, RapatDengan.DPM, status_verifikasi.proposal.dpm, status_verifikasi.proposal.lem, pv[JenisRapat.PROPOSAL]))
+                rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.PROPOSAL, RapatDengan.DPM, status_verifikasi.proposal.dpm, status_verifikasi.proposal.lem, antrean_lem[JenisRapat.PROPOSAL]))
                 rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.LPJ, RapatDengan.LEM, status_verifikasi.lpj.lem))
-                rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.LPJ, RapatDengan.DPM, status_verifikasi.lpj.dpm, status_verifikasi.lpj.lem, pv[JenisRapat.LPJ]))
+                rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.LPJ, RapatDengan.DPM, status_verifikasi.lpj.dpm, status_verifikasi.lpj.lem, antrean_lem[JenisRapat.LPJ]))
             })
 
             // berkas update
