@@ -46,7 +46,7 @@
                         swal.fire({
                             icon: 'warning',
                             title: `Hapus akun kegiatan?`,
-                            html: `<small>Pastikan tidak ada yang sedang masuk akun kegiatan ${nama_kegiatan} dengan uid ${uid}.</small>`,
+                            html: `<small>Kegiatan <span class="text-danger">${nama_kegiatan}</span> dengan UID <span class="text-primary">${uid}</span> akan hilang dari database dan tidak bisa dipakai lagi untuk masuk.</small>`,
                             showDenyButton: true,
                             confirmButtonText: 'Hapus',
                             denyButtonText: 'Nanti',

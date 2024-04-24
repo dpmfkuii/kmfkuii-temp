@@ -6,54 +6,54 @@
     const detail_panel = dom.q<'div'>('#panel_detail_kegiatan')!
     //#region detail panel query elements
     const detail_form = dom.q<'form'>('#form_pendaftaran_kegiatan')!
-    const input_uid_kegiatan = dom.qe<'input'>(detail_form, 'input[name="uid_kegiatan"]')!
-    const input_email_pendaftar = dom.qe<'input'>(detail_form, 'input[name="email_pendaftar"]')!
-    const input_nama_pendaftar = dom.qe<'input'>(detail_form, 'input[name="nama_pendaftar"]')!
-    const select_organisasi = dom.qe<'select'>(detail_form, 'select[name="organisasi"]')!
-    const input_nama_kegiatan = dom.qe<'input'>(detail_form, 'input[name="nama_kegiatan"]')!
-    const select_periode_kegiatan = dom.qe<'select'>(detail_form, 'select[name="periode_kegiatan"]')!
-    const select_penyelenggara_kegiatan = dom.qe<'select'>(detail_form, 'select[name="penyelenggara_kegiatan"]')!
-    const select_lingkup_kegiatan = dom.qe<'select'>(detail_form, 'select[name="lingkup_kegiatan"]')!
+    const detail_input_uid_kegiatan = dom.qe<'input'>(detail_form, 'input[name="uid_kegiatan"]')!
+    const detail_input_email_pendaftar = dom.qe<'input'>(detail_form, 'input[name="email_pendaftar"]')!
+    const detail_input_nama_pendaftar = dom.qe<'input'>(detail_form, 'input[name="nama_pendaftar"]')!
+    const detail_select_organisasi = dom.qe<'select'>(detail_form, 'select[name="organisasi"]')!
+    const detail_input_nama_kegiatan = dom.qe<'input'>(detail_form, 'input[name="nama_kegiatan"]')!
+    const detail_select_periode_kegiatan = dom.qe<'select'>(detail_form, 'select[name="periode_kegiatan"]')!
+    const detail_select_penyelenggara_kegiatan = dom.qe<'select'>(detail_form, 'select[name="penyelenggara_kegiatan"]')!
+    const detail_select_lingkup_kegiatan = dom.qe<'select'>(detail_form, 'select[name="lingkup_kegiatan"]')!
     // const input_tanggal_kegiatan = dom.q<'input'>('input[name="tanggal_kegiatan"]')!
     const detail_button_ubah = dom.qe<'button'>(detail_form, 'button[aria-label="Ubah"]')!
     const detail_button_batal = dom.qe<'button'>(detail_form, 'button[aria-label="Batal"]')!
     //#endregion
 
     //#region detail panel fill in options
-    select_organisasi.innerHTML = '<option disabled selected value>-- Pilih organisasi --</option>'
+    detail_select_organisasi.innerHTML = '<option disabled selected value>-- Pilih organisasi --</option>'
     for (const n of Object.values(OrganisasiKegiatan)) {
         const option = dom.c('option')
         option.textContent = option.value = n
-        select_organisasi.appendChild(option)
+        detail_select_organisasi.appendChild(option)
     }
 
-    select_periode_kegiatan.innerHTML = ''
+    detail_select_periode_kegiatan.innerHTML = ''
     for (const n of main.get_opsi_periode_kegiatan()) {
         const option = dom.c('option')
         option.value = n
         option.textContent = n.replace('-', '/')
-        select_periode_kegiatan.appendChild(option)
+        detail_select_periode_kegiatan.appendChild(option)
         if (main.get_selected_periode_kegiatan() === n) {
             option.selected = true
         }
     }
 
-    select_penyelenggara_kegiatan.innerHTML = ''
+    detail_select_penyelenggara_kegiatan.innerHTML = ''
     for (const n of Object.values(PenyelenggaraKegiatan)) {
         const option = dom.c('option')
         option.textContent = option.value = n
-        select_penyelenggara_kegiatan.appendChild(option)
-        if (select_penyelenggara_kegiatan.childNodes.length === 1) {
+        detail_select_penyelenggara_kegiatan.appendChild(option)
+        if (detail_select_penyelenggara_kegiatan.childNodes.length === 1) {
             option.selected = true
         }
     }
 
-    select_lingkup_kegiatan.innerHTML = ''
+    detail_select_lingkup_kegiatan.innerHTML = ''
     for (const n of Object.values(LingkupKegiatan)) {
         const option = dom.c('option')
         option.textContent = option.value = n
-        select_lingkup_kegiatan.appendChild(option)
-        if (select_lingkup_kegiatan.childNodes.length === 1) {
+        detail_select_lingkup_kegiatan.appendChild(option)
+        if (detail_select_lingkup_kegiatan.childNodes.length === 1) {
             option.selected = true
         }
     }
@@ -61,14 +61,14 @@
 
     //#region detail panel initial state
     dom.disable(
-        input_uid_kegiatan,
-        input_email_pendaftar,
-        input_nama_pendaftar,
-        select_organisasi,
-        input_nama_kegiatan,
-        select_periode_kegiatan,
-        select_penyelenggara_kegiatan,
-        select_lingkup_kegiatan,
+        detail_input_uid_kegiatan,
+        detail_input_email_pendaftar,
+        detail_input_nama_pendaftar,
+        detail_select_organisasi,
+        detail_input_nama_kegiatan,
+        detail_select_periode_kegiatan,
+        detail_select_penyelenggara_kegiatan,
+        detail_select_lingkup_kegiatan,
         detail_button_ubah,
     )
     //#endregion
@@ -91,7 +91,14 @@
 
     //#region detail panel logic
     const detail_panel_update = (kegiatan: Kegiatan) => {
-
+        detail_input_uid_kegiatan.value = kegiatan.uid
+        detail_input_email_pendaftar.value = kegiatan.email_pendaftar
+        detail_input_nama_pendaftar.value = kegiatan.nama_pendaftar
+        detail_select_organisasi.value = Object.values(OrganisasiKegiatan)[kegiatan.organisasi_index]
+        detail_input_nama_kegiatan.value = kegiatan.nama_kegiatan
+        detail_select_periode_kegiatan.value = kegiatan.periode_kegiatan
+        detail_select_penyelenggara_kegiatan.value = Object.values(PenyelenggaraKegiatan)[kegiatan.penyelenggara_kegiatan_index]
+        detail_select_lingkup_kegiatan.value = Object.values(LingkupKegiatan)[kegiatan.lingkup_kegiatan_index]
     }
     //#endregion
 
@@ -157,7 +164,7 @@
                 },
                 buttonsStyling: false,
                 showCloseButton: true,
-                footer: '<i>Alhamdulillah</i>',
+                footer: '<small class="text-success fw-bold"><i>Alhamdulillah</i></small>',
             }).then((result: any) => {
                 if (result.isConfirmed) {
                     swal.fire({
@@ -214,7 +221,7 @@
                 },
                 buttonsStyling: false,
                 showCloseButton: true,
-                footer: '<i>Subhanallah</i>',
+                footer: '<small class="text-danger fw-bold">Jangan lupa kirim email konfirmasi dan sertakan alasan!</small>',
             }).then((result: any) => {
                 if (result.isConfirmed) {
                     swal.fire({

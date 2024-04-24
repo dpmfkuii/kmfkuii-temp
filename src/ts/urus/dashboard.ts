@@ -270,7 +270,7 @@
             }
         }
         else {
-            children.push(dom.c('span', { classes: ['text-secondary'], html: main.get_status_rapat_text(status) }))
+            children.push(dom.c('span', { classes: ['text-secondary'], html: main.get_status_rapat_text(status, true) }))
         }
 
         return dom.c('li', {
