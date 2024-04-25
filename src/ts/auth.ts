@@ -14,7 +14,7 @@ enum UserRole {
 }
 
 interface AuthController {
-    seeded_uid(seed?: number): string
+    make_uid(length?: number): string
     /**
      * make sure firebase is loaded
      */
@@ -40,15 +40,27 @@ enum AuthRegisterStatus {
 }
 
 const auth: AuthController = {
-    seeded_uid(seed = Date.now()) {
-        // https://en.wikipedia.org/wiki/Linear_congruential_generator
-        seed = ((seed * 9301 + 49297) % 233280) / 233280
-        const n = seed.toString().split('.')[1].split('')
-        n.splice(7, 0, '-')
-        n.splice(4, 0, '-')
+    make_uid(length = 10) {
+        // why the change?
+        // somehow this `auth.seeded_uid(new Date(1714041210563))` returns 0.25 (to short)
+        // the new `make_uid` make sure the length is always 10
 
-        const uid = common.scramble_numbers(n.slice(0, 12).join(''))
-        return uid
+        const characters = 'abcdefghijklmnopqrstuvwxyz0123456789'
+        let result = ''
+        let counter = 0
+
+        while (counter < length) {
+            result += characters.charAt(Math.floor(Math.random() * characters.length))
+            counter += 1
+        }
+
+        const uid = result.split('')
+        if (length >= 10) {
+            uid.splice(7, 0, '-')
+            uid.splice(4, 0, '-')
+        }
+
+        return uid.join('')
     },
     async register(user) {
         let status: AuthRegisterStatus = AuthRegisterStatus.SUCCESS
