@@ -1,5 +1,8 @@
 // panel detail kegiatan
 (() => {
+    let is_loading = true
+
+    //#region panel detail
     const panel_detail = dom.q<'div'>('#panel_urus_detail_kegiatan')!
 
     const form_edit_detail = dom.q<'form'>('#form_pendaftaran_kegiatan')!
@@ -238,9 +241,12 @@
             },
         })
     })
+    //#endregion
 
+    //#region panel rapat
     const panel_rapat_verifikasi = dom.q<'div'>('#panel_urus_rapat_verifikasi')!
     const rapat_list_group = dom.qe(panel_rapat_verifikasi, '.list-group')!
+    const alur_daftar_rapat_text_email_pendaftar = dom.q('#alur_daftar_rapat_text_email_pendaftar')
 
     /**
      * @param antrean_lem tanggal lem buat dicari diff nya dg dpm
@@ -280,6 +286,12 @@
         })
     }
 
+    const update_daftar_ketentuan = (kegiatan: Kegiatan) => {
+        if (alur_daftar_rapat_text_email_pendaftar) {
+            alur_daftar_rapat_text_email_pendaftar.textContent = kegiatan.email_pendaftar
+        }
+    }
+
     rapat_list_group.innerHTML = `
         <div class="d-flex align-items-center">
             <strong role="status" class="text-secondary fst-italic"
@@ -288,7 +300,9 @@
             <div class="spinner-border ms-auto" aria-hidden="true"></div>
         </div>
     `
+    //#endregion
 
+    //#region panel berkas
     const panel_berkas = dom.q<'div'>('#panel_urus_berkas')!
     const berkas_list_group = dom.qe(panel_berkas, 'ul.list-group')!
     const berkas_ketentuan_table = dom.q<'table'>('#berkas_ketentuan_table')!
@@ -350,7 +364,7 @@
             attributes: {
                 role: 'button',
                 target: '_blank',
-                style: 'min-width: max-content',
+                style: 'width: max-content',
                 href: link_berkas,
             },
             html: `BERKAS VERIFIKASI (${defines.rapat_dengan_text[dengan]}) <i class="fa-solid fa-arrow-up-right-from-square"></i>`,
@@ -373,10 +387,119 @@
             <div class="spinner-border ms-auto" aria-hidden="true"></div>
         </div>
     `
+    //#endregion
+
+    //#region panel komunikasi
+    enum TemplatEmail {
+        BerkasZoom = "berkas_dan_zoom",
+        Revisi = "revisi",
+        Revisi2 = "revisi_2",
+        // TTD = "ttd",
+        // SPD = "spd",
+        // PeminjamanDana = "peminjaman_dana",
+        // PeminjamanInventaris = "peminjaman_inventaris",
+        // Sambutan = "sambutan",
+        // Lain = "lain",
+    }
+
+    const tujuan_email = {
+        [RapatDengan.LEM]: 'sekretariatlemfkuii@gmail.com',
+        [RapatDengan.DPM]: 'fkuiidpm@gmail.com',
+    }
+
+    const get_subjek_email = (templat: TemplatEmail, kegiatan: Kegiatan) => {
+        return {
+            [TemplatEmail.BerkasZoom]: `VERIFIKASI_BERKAS & LINK ZOOM_${kegiatan.nama_kegiatan}`,
+            [TemplatEmail.Revisi]: `VERIFIKASI_REVISI_${kegiatan.nama_kegiatan}`,
+            [TemplatEmail.Revisi2]: `VERIFIKASI_REVISI 2_${kegiatan.nama_kegiatan}`,
+            // [TemplatEmail.TTD]: `PERMOHONAN TTD_${kegiatan.nama_kegiatan}`,
+            // [TemplatEmail.SPD]: `PERMOHONAN DANA_${kegiatan.nama_kegiatan}`,
+            // [TemplatEmail.PeminjamanDana]: `PEMINJAMAN DANA_${kegiatan.nama_kegiatan}`,
+            // [TemplatEmail.PeminjamanInventaris]: `PEMINJAMAN_menyesuaikan`,
+            // [TemplatEmail.Sambutan]: `PERMOHONAN SAMBUTAN_${kegiatan.nama_kegiatan}`,
+            // [TemplatEmail.Lain]: `menyesuaikan`,
+        }[templat]
+    }
+
+    const get_isi_email = (templat: TemplatEmail, dengan: RapatDengan) => {
+        const pre = `Assalamu'alaikum warahmatullahi wabarakatuh\n\n`
+        const post = `\n\nTerima kasih,\nWassalamu'alaikum warahmatullahi wabarakatuh`
+        return pre + {
+            [TemplatEmail.BerkasZoom]: `Izin konfirmasi bahwa berkas verifikasi telah kami upload di folder yang sudah ditetapkan.
+
+Dan berikut link zoom untuk verifikasi dengan ${defines.rapat_dengan_text[dengan]}.
+
+https://zoom.xxx`,
+            [TemplatEmail.Revisi]: `Izin konfirmasi bahwa berkas hasil revisi telah kami upload di folder yang sudah ditetapkan.`,
+            [TemplatEmail.Revisi2]: `Izin konfirmasi bahwa berkas hasil revisi 2 telah kami upload di folder yang sudah ditetapkan.`,
+            // [TemplatEmail.TTD]: `PERMOHONAN TTD`,
+            // [TemplatEmail.SPD]: `PERMOHONAN DANA`,
+            // [TemplatEmail.PeminjamanDana]: `PEMINJAMAN DANA`,
+            // [TemplatEmail.PeminjamanInventaris]: `PEMINJAMAN_menyesuaikan`,
+            // [TemplatEmail.Sambutan]: `PERMOHONAN SAMBUTAN`,
+            // [TemplatEmail.Lain]: `menyesuaikan`,
+        }[templat] + post
+    }
+
+    const panel_komunikasi = dom.q<'div'>('#panel_urus_komunikasi')!
+    const select_templat_email = dom.q<'select'>('#select_templat_email')!
+    const select_tujuan_email = dom.q<'select'>('#select_tujuan_email')!
+    const span_subjek_email = dom.q<'span'>('#span_subjek_email')!
+    const text_isi_email = dom.q<'div'>('#text_isi_email')!
+    const button_buka_aplikasi_email = dom.q<'div'>('#button_buka_aplikasi_email')!
+    const button_copy_tujuan_email = dom.q<'span'>('span[button-copy-target="select_tujuan_email"]')!
+    const button_copy_subjek_email = dom.q<'span'>('span[button-copy-target="span_subjek_email"]')!
+    const button_copy_isi_email = dom.q<'span'>('span[button-copy-target="text_isi_email"]')!
+
+    const update_templat_email = (kegiatan: Kegiatan, templat: TemplatEmail, dengan: RapatDengan) => {
+        if (is_loading) return
+
+        span_subjek_email.textContent = get_subjek_email(templat, kegiatan)
+        text_isi_email.innerHTML = common.text_break_to_html(get_isi_email(templat, dengan))
+    }
+
+    const button_copy_action = (data: string, el_to_highlight: HTMLElement) => {
+        common.copy(data).then(() => {
+            el_to_highlight.style.opacity = '0'
+            setTimeout(() => el_to_highlight.style.opacity = '1', 250)
+        })
+    }
+
+    select_templat_email.addEventListener('change', () => {
+        update_templat_email(_kegiatan, select_templat_email.value as TemplatEmail, select_tujuan_email.value as RapatDengan)
+    })
+
+    select_tujuan_email.addEventListener('change', () => {
+        update_templat_email(_kegiatan, select_templat_email.value as TemplatEmail, select_tujuan_email.value as RapatDengan)
+    })
+
+    button_copy_tujuan_email.addEventListener('click', () => button_copy_action(
+        tujuan_email[select_tujuan_email.value as RapatDengan],
+        select_tujuan_email,
+    ))
+    button_copy_subjek_email.addEventListener('click', () => button_copy_action(
+        get_subjek_email(select_templat_email.value as TemplatEmail, _kegiatan),
+        span_subjek_email,
+    ))
+    button_copy_isi_email.addEventListener('click', () => button_copy_action(
+        get_isi_email(select_templat_email.value as TemplatEmail, select_tujuan_email.value as RapatDengan),
+        text_isi_email,
+    ))
+
+    button_buka_aplikasi_email.addEventListener('click', () => {
+        const templat = select_templat_email.value as TemplatEmail
+        const tujuan = select_tujuan_email.value as RapatDengan
+        const subject = encodeURIComponent(get_subjek_email(templat, _kegiatan))
+        const body = encodeURIComponent(get_isi_email(templat, tujuan))
+        location.href = `mailto:${tujuan_email[tujuan]}?subject=${subject}&body=${body}`
+    })
+    //#endregion
 
     db.get_kegiatan(uid)
         .then(snap => {
             if (!snap.exists()) return
+            is_loading = false
+
             const kegiatan = snap.val()
             const organisasi = Object.values(OrganisasiKegiatan)[kegiatan.organisasi_index]
 
@@ -384,6 +507,8 @@
             update_detail_kegiatan(kegiatan)
 
             // rapat update
+            // update ketentuan
+            update_daftar_ketentuan(kegiatan)
             // start listening to status verifikasi
             db.on_kegiatan_status_verifikasi(uid, async snap_stat => {
                 if (!snap_stat.exists()) return
@@ -417,6 +542,8 @@
             update_berkas_ketentuan_table(organisasi, kegiatan.nama_kegiatan)
             // ga butuh db sebenarnya, tapi nunggu update ketentuan selesai
             update_berkas_list_group()
+
+            update_templat_email(kegiatan, TemplatEmail.BerkasZoom, select_tujuan_email.value as RapatDengan)
 
             _kegiatan = kegiatan
             _form_edit_prev_kegiatan = kegiatan

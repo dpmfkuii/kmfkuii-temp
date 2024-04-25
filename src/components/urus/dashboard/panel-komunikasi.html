@@ -15,9 +15,113 @@
         <div class="accordion-body">
             <insert-component-urus/dashboard/ketentuan-komunikasi />
             <hr />
-            <ul class="list-group">
-                <i>Under maintenance.</i>
-            </ul>
+            <div class="card shadow-sm border-0">
+                <div class="card-header text-bg-dark">Pilih templat</div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex align-items-center">
+                            <span class="opacity-50">Templat</span>
+                            <select
+                                class="form-select border-0"
+                                id="select_templat_email"
+                            >
+                                <option value="berkas_dan_zoom">
+                                    Selesai unggah berkas dan kirim link Zoom
+                                    sekaligus
+                                </option>
+                                <option value="revisi">
+                                    Selesai unggah berkas revisi
+                                </option>
+                                <option value="revisi_2">
+                                    Selesai unggah berkas revisi 2
+                                </option>
+                                <!-- <option value="ttd">
+                                    Permohonan Tanda Tangan
+                                </option>
+                                <option value="spd">Kirim SPD</option>
+                                <option value="peminjaman_dana">
+                                    Peminjaman Dana
+                                </option> -->
+                                <!-- <option value="peminjaman_inventaris">
+                                    Peminjaman Inventaris
+                                </option> -->
+                                <!-- <option value="sambutan">
+                                    Permohonan Sambutan
+                                </option> -->
+                                <!-- <option value="lain">Lain-lain</option> -->
+                            </select>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <span class="opacity-50">Tujuan</span>
+                            <select
+                                class="form-select border-0 animate animate-speed-25"
+                                id="select_tujuan_email"
+                            >
+                                <option value="lem" selected>
+                                    LEM (sekretariatlemfkuii@gmail.com)
+                                </option>
+                                <option value="dpm">
+                                    DPM (fkuiidpm@gmail.com)
+                                </option>
+                            </select>
+                            <span
+                                class="position-absolute bottom-0 end-0 fs-5"
+                                role="button"
+                                button-copy-target="select_tujuan_email"
+                            >
+                                <i class="fa-regular fa-copy"></i>
+                            </span>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <span class="opacity-50">Subjek</span>
+                            <span
+                                class="animate animate-speed-25"
+                                style="padding-left: 0.75rem !important"
+                                id="span_subjek_email"
+                                >VERIFIKASI_BERKAS & LINK ZOOM_Nama
+                                Kegiatan</span
+                            >
+                            <span
+                                class="position-absolute bottom-0 end-0 fs-5"
+                                role="button"
+                                button-copy-target="span_subjek_email"
+                            >
+                                <i class="fa-regular fa-copy"></i>
+                            </span>
+                        </li>
+                        <li class="list-group-item mt-3 mb-4 px-4 small">
+                            <span
+                                class="animate animate-speed-25"
+                                id="text_isi_email"
+                            >
+                                Assalamu'alaikum warahmatullahi wabarakatuh<br />
+                                <br />
+                                Izin konfirmasi bahwa berkas verifikasi telah
+                                kami upload di folder yang sudah ditetapkan.<br />
+                                <br />
+                                Terima kasih,<br />
+                                Wassalamu'alaikum warahmatullahi wabarakatuh
+                            </span>
+                            <span
+                                class="position-absolute bottom-0 end-0 fs-5"
+                                role="button"
+                                button-copy-target="text_isi_email"
+                            >
+                                <i class="fa-regular fa-copy"></i>
+                            </span>
+                        </li>
+                    </ul>
+                    <div class="d-grid">
+                        <button
+                            class="btn btn-km-primary"
+                            id="button_buka_aplikasi_email"
+                        >
+                            <i class="fa-solid fa-envelope"></i> BUKA APLIKASI
+                            EMAIL
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

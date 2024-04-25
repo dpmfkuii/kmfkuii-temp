@@ -74,6 +74,10 @@ a.disabled {
     transition: all 250ms;
 }
 
+.animate.animate-speed-25 {
+    transition: all 125ms;
+}
+
 .animate.animate-delay-100 {
     transition-delay: 100ms;
 }
