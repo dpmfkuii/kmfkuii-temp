@@ -287,6 +287,10 @@
                             try {
                                 await Promise.all([
                                     db.move_rapat_from_antrean_to_jadwal(rapat),
+                                    db.set_pengajuan_diterima(rapat.uid,
+                                        rapat.jenis_rapat, rapat.rapat_dengan,
+                                        main.tanggal_dan_jam_to_date(rapat.tanggal_rapat, rapat.jam_rapat),
+                                    )
                                 ])
                                 await Promise.all([
                                     db.add_kegiatan_log(rapat.uid,

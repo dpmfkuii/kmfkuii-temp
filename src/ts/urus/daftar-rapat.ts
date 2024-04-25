@@ -189,6 +189,7 @@
                 db.add_antrean_rapat(new_rapat),
                 db.set_kegiatan_status_verifikasi(uid, new_rapat.jenis_rapat, new_rapat.rapat_dengan, StatusRapat.IN_PROGRESS),
                 db.get_kegiatan(uid).then(snap => db.set_logbook(snap.val()!)),
+                db.set_pengajuan_diajukan(uid, new_rapat.jenis_rapat, new_rapat.rapat_dengan, main.tanggal_dan_jam_to_date(new_rapat.tanggal_rapat, new_rapat.jam_rapat)),
             ])
             await Promise.all([
                 db.add_kegiatan_log(uid,
@@ -197,7 +198,17 @@
                 ),
                 db.set_kegiatan_updated_timestamp(uid),
             ])
-            location.href = `/urus/`
+            await swal.fire({
+                icon: 'success',
+                title: `Jadwal ${input_jenis_rapat.value} ${input_rapat_dengan.value} masuk antrean!`,
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+            }).then(() => {
+                auth.redirect_home(UserRole.PENGURUS)
+            })
         }
         catch (err) {
             main.show_unexpected_error_message(err)

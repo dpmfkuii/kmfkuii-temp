@@ -148,6 +148,33 @@ var _ = {
                     },
                 },
             },
+
+            "pengajuan": {
+                "{uid}": {
+                    "proposal": {
+                        "lem": {
+                            // main_db.ref(`verifikasi/rapat/pengajuan/${uid}/${jenis}/${dengan}/diajukan`)
+                            "diajukan": 1234567890,
+                            // main_db.ref(`verifikasi/rapat/pengajuan/${uid}/${jenis}/${dengan}/diterima`)
+                            "diterima": 1234567890,
+                        },
+                        "dpm": {
+                            "diajukan": 1234567890,
+                            "diterima": 1234567890,
+                        },
+                    },
+                    "lpj": {
+                        "lem": {
+                            "diajukan": 1234567890,
+                            "diterima": 1234567890,
+                        },
+                        "dpm": {
+                            "diajukan": 1234567890,
+                            "diterima": 1234567890,
+                        },
+                    },
+                },
+            },
         },
     },
 }

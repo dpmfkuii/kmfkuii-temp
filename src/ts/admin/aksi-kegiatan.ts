@@ -1,4 +1,4 @@
-(() => {
+(async () => {
     const uid = common.url_params.get('uid') || ''
 
     if (!uid) auth.redirect_home(UserRole.ADMIN)
@@ -292,7 +292,7 @@
             attributes: {
                 role: 'button',
                 target: '_blank',
-                style: 'min-width: max-content',
+                style: 'width: max-content',
                 href: link_berkas,
             },
             html: `BERKAS VERIFIKASI (${defines.rapat_dengan_text[dengan]}) <i class="fa-solid fa-arrow-up-right-from-square"></i>`,
@@ -306,14 +306,200 @@
     berkas_list_group.appendChild(create_berkas_list_group_item(RapatDengan.DPM, sistem.data.link_berkas_dpm))
     //#endregion
 
+    //#region komunikasi panel
+    enum TemplatEmail {
+        KONFIRMASI_VERIFIKASI_PROPOSAL = 'Konfirmasi Verifikasi Proposal',
+        KONFIRMASI_VERIFIKASI_LPJ = 'Konfirmasi Verifikasi LPJ',
+        ANTREAN_DITOLAK = 'Antrean Ditolak',
+        PERINTAH_REVISI = 'Perintah Revisi',
+        PERINTAH_REVISI_2 = 'Perintah Revisi 2',
+        SELESAI_VERIFIKASI = 'Selesai Verifikasi',
+        PEMBATALAN_VERIFIKASI = 'Pembatalan Verifikasi',
+        LUPA_UID = 'Lupa UID',
+    }
+
+    let _komunikasi_kegiatan: Kegiatan = {} as any
+    let _pengajuan_rapat_kegiatan: PengajuanRapatKegiatan = {} as any
+
+    const panel_komunikasi = dom.q<'div'>('#panel_urus_komunikasi')!
+    const select_templat_email = dom.q<'select'>('#select_templat_email')!
+    const select_waktu_verifikasi = dom.q<'input'>('#select_waktu_verifikasi')!
+    const select_waktu_verifikasi_parent = select_waktu_verifikasi.parentElement! as HTMLLIElement
+    const select_tujuan_email = dom.q<'select'>('#select_tujuan_email')!
+    const span_subjek_email = dom.q<'span'>('#span_subjek_email')!
+    const text_isi_email = dom.q<'div'>('#text_isi_email')!
+    const button_buka_aplikasi_email = dom.q<'div'>('#button_buka_aplikasi_email')!
+    const button_copy_tujuan_email = dom.q<'span'>('span[button-copy-target="select_tujuan_email"]')!
+    const button_copy_subjek_email = dom.q<'span'>('span[button-copy-target="span_subjek_email"]')!
+    const button_copy_isi_email = dom.q<'span'>('span[button-copy-target="text_isi_email"]')!
+
+    select_templat_email.innerHTML = ''
+    for (const n of Object.values(TemplatEmail)) {
+        const option = dom.c('option')
+        option.textContent = option.value = n
+        select_templat_email.appendChild(option)
+    }
+
+    const button_copy_action = (data: string, el_to_highlight: HTMLElement) => {
+        common.copy(data).then(() => {
+            el_to_highlight.style.opacity = '0'
+            setTimeout(() => el_to_highlight.style.opacity = '1', 250)
+        })
+    }
+
+    const get_subjek_email = () => {
+        return {
+            [TemplatEmail.KONFIRMASI_VERIFIKASI_PROPOSAL]: `KONFIRMASI VERIFIKASI PROPOSAL_${_komunikasi_kegiatan.nama_kegiatan}`,
+            [TemplatEmail.KONFIRMASI_VERIFIKASI_LPJ]: `KONFIRMASI VERIFIKASI LPJ_${_komunikasi_kegiatan.nama_kegiatan}`,
+            [TemplatEmail.ANTREAN_DITOLAK]: `ANTREAN DITOLAK_${_komunikasi_kegiatan.nama_kegiatan}`,
+            [TemplatEmail.PERINTAH_REVISI]: `PERINTAH REVISI_${_komunikasi_kegiatan.nama_kegiatan}`,
+            [TemplatEmail.PERINTAH_REVISI_2]: `PERINTAH REVISI 2_${_komunikasi_kegiatan.nama_kegiatan}`,
+            [TemplatEmail.SELESAI_VERIFIKASI]: `SELESAI VERIFIKASI_${_komunikasi_kegiatan.nama_kegiatan}`,
+            [TemplatEmail.PEMBATALAN_VERIFIKASI]: `PEMBATALAN VERIFIKASI_${_komunikasi_kegiatan.nama_kegiatan}`,
+            [TemplatEmail.LUPA_UID]: `UID [${uid}]_${_komunikasi_kegiatan.nama_kegiatan}`,
+        }[select_templat_email.value as TemplatEmail] || ''
+    }
+
+    const get_isi_email = () => {
+        const templat = select_templat_email.value as TemplatEmail
+        let pre = `Assalamu'alaikum warahmatullahi wabarakatuh\n\n`
+        let post = `\n\nTerima kasih,\nWassalamu'alaikum warahmatullahi wabarakatuh`
+        if (templat === TemplatEmail.KONFIRMASI_VERIFIKASI_PROPOSAL || templat === TemplatEmail.KONFIRMASI_VERIFIKASI_LPJ) {
+            pre += `Terima kasih atas pengajuan verifikasinya. Verifikasi diterima dan akan dijadwalkan pada hari ${select_waktu_verifikasi.value}.
+
+Berikut informasi lanjut terkait proses verifikasi ini:
+1. PENGUMPULAN FILE\nUnggah file `
+            post = ` dalam format PDF sesuai perintah yang ada di website.
+Feedback akan diberikan lewat comment di file PDF dan secara langsung saat pertemuan verifikasi.
+
+2. PENGIRIMAN LINK ZOOM
+Jangan lupa untuk mengirim link Zoom yang telah disiapkan melalui fitur yang sudah ada di website.
+
+*NOTE: DEADLINE pengumpulan berkas & link zoom adalah H-8 JAM sebelum verifikasi${post}`
+        }
+        return pre + {
+            [TemplatEmail.KONFIRMASI_VERIFIKASI_PROPOSAL]: `proposal dan SPD`,
+            [TemplatEmail.KONFIRMASI_VERIFIKASI_LPJ]: `LPJ`,
+            [TemplatEmail.ANTREAN_DITOLAK]: `Mohon maaf karena pengajuan verifikasi tidak sesuai dengan alur/ketentuan yang telah ditetapkan, maka pengajuan verifikasi kami tolak.\n\nSilahkan cermati alur/ketentuan yang sudah tertera di website.`,
+            [TemplatEmail.PERINTAH_REVISI]: `Terima kasih telah melakukan verifikasi, untuk selanjutnya karena masih ada yang perlu direvisi silahkan upload file hasil revisi melalui fitur yang tersedia di website.`,
+            [TemplatEmail.PERINTAH_REVISI_2]: `Terima kasih telah mengirim berkas hasil revisi, untuk selanjutnya masih ada yang perlu direvisi, silahkan upload file hasil revisi 2 melalui fitur yang tersedia di website.`,
+            [TemplatEmail.SELESAI_VERIFIKASI]: `Alhamdulillah proses verifikasi kegiatan sudah selesai, berikut file yang sudah ditandatangani.`,
+            [TemplatEmail.PEMBATALAN_VERIFIKASI]: `Mohon maaf, karena ada proses yang tidak dijalankan sesuai tenggat waktu/ketentuan yang berlaku, maka verifikasi kami batalkan.\n\nSilahkan daftar dan ajukan ulang verifikasi.`,
+            [TemplatEmail.LUPA_UID]: `Silahkan gunakan UID berikut untuk login di website.\n\n${_komunikasi_kegiatan.nama_kegiatan}\nUID: ${uid}`
+        }[templat] + post
+    }
+
+    const update_templat_email = () => {
+        select_waktu_verifikasi_parent.classList.add('visually-hidden')
+        if (select_templat_email.value === TemplatEmail.KONFIRMASI_VERIFIKASI_PROPOSAL
+            || select_templat_email.value === TemplatEmail.KONFIRMASI_VERIFIKASI_LPJ) {
+            select_waktu_verifikasi_parent.classList.remove('visually-hidden')
+        }
+        span_subjek_email.textContent = get_subjek_email()
+        text_isi_email.innerHTML = common.text_break_to_html(get_isi_email())
+    }
+
+    const update_select_waktu_verifikasi = () => {
+        const rapat_names: string[] = []
+
+        const templat = select_templat_email.value as TemplatEmail
+        if (templat === TemplatEmail.KONFIRMASI_VERIFIKASI_PROPOSAL) {
+            rapat_names.push(`${JenisRapat.PROPOSAL} ${RapatDengan.LEM}`)
+            rapat_names.push(`${JenisRapat.PROPOSAL} ${RapatDengan.DPM}`)
+        }
+        else if (templat === TemplatEmail.KONFIRMASI_VERIFIKASI_LPJ) {
+            rapat_names.push(`${JenisRapat.LPJ} ${RapatDengan.LEM}`)
+            rapat_names.push(`${JenisRapat.LPJ} ${RapatDengan.DPM}`)
+        }
+
+        select_waktu_verifikasi.innerHTML = '<option disabled selected value>-- Pilih waktu verifikasi --</option>'
+        for (const rapat_name of rapat_names) {
+            const jenis = rapat_name.split(' ')[0] as JenisRapat
+            const dengan = rapat_name.split(' ')[1] as RapatDengan
+
+            let waktu_pengajuan_diajukan = -1
+            let waktu_pengajuan_diterima = -1
+
+            if (_pengajuan_rapat_kegiatan) {
+                if (_pengajuan_rapat_kegiatan[jenis]) {
+                    if (_pengajuan_rapat_kegiatan[jenis][dengan]) {
+                        waktu_pengajuan_diajukan = _pengajuan_rapat_kegiatan[jenis][dengan].diajukan || -1
+                        waktu_pengajuan_diterima = _pengajuan_rapat_kegiatan[jenis][dengan].diterima || -1
+                    }
+                }
+            }
+
+            let waktu_pengajuan_text = 'tidak ada data'
+            let post_text = ''
+            if (waktu_pengajuan_diajukan >= 0 && waktu_pengajuan_diterima >= 0) {
+                try {
+                    waktu_pengajuan_text = common.to_date_pukul_text(new Date(waktu_pengajuan_diterima))
+                    post_text = `, ${waktu_pengajuan_diterima === waktu_pengajuan_diajukan
+                        ? 'sesuai'
+                        : waktu_pengajuan_diterima > waktu_pengajuan_diajukan
+                            ? 'diundur'
+                            : 'dimajukan'} dari permohonan`
+                }
+                catch { }
+            }
+
+            const option = dom.c('option')
+            option.value = `${waktu_pengajuan_text}${post_text}`
+            option.textContent = `${defines.rapat_dengan_text[dengan]} (${waktu_pengajuan_text})`
+            select_waktu_verifikasi.appendChild(option)
+        }
+    }
+
+    select_templat_email.addEventListener('change', () => {
+        update_select_waktu_verifikasi()
+        update_templat_email()
+    })
+
+    select_waktu_verifikasi.addEventListener('change', () => {
+        update_templat_email()
+    })
+
+    button_copy_tujuan_email.addEventListener('click', () => button_copy_action(
+        select_tujuan_email.value,
+        select_tujuan_email,
+    ))
+
+    button_copy_subjek_email.addEventListener('click', () => button_copy_action(
+        get_subjek_email(),
+        span_subjek_email,
+    ))
+
+    button_copy_isi_email.addEventListener('click', () => button_copy_action(
+        get_isi_email(),
+        text_isi_email,
+    ))
+
+    const init_komunikasi_panel = (kegiatan: Kegiatan) => {
+        select_tujuan_email.innerHTML = `<option value="${kegiatan.email_pendaftar}" selected>${kegiatan.email_pendaftar} (${kegiatan.nama_pendaftar})</option>`
+        update_select_waktu_verifikasi()
+        update_templat_email()
+    }
+
+    button_buka_aplikasi_email.addEventListener('click', () => {
+        const tujuan = select_tujuan_email.value
+        const subject = encodeURIComponent(get_subjek_email())
+        const body = encodeURIComponent(get_isi_email())
+        location.href = `mailto:${tujuan}?subject=${subject}&body=${body}`
+    })
+    //#endregion
+
     //#region query db
     try {
-        db.on_kegiatan(uid, snap => {
+        await db.get_pengajuan_rapat_kegiatan(uid)
+            .then(snap => _pengajuan_rapat_kegiatan = snap.val()!)
+        await db.on_kegiatan(uid, snap => {
             if (!snap.exists()) throw new Error('Data tidak ditemukan.')
 
             const kegiatan = snap.val()
+            _komunikasi_kegiatan = kegiatan
             detail_panel_update(kegiatan)
             rapat_panel_update(kegiatan)
+            init_komunikasi_panel(kegiatan)
         })
     }
     catch (err) {

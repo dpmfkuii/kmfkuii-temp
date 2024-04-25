@@ -391,15 +391,15 @@
 
     //#region panel komunikasi
     enum TemplatEmail {
-        BerkasZoom = "berkas_dan_zoom",
-        Revisi = "revisi",
-        Revisi2 = "revisi_2",
-        // TTD = "ttd",
-        // SPD = "spd",
-        // PeminjamanDana = "peminjaman_dana",
-        // PeminjamanInventaris = "peminjaman_inventaris",
-        // Sambutan = "sambutan",
-        // Lain = "lain",
+        BerkasZoom = 'berkas_dan_zoom',
+        Revisi = 'revisi',
+        Revisi2 = 'revisi_2',
+        // TTD = 'ttd',
+        // SPD = 'spd',
+        // PeminjamanDana = 'peminjaman_dana',
+        // PeminjamanInventaris = 'peminjaman_inventaris',
+        // Sambutan = 'sambutan',
+        // Lain = 'lain',
     }
 
     const tujuan_email = {

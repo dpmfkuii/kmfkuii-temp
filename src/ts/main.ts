@@ -25,7 +25,18 @@ interface FirebaseSnapshot<T = any> {
 declare const firebase: Firebase
 declare const swal: any
 
-const main_db = firebase.database()
+const main_db = {
+    ref(path?: string): FirebaseDatabase {
+        if (path) {
+            path = path.replaceAll('.', '')
+                .replaceAll('#', '')
+                .replaceAll('$', '')
+                .replaceAll('[', '')
+                .replaceAll(']', '')
+        }
+        return firebase.database().ref(path)
+    },
+}
 
 // kegiatan
 interface Kegiatan {
@@ -192,6 +203,26 @@ interface RapatList {
     [timestamp: string]: Rapat
 }
 
+interface PengajuanRapatList {
+    [uid: string]: PengajuanRapatKegiatan
+}
+
+interface PengajuanRapatKegiatan {
+    [JenisRapat.PROPOSAL]: JenisPengajuanRapatKegiatan
+    [JenisRapat.LPJ]: JenisPengajuanRapatKegiatan
+}
+
+interface JenisPengajuanRapatKegiatan {
+    [RapatDengan.LEM]: {
+        diajukan: number
+        diterima: number
+    }
+    [RapatDengan.DPM]: {
+        diajukan: number
+        diterima: number
+    }
+}
+
 type LogColor = 'light' | 'info' | 'success' | 'warning' | 'danger'
 
 const main = {
@@ -317,6 +348,15 @@ const main = {
             nama_kegiatan,
             status,
         }
+    },
+    /**
+     * 
+     * @param tanggal yyyy-mm-dd
+     * @param jam hh.mm
+     */
+    tanggal_dan_jam_to_date(tanggal: string, jam: string) {
+        const iso = `${tanggal}T${jam.replace('.', ':')}`
+        return new Date(iso)
     },
 }
 
@@ -456,6 +496,18 @@ const db = {
         ])
         await db.remove_kegiatan(uid)
         await main_db.ref(`users/${uid}`).remove()
+    },
+    get_pengajuan_rapat_kegiatan(uid: string): Promise<FirebaseSnapshot<PengajuanRapatKegiatan>> {
+        return main_db.ref(`verifikasi/rapat/pengajuan/${uid}`)
+            .once<PengajuanRapatKegiatan>('value')
+    },
+    set_pengajuan_diajukan(uid: string, jenis: JenisRapat, dengan: RapatDengan, date_diajukan: Date) {
+        return main_db.ref(`verifikasi/rapat/pengajuan/${uid}/${jenis}/${dengan}/diajukan`)
+            .set(date_diajukan.getTime())
+    },
+    set_pengajuan_diterima(uid: string, jenis: JenisRapat, dengan: RapatDengan, date_diterima: Date) {
+        return main_db.ref(`verifikasi/rapat/pengajuan/${uid}/${jenis}/${dengan}/diterima`)
+            .set(date_diterima.getTime())
     },
 }
 

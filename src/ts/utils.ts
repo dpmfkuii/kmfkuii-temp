@@ -139,6 +139,18 @@ const common = {
         return this.date_string_to_date_text_date(this.to_date_string(date))
     },
     /**
+     * 
+     * @param date 
+     * @returns hh.mm
+     */
+    get_pukul_text(date: Date) {
+        const d = date.toTimeString().split(':')
+        return `${d[0]}.${d[1]}`
+    },
+    to_date_pukul_text(date: Date) {
+        return `${this.date_string_to_date_text(this.to_date_string(date))} pukul ${this.get_pukul_text(date)} WIB`
+    },
+    /**
      * Returns true if `date1` < `date2`
      * @param date1 
      * @param date2 
