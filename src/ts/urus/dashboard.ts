@@ -391,14 +391,15 @@
 
     //#region panel komunikasi
     enum TemplatEmail {
-        BerkasZoom = 'berkas_dan_zoom',
-        Revisi = 'revisi',
-        Revisi2 = 'revisi_2',
-        // TTD = 'ttd',
-        // SPD = 'spd',
-        // PeminjamanDana = 'peminjaman_dana',
-        // PeminjamanInventaris = 'peminjaman_inventaris',
-        // Sambutan = 'sambutan',
+        BERKAS_ZOOM = 'berkas_dan_zoom',
+        REVISI = 'revisi',
+        REVISI_2 = 'revisi_2',
+        PERMOHONAN_TANDA_TANGAN = 'permohonan_tanda_tangan',
+        PERMOHONAN_DANA = 'permohonan_dana',
+        PEMINJAMAN_DANA = 'peminjaman_dana',
+        PEMINJAMAN_INVENTARIS = 'peminjaman_inventaris',
+        PERMOHONAN_SAMBUTAN = 'permohonan_sambutan',
+        PERMOHONAN_DITANDAI_SELESAI = 'permohonan_ditandai_selesai',
         // Lain = 'lain',
     }
 
@@ -409,34 +410,55 @@
 
     const get_subjek_email = (templat: TemplatEmail, kegiatan: Kegiatan) => {
         return {
-            [TemplatEmail.BerkasZoom]: `VERIFIKASI_BERKAS & LINK ZOOM_${kegiatan.nama_kegiatan}`,
-            [TemplatEmail.Revisi]: `VERIFIKASI_REVISI_${kegiatan.nama_kegiatan}`,
-            [TemplatEmail.Revisi2]: `VERIFIKASI_REVISI 2_${kegiatan.nama_kegiatan}`,
-            // [TemplatEmail.TTD]: `PERMOHONAN TTD_${kegiatan.nama_kegiatan}`,
-            // [TemplatEmail.SPD]: `PERMOHONAN DANA_${kegiatan.nama_kegiatan}`,
-            // [TemplatEmail.PeminjamanDana]: `PEMINJAMAN DANA_${kegiatan.nama_kegiatan}`,
-            // [TemplatEmail.PeminjamanInventaris]: `PEMINJAMAN_menyesuaikan`,
-            // [TemplatEmail.Sambutan]: `PERMOHONAN SAMBUTAN_${kegiatan.nama_kegiatan}`,
+            [TemplatEmail.BERKAS_ZOOM]: `VERIFIKASI_BERKAS & LINK ZOOM_${kegiatan.nama_kegiatan}`,
+            [TemplatEmail.REVISI]: `VERIFIKASI_REVISI_${kegiatan.nama_kegiatan}`,
+            [TemplatEmail.REVISI_2]: `VERIFIKASI_REVISI 2_${kegiatan.nama_kegiatan}`,
+            [TemplatEmail.PERMOHONAN_TANDA_TANGAN]: `PERMOHONAN TTD_${kegiatan.nama_kegiatan}`,
+            [TemplatEmail.PERMOHONAN_DANA]: `PERMOHONAN DANA_${kegiatan.nama_kegiatan}`,
+            [TemplatEmail.PEMINJAMAN_DANA]: `PEMINJAMAN DANA_${kegiatan.nama_kegiatan}`,
+            [TemplatEmail.PEMINJAMAN_INVENTARIS]: `PEMINJAMAN_INVENTARIS_${kegiatan.nama_kegiatan}`,
+            [TemplatEmail.PERMOHONAN_SAMBUTAN]: `PERMOHONAN SAMBUTAN_${kegiatan.nama_kegiatan}`,
+            [TemplatEmail.PERMOHONAN_DITANDAI_SELESAI]: `VERIFIKASI_PERMOHONAN DITANDAI SELESAI_${kegiatan.nama_kegiatan}`,
             // [TemplatEmail.Lain]: `menyesuaikan`,
         }[templat]
     }
 
-    const get_isi_email = (templat: TemplatEmail, dengan: RapatDengan) => {
+    const get_isi_email = (templat: TemplatEmail, dengan: RapatDengan, kegiatan: Kegiatan) => {
         const pre = `Assalamu'alaikum warahmatullahi wabarakatuh\n\n`
         const post = `\n\nTerima kasih,\nWassalamu'alaikum warahmatullahi wabarakatuh`
+        const tujuan = `${(defines.rapat_dengan_text as any)[dengan]}`
+        const nama_kegiatan = kegiatan.nama_kegiatan
         return pre + {
-            [TemplatEmail.BerkasZoom]: `Izin konfirmasi bahwa berkas verifikasi telah kami upload di folder yang sudah ditetapkan.
+            [TemplatEmail.BERKAS_ZOOM]: `Izin konfirmasi bahwa berkas verifikasi telah kami upload di folder yang sudah ditetapkan.
 
 Dan berikut link zoom untuk verifikasi dengan ${defines.rapat_dengan_text[dengan]}.
 
 https://zoom.xxx`,
-            [TemplatEmail.Revisi]: `Izin konfirmasi bahwa berkas hasil revisi telah kami upload di folder yang sudah ditetapkan.`,
-            [TemplatEmail.Revisi2]: `Izin konfirmasi bahwa berkas hasil revisi 2 telah kami upload di folder yang sudah ditetapkan.`,
-            // [TemplatEmail.TTD]: `PERMOHONAN TTD`,
-            // [TemplatEmail.SPD]: `PERMOHONAN DANA`,
-            // [TemplatEmail.PeminjamanDana]: `PEMINJAMAN DANA`,
-            // [TemplatEmail.PeminjamanInventaris]: `PEMINJAMAN_menyesuaikan`,
-            // [TemplatEmail.Sambutan]: `PERMOHONAN SAMBUTAN`,
+            [TemplatEmail.REVISI]: `Izin konfirmasi bahwa berkas hasil revisi telah kami upload di folder yang sudah ditetapkan.`,
+            [TemplatEmail.REVISI_2]: `Izin konfirmasi bahwa berkas hasil revisi 2 telah kami upload di folder yang sudah ditetapkan.`,
+            [TemplatEmail.PERMOHONAN_TANDA_TANGAN]:
+                `Perkenalkan kami dari panitia kegiatan ${nama_kegiatan} izin mengajukan`
+                + ` permohonan tanda tangan [nama surat] kepada ${tujuan} untuk kegiatan ${nama_kegiatan}.`
+                + `\n\nBersama ini, turut kami lampirkan 1 buah file terkait.`,
+            [TemplatEmail.PERMOHONAN_DANA]:
+                `Perkenalkan kami dari panitia kegiatan ${nama_kegiatan} izin mengajukan`
+                + ` Surat Permohonan Dana kepada ${tujuan} untuk kegiatan ${nama_kegiatan}.`
+                + `\n\nBersama ini, turut kami lampirkan 1 buah file terkait.`,
+            [TemplatEmail.PEMINJAMAN_DANA]:
+                `Perkenalkan kami dari panitia kegiatan ${nama_kegiatan} izin mengajukan`
+                + ` permohonan peminjaman dana kepada ${tujuan} untuk kegiatan ${nama_kegiatan}.`
+                + `\n\nBersama ini, turut kami lampirkan surat peminjaman dana, surat permohonan dana, dan proposal terkait.`,
+            [TemplatEmail.PEMINJAMAN_INVENTARIS]:
+                `Perkenalkan kami dari panitia kegiatan ${nama_kegiatan} izin mengajukan`
+                + ` permohonan peminjaman inventaris kepada ${tujuan} untuk kegiatan ${nama_kegiatan},`
+                + ` berupa [sebutkan barang yang dipinjam].\n\nBersama ini, turut kami lampirkan surat peminjaman inventaris terkait.`,
+            [TemplatEmail.PERMOHONAN_SAMBUTAN]:
+                `Perkenalkan kami dari panitia kegiatan ${nama_kegiatan} izin mengirimkan`
+                + ` undangan kepada [Ketua LEM/Ketua DPM/Pihak yang diundang] untuk dapat hadir memberikan sambutan`
+                + ` dalam kegiatan ${nama_kegiatan}.\n\nBersama ini, turut kami lampirkan 1 buah file surat undangan terkait.`,
+            [TemplatEmail.PERMOHONAN_DITANDAI_SELESAI]: `Mohon izin kami dari panitia kegiatan ${nama_kegiatan} ingin memohon kepada LEM`
+                + ` untuk membantu alur verifikasi di website dengan cara menandai "selesai" pada proker kami di kolom [proposal / LPJ]`
+                + ` oleh LEM untuk melanjutkan proses verifikasi ke DPM karena kami telah melewati verifikasi oleh LEM.`,
             // [TemplatEmail.Lain]: `menyesuaikan`,
         }[templat] + post
     }
@@ -455,7 +477,7 @@ https://zoom.xxx`,
         if (is_loading) return
 
         span_subjek_email.textContent = get_subjek_email(templat, kegiatan)
-        text_isi_email.innerHTML = common.text_break_to_html(get_isi_email(templat, dengan))
+        text_isi_email.innerHTML = common.text_break_to_html(get_isi_email(templat, dengan, kegiatan))
     }
 
     const button_copy_action = (data: string, el_to_highlight: HTMLElement) => {
@@ -482,7 +504,7 @@ https://zoom.xxx`,
         span_subjek_email,
     ))
     button_copy_isi_email.addEventListener('click', () => button_copy_action(
-        get_isi_email(select_templat_email.value as TemplatEmail, select_tujuan_email.value as RapatDengan),
+        get_isi_email(select_templat_email.value as TemplatEmail, select_tujuan_email.value as RapatDengan, _kegiatan),
         text_isi_email,
     ))
 
@@ -490,7 +512,7 @@ https://zoom.xxx`,
         const templat = select_templat_email.value as TemplatEmail
         const tujuan = select_tujuan_email.value as RapatDengan
         const subject = encodeURIComponent(get_subjek_email(templat, _kegiatan))
-        const body = encodeURIComponent(get_isi_email(templat, tujuan))
+        const body = encodeURIComponent(get_isi_email(templat, tujuan, _kegiatan))
         location.href = `mailto:${tujuan_email[tujuan]}?subject=${subject}&body=${body}`
     })
     //#endregion
@@ -543,7 +565,7 @@ https://zoom.xxx`,
             // ga butuh db sebenarnya, tapi nunggu update ketentuan selesai
             update_berkas_list_group()
 
-            update_templat_email(kegiatan, TemplatEmail.BerkasZoom, select_tujuan_email.value as RapatDengan)
+            update_templat_email(kegiatan, TemplatEmail.BERKAS_ZOOM, select_tujuan_email.value as RapatDengan)
 
             _kegiatan = kegiatan
             _form_edit_prev_kegiatan = kegiatan

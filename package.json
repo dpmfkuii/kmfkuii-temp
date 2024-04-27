@@ -3,7 +3,8 @@
     "scripts": {
         "init": "npm i",
         "dev": "node dev/dev",
-        "serve": "firebase emulators:start"
+        "serve": "firebase emulators:start",
+        "deploy": "firebase deploy"
     },
     "private": true,
     "devDependencies": {

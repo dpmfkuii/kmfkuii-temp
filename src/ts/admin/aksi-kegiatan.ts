@@ -315,6 +315,7 @@
         PERINTAH_REVISI_2 = 'Perintah Revisi 2',
         SELESAI_VERIFIKASI = 'Selesai Verifikasi',
         PEMBATALAN_VERIFIKASI = 'Pembatalan Verifikasi',
+        ACC_DITANDAI_SELESAI = 'Acc Ditandai Selesai',
         LUPA_UID = 'Lupa UID',
     }
 
@@ -356,6 +357,7 @@
             [TemplatEmail.PERINTAH_REVISI_2]: `PERINTAH REVISI 2_${_komunikasi_kegiatan.nama_kegiatan}`,
             [TemplatEmail.SELESAI_VERIFIKASI]: `SELESAI VERIFIKASI_${_komunikasi_kegiatan.nama_kegiatan}`,
             [TemplatEmail.PEMBATALAN_VERIFIKASI]: `PEMBATALAN VERIFIKASI_${_komunikasi_kegiatan.nama_kegiatan}`,
+            [TemplatEmail.ACC_DITANDAI_SELESAI]: `ACC DITANDAI SELESAI`,
             [TemplatEmail.LUPA_UID]: `UID [${uid}]_${_komunikasi_kegiatan.nama_kegiatan}`,
         }[select_templat_email.value as TemplatEmail] || ''
     }
@@ -385,6 +387,7 @@ Jangan lupa untuk mengirim link Zoom yang telah disiapkan melalui fitur yang sud
             [TemplatEmail.PERINTAH_REVISI_2]: `Terima kasih telah mengirim berkas hasil revisi, untuk selanjutnya masih ada yang perlu direvisi, silahkan upload file hasil revisi 2 melalui fitur yang tersedia di website.`,
             [TemplatEmail.SELESAI_VERIFIKASI]: `Alhamdulillah proses verifikasi kegiatan sudah selesai, berikut file yang sudah ditandatangani.`,
             [TemplatEmail.PEMBATALAN_VERIFIKASI]: `Mohon maaf, karena ada proses yang tidak dijalankan sesuai tenggat waktu/ketentuan yang berlaku, maka verifikasi kami batalkan.\n\nSilahkan daftar dan ajukan ulang verifikasi.`,
+            [TemplatEmail.ACC_DITANDAI_SELESAI]: `Terima kasih atas permohonannya, sudah kami tandai selesai. Silahkan melanjutkan alur verifikasi.`,
             [TemplatEmail.LUPA_UID]: `Silahkan gunakan UID berikut untuk login di website.\n\n${_komunikasi_kegiatan.nama_kegiatan}\nUID: ${uid}`
         }[templat] + post
     }
