@@ -24,6 +24,7 @@ interface FirebaseSnapshot<T = any> {
 
 declare const firebase: Firebase
 declare const swal: any
+declare const Fuse: any
 
 const main_db = {
     ref(path?: string): FirebaseDatabase {

@@ -437,8 +437,8 @@ Jangan lupa untuk mengirim link Zoom yang telah disiapkan melalui fitur yang sud
                     post_text = `, ${waktu_pengajuan_diterima === waktu_pengajuan_diajukan
                         ? 'sesuai'
                         : waktu_pengajuan_diterima > waktu_pengajuan_diajukan
-                            ? 'diundur'
-                            : 'dimajukan'} dari permohonan`
+                            ? 'diundur dari'
+                            : 'dimajukan dari'} permohonan`
                 }
                 catch { }
             }

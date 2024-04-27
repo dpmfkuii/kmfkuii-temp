@@ -193,6 +193,9 @@ const common = {
     text_break_to_html(text: string) {
         return text.replaceAll('\n', '<br />')
     },
+    remove_extra_spaces(text: string) {
+        return text.replace(/\s+/g, ' ').trim()
+    },
 }
 
 declare const CryptoJS: any

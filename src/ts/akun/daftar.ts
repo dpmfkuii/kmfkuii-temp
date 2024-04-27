@@ -87,10 +87,10 @@
         const created_timestamp = common.timestamp()
         const new_kegiatan: Kegiatan = {
             uid: new_user.uid,
-            email_pendaftar: input_email_pendaftar.value,
-            nama_pendaftar: input_nama_pendaftar.value,
+            email_pendaftar: common.remove_extra_spaces(input_email_pendaftar.value),
+            nama_pendaftar: common.remove_extra_spaces(input_nama_pendaftar.value),
             organisasi_index: Object.values(OrganisasiKegiatan).indexOf(select_organisasi.value as OrganisasiKegiatan),
-            nama_kegiatan: input_nama_kegiatan.value,
+            nama_kegiatan: common.remove_extra_spaces(input_nama_kegiatan.value),
             periode_kegiatan: select_periode_kegiatan.value,
             penyelenggara_kegiatan_index: Object.values(PenyelenggaraKegiatan).indexOf(select_penyelenggara_kegiatan.value as PenyelenggaraKegiatan),
             lingkup_kegiatan_index: Object.values(LingkupKegiatan).indexOf(select_lingkup_kegiatan.value as LingkupKegiatan),
