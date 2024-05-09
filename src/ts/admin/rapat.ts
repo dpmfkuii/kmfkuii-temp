@@ -193,6 +193,9 @@
 
             for (let i = 0; i < jadwal_days_amount; i++) {
                 const td = dom.c('td')
+                if (jam === '19.00') {
+                    td.innerHTML = '<span class="badge text-bg-danger">-</span>'
+                }
                 const rapat_terjadwal = list_jadwal_rapat_by_jam[jam][i]
                 if (rapat_terjadwal) {
                     td.classList.add('text-bg-jadwal')

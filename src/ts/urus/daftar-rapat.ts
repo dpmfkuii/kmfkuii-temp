@@ -93,9 +93,9 @@
                 input_tanggal_rapat_invalid_feedback.innerHTML = 'Pendaftaran di tanggal itu sudah <strong>tutup</strong>!'
                 input_tanggal_rapat.classList.add('is-invalid')
             }
-            // cek kalau H-7
-            else if (common.get_difference_in_days(date_tanggal_rapat, tanggal_pertama_kegiatan) < 7) {
-                input_tanggal_rapat_invalid_feedback.innerHTML = 'Pendaftaran minimal <strong>H-7</strong>!'
+            // cek kalau proposal H-7
+            else if (jenis === JenisRapat.PROPOSAL && common.get_difference_in_days(date_tanggal_rapat, tanggal_pertama_kegiatan) < 7) {
+                input_tanggal_rapat_invalid_feedback.innerHTML = 'Rapat proposal minimal <strong>H-7</strong> kegiatan!'
                 input_tanggal_rapat.classList.add('is-invalid')
             }
             // cek jarak lem ke dpm
