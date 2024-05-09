@@ -15,10 +15,10 @@
     const input_nama_pendaftar = dom.q<'input'>('input[name="nama_pendaftar"]')!
     const select_organisasi = dom.q<'select'>('select[name="organisasi"]')!
     const input_nama_kegiatan = dom.q<'input'>('input[name="nama_kegiatan"]')!
+    const input_tanggal_pertama_kegiatan = dom.q<'input'>('input[name="tanggal_pertama_kegiatan"]')!
     const select_periode_kegiatan = dom.q<'select'>('select[name="periode_kegiatan"]')!
     const select_penyelenggara_kegiatan = dom.q<'select'>('select[name="penyelenggara_kegiatan"]')!
     const select_lingkup_kegiatan = dom.q<'select'>('select[name="lingkup_kegiatan"]')!
-    // const input_tanggal_kegiatan = dom.q<'input'>('input[name="tanggal_kegiatan"]')!
 
     input_uid_kegiatan.value = auth.get_logged_in_user()?.uid || ''
 
@@ -66,6 +66,7 @@
         input_nama_pendaftar,
         select_organisasi,
         input_nama_kegiatan,
+        input_tanggal_pertama_kegiatan,
         select_periode_kegiatan,
         select_penyelenggara_kegiatan,
         select_lingkup_kegiatan,
@@ -77,6 +78,7 @@
         input_nama_pendaftar.value = kegiatan.nama_pendaftar
         select_organisasi.value = Object.values(OrganisasiKegiatan)[kegiatan.organisasi_index]
         input_nama_kegiatan.value = kegiatan.nama_kegiatan
+        input_tanggal_pertama_kegiatan.value = kegiatan.tanggal_kegiatan[0]
         select_periode_kegiatan.value = kegiatan.periode_kegiatan
         select_penyelenggara_kegiatan.value = Object.values(PenyelenggaraKegiatan)[kegiatan.penyelenggara_kegiatan_index]
         select_lingkup_kegiatan.value = Object.values(LingkupKegiatan)[kegiatan.lingkup_kegiatan_index]
@@ -92,6 +94,7 @@
     button_batal.addEventListener('click', () => {
         dom.disable(
             input_nama_kegiatan,
+            input_tanggal_pertama_kegiatan,
             select_periode_kegiatan,
             select_penyelenggara_kegiatan,
             select_lingkup_kegiatan,
@@ -114,6 +117,7 @@
         if (!button_ubah.hasAttribute('is-editing')) {
             dom.enable(
                 input_nama_kegiatan,
+                input_tanggal_pertama_kegiatan,
                 select_periode_kegiatan,
                 select_penyelenggara_kegiatan,
                 select_lingkup_kegiatan,
@@ -126,6 +130,7 @@
             button_ubah.setAttribute('is-editing', '')
 
             _form_edit_prev_kegiatan.nama_kegiatan = input_nama_kegiatan.value
+            _form_edit_prev_kegiatan.tanggal_kegiatan = [input_tanggal_pertama_kegiatan.value]
             _form_edit_prev_kegiatan.periode_kegiatan = select_periode_kegiatan.value
             _form_edit_prev_kegiatan.penyelenggara_kegiatan_index = Object.values(PenyelenggaraKegiatan).indexOf(select_penyelenggara_kegiatan.value as PenyelenggaraKegiatan)
             _form_edit_prev_kegiatan.lingkup_kegiatan_index = Object.values(LingkupKegiatan).indexOf(select_lingkup_kegiatan.value as LingkupKegiatan)
@@ -135,6 +140,7 @@
 
         const kegiatan_changes = {
             nama_kegiatan: input_nama_kegiatan.value,
+            tanggal_kegiatan: [input_tanggal_pertama_kegiatan.value],
             periode_kegiatan: select_periode_kegiatan.value,
             penyelenggara_kegiatan_index: Object.values(PenyelenggaraKegiatan).indexOf(select_penyelenggara_kegiatan.value as PenyelenggaraKegiatan),
             lingkup_kegiatan_index: Object.values(LingkupKegiatan).indexOf(select_lingkup_kegiatan.value as LingkupKegiatan),
@@ -142,6 +148,7 @@
 
         let is_changed
             = kegiatan_changes.nama_kegiatan !== _kegiatan.nama_kegiatan
+            || kegiatan_changes.tanggal_kegiatan !== _kegiatan.tanggal_kegiatan
             || kegiatan_changes.periode_kegiatan !== _kegiatan.periode_kegiatan
             || kegiatan_changes.penyelenggara_kegiatan_index !== _kegiatan.penyelenggara_kegiatan_index
             || kegiatan_changes.lingkup_kegiatan_index !== _kegiatan.lingkup_kegiatan_index
@@ -174,6 +181,7 @@
 
                 const prop_name = {
                     nama_kegiatan: 'Nama Kegiatan',
+                    tanggal_kegiatan: 'Tanggal Pertama Kegiatan',
                     periode_kegiatan: 'Periode Kegiatan',
                     penyelenggara_kegiatan_index: 'Penyelenggara Kegiatan',
                     lingkup_kegiatan_index: 'Lingkup Kegiatan',
@@ -181,6 +189,7 @@
 
                 for (const prop of [
                     'nama_kegiatan',
+                    'tanggal_kegiatan',
                     'periode_kegiatan',
                     'penyelenggara_kegiatan_index',
                     'lingkup_kegiatan_index'
@@ -268,7 +277,8 @@
                     html: 'Daftar',
                 })
                 daftar_button.addEventListener('click', () => {
-                    const params = { jenis, dengan, status_lem, antrean_lem }
+                    const tanggal_pertama_kegiatan = common.to_date_string(new Date(_kegiatan.tanggal_kegiatan[0]))
+                    const params = { jenis, dengan, status_lem, antrean_lem, tanggal_pertama_kegiatan }
                     store.set_item(defines.store_key.daftar_rapat, JSON.stringify(params))
                     location.href = `/urus/daftar-rapat/`
                 })

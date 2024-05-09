@@ -33,3 +33,9 @@ Start Firebase emu
 ```bash
   npm run serve
 ```
+
+## Deploy
+
+```bash
+  npm run deploy
+```

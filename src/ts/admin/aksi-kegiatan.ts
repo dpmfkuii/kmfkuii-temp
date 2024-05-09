@@ -11,10 +11,10 @@
     const detail_input_nama_pendaftar = dom.qe<'input'>(detail_form, 'input[name="nama_pendaftar"]')!
     const detail_select_organisasi = dom.qe<'select'>(detail_form, 'select[name="organisasi"]')!
     const detail_input_nama_kegiatan = dom.qe<'input'>(detail_form, 'input[name="nama_kegiatan"]')!
+    const detail_input_tanggal_pertama_kegiatan = dom.qe<'input'>(detail_form, 'input[name="tanggal_pertama_kegiatan"]')!
     const detail_select_periode_kegiatan = dom.qe<'select'>(detail_form, 'select[name="periode_kegiatan"]')!
     const detail_select_penyelenggara_kegiatan = dom.qe<'select'>(detail_form, 'select[name="penyelenggara_kegiatan"]')!
     const detail_select_lingkup_kegiatan = dom.qe<'select'>(detail_form, 'select[name="lingkup_kegiatan"]')!
-    // const input_tanggal_kegiatan = dom.q<'input'>('input[name="tanggal_kegiatan"]')!
     const detail_button_ubah = dom.qe<'button'>(detail_form, 'button[aria-label="Ubah"]')!
     const detail_button_batal = dom.qe<'button'>(detail_form, 'button[aria-label="Batal"]')!
     //#endregion
@@ -66,6 +66,7 @@
         detail_input_nama_pendaftar,
         detail_select_organisasi,
         detail_input_nama_kegiatan,
+        detail_input_tanggal_pertama_kegiatan,
         detail_select_periode_kegiatan,
         detail_select_penyelenggara_kegiatan,
         detail_select_lingkup_kegiatan,
@@ -96,6 +97,7 @@
         detail_input_nama_pendaftar.value = kegiatan.nama_pendaftar
         detail_select_organisasi.value = Object.values(OrganisasiKegiatan)[kegiatan.organisasi_index]
         detail_input_nama_kegiatan.value = kegiatan.nama_kegiatan
+        detail_input_tanggal_pertama_kegiatan.value = kegiatan.tanggal_kegiatan[0]
         detail_select_periode_kegiatan.value = kegiatan.periode_kegiatan
         detail_select_penyelenggara_kegiatan.value = Object.values(PenyelenggaraKegiatan)[kegiatan.penyelenggara_kegiatan_index]
         detail_select_lingkup_kegiatan.value = Object.values(LingkupKegiatan)[kegiatan.lingkup_kegiatan_index]
@@ -377,14 +379,18 @@ Feedback akan diberikan lewat comment di file PDF dan secara langsung saat perte
 2. PENGIRIMAN LINK ZOOM
 Jangan lupa untuk mengirim link Zoom yang telah disiapkan melalui fitur yang sudah ada di website.
 
-*NOTE: DEADLINE pengumpulan berkas & link zoom adalah H-8 JAM sebelum verifikasi${post}`
+*NOTE: DEADLINE pengumpulan berkas & link zoom adalah H-8 JAM sebelum verifikasi.${post}`
         }
         return pre + {
             [TemplatEmail.KONFIRMASI_VERIFIKASI_PROPOSAL]: `proposal dan SPD`,
             [TemplatEmail.KONFIRMASI_VERIFIKASI_LPJ]: `LPJ`,
             [TemplatEmail.ANTREAN_DITOLAK]: `Mohon maaf karena pengajuan verifikasi tidak sesuai dengan alur/ketentuan yang telah ditetapkan, maka pengajuan verifikasi kami tolak.\n\nSilahkan cermati alur/ketentuan yang sudah tertera di website.`,
-            [TemplatEmail.PERINTAH_REVISI]: `Terima kasih telah melakukan verifikasi, untuk selanjutnya karena masih ada yang perlu direvisi silahkan upload file hasil revisi melalui fitur yang tersedia di website.`,
-            [TemplatEmail.PERINTAH_REVISI_2]: `Terima kasih telah mengirim berkas hasil revisi, untuk selanjutnya masih ada yang perlu direvisi, silahkan upload file hasil revisi 2 melalui fitur yang tersedia di website.`,
+            [TemplatEmail.PERINTAH_REVISI]: `Terima kasih telah melakukan verifikasi, untuk selanjutnya karena masih ada yang perlu direvisi silahkan upload file hasil revisi melalui fitur yang tersedia di website.
+
+*NOTE: jangan lupa kirim email konfirmasi jika sudah upload file hasil revisi melalui fitur yang tersedia di website.`,
+            [TemplatEmail.PERINTAH_REVISI_2]: `Terima kasih telah mengirim berkas hasil revisi, untuk selanjutnya masih ada yang perlu direvisi, silahkan upload file hasil revisi 2 melalui fitur yang tersedia di website.
+
+*NOTE: jangan lupa kirim email konfirmasi jika sudah upload file hasil revisi 2 melalui fitur yang tersedia di website.`,
             [TemplatEmail.SELESAI_VERIFIKASI]: `Alhamdulillah proses verifikasi kegiatan sudah selesai, berikut file yang sudah ditandatangani.`,
             [TemplatEmail.PEMBATALAN_VERIFIKASI]: `Mohon maaf, karena ada proses yang tidak dijalankan sesuai tenggat waktu/ketentuan yang berlaku, maka verifikasi kami batalkan.\n\nSilahkan daftar dan ajukan ulang verifikasi.`,
             [TemplatEmail.ACC_DITANDAI_SELESAI]: `Terima kasih atas permohonannya, sudah kami tandai selesai. Silahkan melanjutkan alur verifikasi.`,

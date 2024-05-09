@@ -29,6 +29,7 @@
     const dengan: string = params.dengan || ''
     const status_lem: StatusRapat = params.status_lem || ''
     const antrean_lem: string = params.antrean_lem || ''
+    const tanggal_pertama_kegiatan: Date = new Date(params.tanggal_pertama_kegiatan) || new Date()
 
     if (!jenis || !dengan) {
         auth.redirect_home(UserRole.PENGURUS)
@@ -45,6 +46,9 @@
 
     // fill in options
     const set_jam_rapat_options = (_taken_hours?: string[]) => {
+        if (_taken_hours) {
+            if (!_taken_hours.includes('19.00')) _taken_hours.push('19.00')
+        }
         select_jam_rapat.innerHTML = '<option disabled selected value>-- Pilih jam --</option>'
         for (const jam of JamRapat) {
             const option = dom.c('option')
@@ -53,6 +57,7 @@
                 option.value = ''
                 option.disabled = true
             }
+            if (jam === '19.00') continue
             select_jam_rapat.appendChild(option)
         }
     }
@@ -86,6 +91,11 @@
             // cek itu dah tutup atau belum
             else if (common.is_date_before(date_tanggal_rapat, min_tanggal_rapat)) {
                 input_tanggal_rapat_invalid_feedback.innerHTML = 'Pendaftaran di tanggal itu sudah <strong>tutup</strong>!'
+                input_tanggal_rapat.classList.add('is-invalid')
+            }
+            // cek kalau H-7
+            else if (common.get_difference_in_days(date_tanggal_rapat, tanggal_pertama_kegiatan) < 7) {
+                input_tanggal_rapat_invalid_feedback.innerHTML = 'Pendaftaran minimal <strong>H-7</strong>!'
                 input_tanggal_rapat.classList.add('is-invalid')
             }
             // cek jarak lem ke dpm

@@ -189,6 +189,7 @@ const JamRapat = [
     '-- Bukan bulan puasa --',
     '17.00',
     '18.30',
+    '19.00',
     '19.30',
     '20.00',
     '-- Bulan puasa --',

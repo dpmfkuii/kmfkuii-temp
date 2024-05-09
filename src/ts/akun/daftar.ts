@@ -10,10 +10,10 @@
     const input_nama_pendaftar = dom.q<'input'>('input[name="nama_pendaftar"]')!
     const select_organisasi = dom.q<'select'>('select[name="organisasi"]')!
     const input_nama_kegiatan = dom.q<'input'>('input[name="nama_kegiatan"]')!
+    const input_tanggal_pertama_kegiatan = dom.q<'input'>('input[name="tanggal_pertama_kegiatan"]')!
     const select_periode_kegiatan = dom.q<'select'>('select[name="periode_kegiatan"]')!
     const select_penyelenggara_kegiatan = dom.q<'select'>('select[name="penyelenggara_kegiatan"]')!
     const select_lingkup_kegiatan = dom.q<'select'>('select[name="lingkup_kegiatan"]')!
-    // const input_tanggal_kegiatan = dom.q<'input'>('input[name="tanggal_kegiatan"]')!
 
     // fill in options
     select_organisasi.innerHTML = '<option disabled selected value>-- Pilih organisasi --</option>'
@@ -66,10 +66,10 @@
             input_nama_pendaftar,
             select_organisasi,
             input_nama_kegiatan,
+            input_tanggal_pertama_kegiatan,
             select_periode_kegiatan,
             select_penyelenggara_kegiatan,
             select_lingkup_kegiatan,
-            // input_tanggal_kegiatan,
         ]
 
         dom.disable(...disabled_elements)
@@ -94,7 +94,7 @@
             periode_kegiatan: select_periode_kegiatan.value,
             penyelenggara_kegiatan_index: Object.values(PenyelenggaraKegiatan).indexOf(select_penyelenggara_kegiatan.value as PenyelenggaraKegiatan),
             lingkup_kegiatan_index: Object.values(LingkupKegiatan).indexOf(select_lingkup_kegiatan.value as LingkupKegiatan),
-            tanggal_kegiatan: ['11-04-2024'], //input_tanggal_kegiatan.value,
+            tanggal_kegiatan: [input_tanggal_pertama_kegiatan.value],
             status: {
                 diajukan: created_timestamp,
                 verifikasi: {

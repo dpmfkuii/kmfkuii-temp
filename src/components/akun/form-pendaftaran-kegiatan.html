@@ -64,19 +64,40 @@
     </div>
 </div>
 
-<div class="mb-3">
-    <div class="form-floating">
-        <select
-            name="periode_kegiatan"
-            class="form-select"
-            id="select_periode_kegiatan"
-            required
-        >
-            <option disabled selected value>
-                -- Pilih periode kegiatan --
-            </option>
-        </select>
-        <label for="select_periode_kegiatan">Periode Kegiatan</label>
+<div class="row row-cols-1 row-cols-sm-2">
+    <div class="col">
+        <div class="mb-3">
+            <div class="form-floating">
+                <input
+                    name="tanggal_pertama_kegiatan"
+                    type="date"
+                    class="form-control"
+                    id="input_tanggal_pertama_kegiatan"
+                    required
+                />
+                <label for="input_tanggal_pertama_kegiatan"
+                    >Tanggal Pertama Kegiatan</label
+                >
+                <div class="invalid-feedback"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="mb-3">
+            <div class="form-floating">
+                <select
+                    name="periode_kegiatan"
+                    class="form-select"
+                    id="select_periode_kegiatan"
+                    required
+                >
+                    <option disabled selected value>
+                        -- Pilih periode kegiatan --
+                    </option>
+                </select>
+                <label for="select_periode_kegiatan">Periode Kegiatan</label>
+            </div>
+        </div>
     </div>
 </div>
 
