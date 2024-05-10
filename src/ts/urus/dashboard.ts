@@ -589,13 +589,13 @@ https://zoom.xxx`,
 
     const list_group = dom.qe(panel, '.list-group')!
 
-    const create_list_group_item = (log: LogKegiatan) => {
+    const create_list_group_item = (log: LogKegiatan, log_number: number) => {
         const li = dom.c('li', {
             classes: ['list-group-item', `list-group-item-${log.color}`, 'pb-0'],
             html: `
                 <span></span>
                 <div class="text-secondary small text-end">
-                    ${common.to_12h_format(new Date(Number(log.timestamp)))}
+                    ${common.to_12h_format(new Date(Number(log.timestamp)))} | ${log_number}
                 </div>
             `
         })
@@ -611,10 +611,11 @@ https://zoom.xxx`,
     db.on_kegiatan_logs(uid, snap => {
         if (!snap.exists()) return
 
-        list_group.innerHTML = `<li class="list-group-item list-group-item-${defines.log_colors.awal_log} text-center rounded-bottom">-- Awal log --</li>`
+        list_group.innerHTML = `<li class="list-group-item list-group-item-${defines.log_colors.awal_log} text-center rounded-bottom">Awal log <i class="fa-solid fa-arrow-turn-up"></i></li>`
 
         const logs = snap.val()
         let _current_date_string = ''
+        let log_number = 1
         for (const timestamp in logs) {
             const _date = new Date(Number(timestamp))
             if (_date.toDateString() !== _current_date_string) {
@@ -625,7 +626,13 @@ https://zoom.xxx`,
                 _current_date_string = _date.toDateString()
             }
             const log = main.extract_log_kegiatan(timestamp, logs[timestamp])
-            list_group.prepend(create_list_group_item(log))
+            list_group.prepend(create_list_group_item(log, log_number))
+            log_number++
         }
+
+        list_group.prepend(dom.c('li', {
+            classes: ['list-group-item', `list-group-item-${defines.log_colors.awal_log}`, 'text-center', 'rounded-bottom'],
+            html: 'Baca log dari bawah ke atas <i class="fa-solid fa-arrow-turn-up"></i>',
+        }))
     })
 })()

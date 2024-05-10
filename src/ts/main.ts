@@ -495,6 +495,7 @@ const db = {
         await Promise.all([
             db.get_kegiatan(uid).then(snap => db.remove_logbook(snap.val()!)),
             db.remove_kegiatan_logs(uid),
+            db.remove_pengajuan(uid),
         ])
         await db.remove_kegiatan(uid)
         await main_db.ref(`users/${uid}`).remove()
@@ -510,6 +511,10 @@ const db = {
     set_pengajuan_diterima(uid: string, jenis: JenisRapat, dengan: RapatDengan, date_diterima: Date) {
         return main_db.ref(`verifikasi/rapat/pengajuan/${uid}/${jenis}/${dengan}/diterima`)
             .set(date_diterima.getTime())
+    },
+    remove_pengajuan(uid: string) {
+        return main_db.ref(`verifikasi/rapat/pengajuan/${uid}`)
+            .remove()
     },
 }
 

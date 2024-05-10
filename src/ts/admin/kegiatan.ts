@@ -16,9 +16,11 @@
 
     const update_table_logbook_data = (list: TableLogbookData[]) => {
         table_logbook_kegiatan_tbody.innerHTML = ''
+        let no = 1
         for (const item of list) {
             const tr = dom.c('tr')
             tr.innerHTML = `
+                <td>${no++}</td>
                 <td>${item.uid}</td>
                 <td>${item.nama_kegiatan}</td>
                 <td>${main.get_status_rapat_icon(item.status_verifikasi.proposal.lem)}</td>
@@ -117,6 +119,8 @@
                 }
             }
         }
+
+        table_logbook_list.sort((a, b) => a.nama_kegiatan < b.nama_kegiatan ? -1 : a.nama_kegiatan > b.nama_kegiatan ? 1 : 0)
 
         fuse = new Fuse(table_logbook_list, {
             // isCaseSensitive: false,
