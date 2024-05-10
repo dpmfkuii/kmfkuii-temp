@@ -360,6 +360,74 @@ const main = {
         const iso = `${tanggal}T${jam.replace('.', ':')}`
         return new Date(iso)
     },
+    swal_fire_detail_kegiatan(nama_kegiatan: string, uid: string, options: { action_el_group?: HTMLElement } = {}) {
+        return swal.fire({
+            title: nama_kegiatan,
+            html: '<div><i>Memuat detail...</i></div>',
+            confirmButtonText: 'Tutup',
+            customClass: {
+                confirmButton: 'btn btn-primary',
+            },
+            buttonsStyling: false,
+            showCloseButton: true,
+            async didOpen() {
+                swal.showLoading()
+                db.get_kegiatan(uid)
+                    .then(snap => {
+                        const popup = swal.getPopup()
+                        if (!popup) {
+                            swal.hideLoading()
+                            return
+                        }
+
+                        const div = dom.qe<'div'>(popup, '#swal2-html-container > div')!
+                        if (snap.exists()) {
+                            const kegiatan = snap.val()
+                            let uid_text = ''
+                            const role = auth.get_logged_in_user()?.role
+                            if (role === UserRole.ADMIN) {
+                                uid_text = kegiatan.uid
+                            }
+                            else {
+                                uid_text = `${uid.substring(0, 4)}${common.replace_all_char(uid.substring(4), '*', ['-'])}`
+                            }
+                            div.classList.add('text-start')
+                            div.innerHTML = `
+                                <h6>UID</h6>
+                                <p class="small">${uid_text}</p>
+                                <h6>Organisasi</h6>
+                                <p class="small">${Object.values(OrganisasiKegiatan)[kegiatan.organisasi_index]}</p>
+                                <h6>Nama Kegiatan</h6>
+                                <p class="small">${kegiatan.nama_kegiatan}</p>
+                                <h6>Periode Kegiatan</h6>
+                                <p class="small">${kegiatan.periode_kegiatan.replace('-', '/')}</p>
+                                <h6>Penyelenggara Kegiatan</h6>
+                                <p class="small">${Object.values(PenyelenggaraKegiatan)[kegiatan.penyelenggara_kegiatan_index]}</p>
+                                <h6>Lingkup Kegiatan</h6>
+                                <p class="small">${Object.values(LingkupKegiatan)[kegiatan.lingkup_kegiatan_index]}</p>
+                                <h6>Status Verifikasi</h6>
+                                <p class="small">Proposal LEM ${main.get_status_rapat_text(kegiatan.status.verifikasi.proposal.lem, true)}.<br />
+                                Proposal DPM ${main.get_status_rapat_text(kegiatan.status.verifikasi.proposal.dpm, true)}.<br />
+                                LPJ LEM ${main.get_status_rapat_text(kegiatan.status.verifikasi.lpj.lem, true)}.<br />
+                                LPJ DPM ${main.get_status_rapat_text(kegiatan.status.verifikasi.lpj.dpm, true)}.</p>
+                                <h6>Dibuat</h6>
+                                <p class="small">${new Date(kegiatan.created_timestamp).toLocaleString()}</p>
+                                <h6>Terakhir Diperbarui</h6>
+                                <p class="small">${new Date(kegiatan.updated_timestamp).toLocaleString()}</p>
+                            `
+                            if (role === UserRole.ADMIN && options.action_el_group) {
+                                div.innerHTML += '<h6>Aksi</h6>'
+                                div.appendChild(options.action_el_group)
+                            }
+                        }
+                        else {
+                            div.innerHTML = '<i class="text-secondary">Tidak ada data.</i>'
+                        }
+                        swal.hideLoading()
+                    })
+            },
+        })
+    },
 }
 
 const db = {
@@ -475,6 +543,25 @@ const db = {
     add_jadwal_rapat(rapat: Rapat) {
         return main_db.ref(`verifikasi/rapat/jadwal/${rapat.rapat_dengan}/${rapat.tanggal_rapat.replaceAll('-', '/')}/${common.timestamp()}`)
             .set(rapat)
+    },
+    remove_jadwal_rapat(rapat: Rapat, timestamp: string) {
+        return main_db.ref(`verifikasi/rapat/jadwal/${rapat.rapat_dengan}/${rapat.tanggal_rapat.replaceAll('-', '/')}/${timestamp}`)
+            .remove()
+    },
+    /**
+     * 
+     * @param rapat 
+     * @param timestamp
+     * @param new_tanggal_rapat yyyy-mm-dd
+     * @param new_jam_rapat hh.mm
+     */
+    move_jadwal_rapat(rapat: Rapat, timestamp: string, new_tanggal_rapat: string, new_jam_rapat: string) {
+        db.add_jadwal_rapat({
+            ...rapat,
+            tanggal_rapat: new_tanggal_rapat,
+            jam_rapat: new_jam_rapat,
+        })
+        db.remove_jadwal_rapat(rapat, timestamp)
     },
     move_rapat_from_antrean_to_jadwal(rapat_in_antrean: Rapat) {
         return Promise.all([

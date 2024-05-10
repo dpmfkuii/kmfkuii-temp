@@ -141,7 +141,7 @@
             </td></tr>
         `
 
-        const list_jadwal_rapat_by_jam: { [jam_rapat: string]: Rapat[] } = {}
+        const list_jadwal_rapat_by_jam: { [jam_rapat: string]: (Rapat & { timestamp: string })[] } = {}
         const list_antrean_rapat_by_jam: { [jam_rapat: string]: Rapat[] } = {}
 
         for (const jam of JamRapat) {
@@ -161,7 +161,10 @@
                         const rapat_list = snap.val()
                         for (const timestamp in rapat_list) {
                             const rapat = rapat_list[timestamp]
-                            list_jadwal_rapat_by_jam[rapat.jam_rapat][i] = rapat
+                            list_jadwal_rapat_by_jam[rapat.jam_rapat][i] = {
+                                ...rapat,
+                                timestamp,
+                            }
                         }
                     })
 
@@ -202,14 +205,301 @@
                 const rapat_terjadwal = list_jadwal_rapat_by_jam[jam][i]
                 if (rapat_terjadwal) {
                     td.classList.add('text-bg-jadwal')
+                    td.setAttribute('role', 'button')
                     td.textContent = main.get_nama_rapat(rapat_terjadwal)
+
+                    const pindah_button = dom.c('button', {
+                        classes: ['btn', 'btn-warning', 'text-light'],
+                        html: '<i class="fa-solid fa-calendar-day"></i>'
+                    })
+
+                    const batal_button = dom.c('button', {
+                        classes: ['btn', 'btn-danger'],
+                        html: '<i class="fa-solid fa-trash-can"></i>'
+                    })
+
+                    const nama_rapat = main.get_nama_rapat(rapat_terjadwal)
+                    const waktu_rapat = main.get_waktu_rapat(rapat_terjadwal)
+
+                    pindah_button.addEventListener('click', async () => {
+                        const log_color = defines.log_colors.jadwal_dipindah
+
+                        let jam_options_html = ''
+                        for (const jam of JamRapat) {
+                            const option = dom.c('option')
+                            option.textContent = option.value = jam
+                            if (jam.includes('--')) {
+                                option.value = ''
+                                option.disabled = true
+                            }
+                            jam_options_html += option.outerHTML
+                        }
+                        const { value: formValues } = await swal.fire({
+                            title: `Pilih waktu baru`,
+                            html: `
+                                <div class="row row-cols-1 row-cols-sm-2 m-0 mt-2">
+                                    <div class="col">
+                                        <div class="mb-3">
+                                            <div class="form-floating">
+                                                <input
+                                                    name="tanggal_rapat"
+                                                    type="date"
+                                                    class="form-control"
+                                                    id="input_tanggal_rapat"
+                                                    value="${rapat_terjadwal.tanggal_rapat}"
+                                                />
+                                                <label for="input_tanggal_rapat">Tanggal</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="mb-3">
+                                            <div class="form-floating">
+                                                <select
+                                                    name="jam_rapat"
+                                                    class="form-select"
+                                                    id="input_jam_rapat"
+                                                >
+                                                    <option disabled value>-- Pilih jam --</option>
+                                                    ${jam_options_html}
+                                                </select>
+                                                <label for="input_jam_rapat">Jam</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                        
+                            `,
+                            showDenyButton: true,
+                            confirmButtonText: 'Pindah',
+                            denyButtonText: 'Nanti',
+                            customClass: {
+                                confirmButton: 'btn btn-warning text-light',
+                                denyButton: 'btn btn-secondary ms-2',
+                            },
+                            buttonsStyling: false,
+                            showCloseButton: true,
+                            footer: `<small id="pindah_footer">Akan muncul log: <span class="text-${log_color}">${defines.log_text.rapat_dipindah(nama_rapat, waktu_rapat, waktu_rapat)}</span></small>`,
+                            preConfirm() {
+                                return {
+                                    new_tanggal_rapat: dom.q<'select'>('#input_tanggal_rapat')!.value,
+                                    new_jam_rapat: dom.q<'select'>('#input_jam_rapat')!.value,
+                                }
+                            },
+                            didOpen() {
+                                try {
+                                    const new_tanggal_rapat = dom.q<'select'>('#input_tanggal_rapat')!
+                                    const new_jam_rapat = dom.q<'select'>('#input_jam_rapat')!
+                                    const pindah_footer = dom.q<'small'>('#pindah_footer')!
+                                    const pindah_footer_log = dom.qe<'span'>(pindah_footer, 'span')!
+                                    new_jam_rapat.value = rapat_terjadwal.jam_rapat
+
+                                    const update_footer_log = () => {
+                                        const new_waktu_rapat = main.get_waktu_rapat({
+                                            ...rapat_terjadwal,
+                                            tanggal_rapat: new_tanggal_rapat.value,
+                                            jam_rapat: new_jam_rapat.value,
+                                        })
+                                        pindah_footer_log.innerHTML = defines.log_text.rapat_dipindah(nama_rapat, waktu_rapat, new_waktu_rapat)
+                                    }
+
+                                    new_tanggal_rapat.addEventListener('change', () => {
+                                        update_footer_log()
+                                    })
+
+                                    new_jam_rapat.addEventListener('change', () => {
+                                        update_footer_log()
+                                    })
+                                }
+                                catch { }
+                            },
+                        })
+
+                        if (formValues) {
+                            console.log(formValues)
+                            swal.fire({
+                                title: 'Pindah Jadwal',
+                                html: '<div><i>Memproses...</i></div>',
+                                showConfirmButton: false,
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                async didOpen() {
+                                    swal.showLoading()
+
+                                    const popup = swal.getPopup()
+                                    if (!popup) {
+                                        swal.hideLoading()
+                                        return
+                                    }
+
+                                    const new_tanggal_rapat = formValues.new_tanggal_rapat
+                                    const new_jam_rapat = formValues.new_jam_rapat
+                                    const new_waktu_rapat = main.get_waktu_rapat({
+                                        ...rapat_terjadwal,
+                                        tanggal_rapat: new_tanggal_rapat,
+                                        jam_rapat: new_jam_rapat,
+                                    })
+
+                                    // cancel kalau jadwal already taken
+                                    let already_taken = ''
+                                    try {
+                                        await db.get_jadwal_rapat_dengan_tanggal(rapat_terjadwal.rapat_dengan, new_tanggal_rapat.replaceAll('-', '/'))
+                                            .then(snap => {
+                                                if (snap.exists()) {
+                                                    const rapat_list = snap.val()
+                                                    for (const timestamp in rapat_list) {
+                                                        if (rapat_list[timestamp].jam_rapat === new_jam_rapat) {
+                                                            already_taken = main.get_nama_rapat(rapat_list[timestamp])
+                                                            break
+                                                        }
+                                                    }
+                                                }
+                                            })
+                                    }
+                                    catch (err) {
+                                        main.show_unexpected_error_message(err)
+                                        return
+                                    }
+
+                                    if (already_taken !== '') {
+                                        swal.fire({
+                                            icon: 'error',
+                                            title: 'Pindah Jadwal',
+                                            html: `<small>Jadwal pada ${new_waktu_rapat} sudah diambil ${already_taken}. Coba waktu lain.</small>`,
+                                            confirmButtonText: 'Tutup',
+                                            customClass: {
+                                                confirmButton: 'btn btn-primary',
+                                            },
+                                            buttonsStyling: false,
+                                            showCloseButton: true,
+                                        })
+                                        return
+                                    }
+
+                                    try {
+                                        await Promise.all([
+                                            db.move_jadwal_rapat(rapat_terjadwal, rapat_terjadwal.timestamp, new_tanggal_rapat, new_jam_rapat),
+                                            db.set_pengajuan_diterima(rapat_terjadwal.uid,
+                                                rapat_terjadwal.jenis_rapat, rapat_terjadwal.rapat_dengan,
+                                                main.tanggal_dan_jam_to_date(new_tanggal_rapat, new_jam_rapat),
+                                            )
+                                        ])
+
+                                        await Promise.all([
+                                            db.add_kegiatan_log(rapat_terjadwal.uid,
+                                                log_color,
+                                                defines.log_text.rapat_dipindah(nama_rapat, waktu_rapat, new_waktu_rapat),
+                                            ),
+                                            db.set_kegiatan_updated_timestamp(rapat_terjadwal.uid),
+                                        ])
+                                    }
+                                    catch (err) {
+                                        main.show_unexpected_error_message(err)
+                                        return
+                                    }
+
+                                    update_jadwal()
+                                    update_antrean()
+
+                                    swal.fire({
+                                        icon: 'success',
+                                        title: 'Pindah berhasil!',
+                                        showConfirmButton: false,
+                                        timer: 1000,
+                                        timerProgressBar: true,
+                                        allowOutsideClick: false,
+                                        allowEscapeKey: false,
+                                    })
+                                },
+                            })
+                        }
+                    })
+
+                    batal_button.addEventListener('click', () => {
+                        const log_color = defines.log_colors.jadwal_dihapus
+                        const log_text = defines.log_text.rapat_dihapus(nama_rapat, waktu_rapat)
+
+                        swal.fire({
+                            icon: 'warning',
+                            title: 'Hapus jadwal?',
+                            html: '<small>Hapus jadwal hanya <strong class="text-danger">menghapus dari kalender dan tidak membatalkan</strong> proses verifikasi. Lakukan pembatalan lewat menu kegiatan bila perlu.</small>',
+                            showDenyButton: true,
+                            confirmButtonText: 'Hapus',
+                            denyButtonText: 'Nanti',
+                            customClass: {
+                                confirmButton: 'btn btn-danger',
+                                denyButton: 'btn btn-secondary ms-2',
+                            },
+                            buttonsStyling: false,
+                            showCloseButton: true,
+                            footer: `<small>Akan muncul log: <span class="text-${log_color}">${log_text}</span></small>`,
+                        }).then((result: any) => {
+                            if (result.isConfirmed) {
+                                swal.fire({
+                                    title: 'Hapus Jadwal',
+                                    html: '<div><i>Memproses...</i></div>',
+                                    showConfirmButton: false,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    async didOpen() {
+                                        swal.showLoading()
+                                        try {
+                                            await db.remove_jadwal_rapat(rapat_terjadwal, rapat_terjadwal.timestamp)
+                                            await Promise.all([
+                                                db.add_kegiatan_log(rapat_terjadwal.uid,
+                                                    log_color,
+                                                    log_text,
+                                                ),
+                                                db.set_kegiatan_updated_timestamp(rapat_terjadwal.uid),
+                                            ])
+                                        }
+                                        catch (err) {
+                                            main.show_unexpected_error_message(err)
+                                            return
+                                        }
+
+                                        update_jadwal()
+                                        update_antrean()
+
+                                        swal.fire({
+                                            icon: 'success',
+                                            title: 'Hapus berhasil!',
+                                            showConfirmButton: false,
+                                            timer: 1000,
+                                            timerProgressBar: true,
+                                            allowOutsideClick: false,
+                                            allowEscapeKey: false,
+                                        })
+                                    },
+                                })
+                            }
+                        })
+                    })
+
+                    const action_el_group = dom.c('div', {
+                        classes: ['d-flex', 'gap-1'],
+                        children: [
+                            pindah_button,
+                            batal_button,
+                        ]
+                    })
+
+                    td.addEventListener('click', () => {
+                        main.swal_fire_detail_kegiatan(rapat_terjadwal.nama_kegiatan, rapat_terjadwal.uid, {
+                            action_el_group,
+                        })
+                    })
                 }
                 else {
                     const rapat_antrean = list_antrean_rapat_by_jam[jam][i]
                     if (rapat_antrean) {
                         td.classList.add('text-bg-antrean')
+                        td.setAttribute('role', 'button')
                         td.style.animation = 'placeholder-glow 2s ease-in-out infinite'
                         td.textContent = main.get_nama_rapat(rapat_antrean)
+
+                        td.addEventListener('click', () => {
+                            main.swal_fire_detail_kegiatan(rapat_antrean.nama_kegiatan, rapat_antrean.uid)
+                        })
                     }
                 }
                 tr.appendChild(td)
@@ -246,7 +536,7 @@
             classes: ['list-group-item', 'd-flex', 'gap-1', 'align-items-center'],
             html: `
                 <div class="flex-grow-1">
-                    <span>${nama_rapat}</span>
+                    <span class="span-nama-rapat">${nama_rapat}</span>
                     <div class="text-secondary small">
                         <span class="fw-bold"
                             ><i class="fa-regular fa-clock"></i> ${rapat.jam_rapat}</span
@@ -259,10 +549,17 @@
                         <i class="fa-solid fa-calendar-plus"></i>
                     </button>
                     <button class="btn btn-danger">
-                        <i class="fa-solid fa-trash-can"></i>
+                        <i class="fa-solid fa-arrow-rotate-left"></i>
                     </button>
                 </div>
             `
+        })
+
+        const span_nama_rapat = dom.qe<'button'>(li, '.span-nama-rapat')!
+        span_nama_rapat.setAttribute('role', 'button')
+
+        span_nama_rapat.addEventListener('click', () => {
+            main.swal_fire_detail_kegiatan(rapat.nama_kegiatan, rapat.uid)
         })
 
         const confirm_button = dom.qe<'button'>(li, '.btn.btn-success')!
@@ -276,10 +573,13 @@
         }
 
         confirm_button.addEventListener('click', () => {
+            const log_color = defines.log_colors.jadwal_terkonfirmasi
+            const log_text = defines.log_text.rapat_terkonfirmasi(nama_rapat, waktu_rapat)
+
             swal.fire({
                 icon: 'question',
                 title: `Konfirmasi jadwal?`,
-                html: '<small>Konfirmasi akan memindahkan jadwal dari antrean ke kalender. Setelah konfirmasi, jadwal masih bisa diubah atau dibatalkan.</small>',
+                html: '<small>Konfirmasi akan memindahkan jadwal dari antrean ke kalender. Setelah konfirmasi, jadwal masih bisa diubah atau dihapus.</small>',
                 showDenyButton: true,
                 confirmButtonText: 'Konfirmasi',
                 denyButtonText: 'Nanti',
@@ -289,7 +589,7 @@
                 },
                 buttonsStyling: false,
                 showCloseButton: true,
-                footer: nama_rapat,
+                footer: `<small>Akan muncul log: <span class="text-${log_color}">${log_text}</span></small>`,
             }).then((result: any) => {
                 if (result.isConfirmed) {
                     swal.fire({
@@ -310,14 +610,15 @@
                                 ])
                                 await Promise.all([
                                     db.add_kegiatan_log(rapat.uid,
-                                        defines.log_colors.jadwal_terkonfirmasi,
-                                        defines.log_text.rapat_terkonfirmasi(nama_rapat, waktu_rapat),
+                                        log_color,
+                                        log_text,
                                     ),
                                     db.set_kegiatan_updated_timestamp(rapat.uid),
                                 ])
                             }
                             catch (err) {
                                 main.show_unexpected_error_message(err)
+                                return
                             }
 
                             update_jadwal()
@@ -339,12 +640,15 @@
         })
 
         reject_button.addEventListener('click', () => {
+            const log_color = defines.log_colors.jadwal_ditolak
+            const log_text = defines.log_text.rapat_ditolak(nama_rapat, waktu_rapat)
+
             swal.fire({
                 icon: 'warning',
                 title: 'Tolak jadwal?',
-                html: '<small>Tolak akan membatalkan jadwal dan pendaftar dapat mendaftar ulang. Jika ingin mengubah waktu tanpa mendaftar ulang, lakukan konfirmasi lalu ubah.</small>',
+                html: '<small>Tolak akan <strong class="text-danger">membatalkan proses verifikasi</strong> dan pendaftar dapat mendaftar ulang. Jika ingin memindah waktu tanpa mendaftar ulang, lakukan konfirmasi lalu pindah.</small>',
                 showDenyButton: true,
-                confirmButtonText: 'Tolak',
+                confirmButtonText: 'Tolak & Batalkan',
                 denyButtonText: 'Nanti',
                 customClass: {
                     confirmButton: 'btn btn-danger',
@@ -352,7 +656,7 @@
                 },
                 buttonsStyling: false,
                 showCloseButton: true,
-                footer: nama_rapat,
+                footer: `<small>Akan muncul log: <span class="text-${log_color}">${log_text}</span></small>`,
             }).then((result: any) => {
                 if (result.isConfirmed) {
                     swal.fire({
@@ -371,14 +675,15 @@
                                 ])
                                 await Promise.all([
                                     db.add_kegiatan_log(rapat.uid,
-                                        defines.log_colors.jadwal_ditolak,
-                                        defines.log_text.rapat_ditolak(nama_rapat, waktu_rapat),
+                                        log_color,
+                                        log_text,
                                     ),
                                     db.set_kegiatan_updated_timestamp(rapat.uid),
                                 ])
                             }
                             catch (err) {
                                 main.show_unexpected_error_message(err)
+                                return
                             }
 
                             update_jadwal()

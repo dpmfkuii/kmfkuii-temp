@@ -39,8 +39,8 @@ const defines = {
         jadwal_masuk_antrean: 'info' as LogColor,
         jadwal_terkonfirmasi: 'success' as LogColor,
         jadwal_ditolak: 'danger' as LogColor,
-        jadwal_diubah: 'info' as LogColor,
-        jadwal_dibatalkan: 'danger' as LogColor,
+        jadwal_dipindah: 'warning' as LogColor,
+        jadwal_dihapus: 'danger' as LogColor,
         verifikasi_selesai: 'success' as LogColor,
         verifikasi_dibatalkan: 'danger' as LogColor,
     },
@@ -68,6 +68,12 @@ const defines = {
         },
         rapat_ditolak(nama_rapat: string, waktu_rapat: string) {
             return `Penjadwalan rapat ${nama_rapat} pada ${waktu_rapat} ditolak.`
+        },
+        rapat_dipindah(nama_rapat: string, waktu_rapat: string, new_waktu_rapat: string) {
+            return `Penjadwalan rapat ${nama_rapat} pada ${waktu_rapat} dipindah ke ${new_waktu_rapat}.`
+        },
+        rapat_dihapus(nama_rapat: string, waktu_rapat: string) {
+            return `Penjadwalan rapat ${nama_rapat} pada ${waktu_rapat} dihapus dari kalender.`
         },
         verifikasi_selesai(jenis_rapat: JenisRapat, rapat_dengan: RapatDengan) {
             return `@html Verifikasi ${defines.jenis_rapat_text_mid[jenis_rapat]} dengan ${defines.rapat_dengan_text[rapat_dengan]} <strong>selesai</strong>.`

@@ -108,54 +108,7 @@
                             })
 
                             list_item_kegiatan_title.addEventListener('click', () => {
-                                swal.fire({
-                                    title: nama_kegiatan,
-                                    html: '<div><i>Memuat detail...</i></div>',
-                                    confirmButtonText: 'Tutup',
-                                    customClass: {
-                                        confirmButton: 'btn btn-primary',
-                                    },
-                                    buttonsStyling: false,
-                                    showCloseButton: true,
-                                    didOpen() {
-                                        swal.showLoading()
-                                        db.get_kegiatan(uid)
-                                            .then(snap => {
-                                                const div = dom.qe<'div'>(swal.getPopup(), '#swal2-html-container > div')!
-                                                if (snap.exists()) {
-                                                    const kegiatan = snap.val()
-                                                    div.classList.add('text-start')
-                                                    div.innerHTML = `
-                                                        <h6>UID</h6>
-                                                        <p class="small">${kegiatan.uid.substring(0, 5)}***-***</p>
-                                                        <h6>Organisasi</h6>
-                                                        <p class="small">${Object.values(OrganisasiKegiatan)[kegiatan.organisasi_index]}</p>
-                                                        <h6>Nama Kegiatan</h6>
-                                                        <p class="small">${kegiatan.nama_kegiatan}</p>
-                                                        <h6>Periode Kegiatan</h6>
-                                                        <p class="small">${kegiatan.periode_kegiatan.replace('-', '/')}</p>
-                                                        <h6>Penyelenggara Kegiatan</h6>
-                                                        <p class="small">${Object.values(PenyelenggaraKegiatan)[kegiatan.penyelenggara_kegiatan_index]}</p>
-                                                        <h6>Lingkup Kegiatan</h6>
-                                                        <p class="small">${Object.values(LingkupKegiatan)[kegiatan.lingkup_kegiatan_index]}</p>
-                                                        <h6>Status Verifikasi</h6>
-                                                        <p class="small">Proposal LEM ${main.get_status_rapat_text(kegiatan.status.verifikasi.proposal.lem, true)}.<br />
-                                                        Proposal DPM ${main.get_status_rapat_text(kegiatan.status.verifikasi.proposal.dpm, true)}.<br />
-                                                        LPJ LEM ${main.get_status_rapat_text(kegiatan.status.verifikasi.lpj.lem, true)}.<br />
-                                                        LPJ DPM ${main.get_status_rapat_text(kegiatan.status.verifikasi.lpj.dpm, true)}.</p>
-                                                        <h6>Dibuat</h6>
-                                                        <p class="small">${new Date(kegiatan.created_timestamp).toLocaleString()}</p>
-                                                        <h6>Terakhir Diperbarui</h6>
-                                                        <p class="small">${new Date(kegiatan.updated_timestamp).toLocaleString()}</p>
-                                                    `
-                                                }
-                                                else {
-                                                    div.innerHTML = '<i class="text-secondary">Tidak ada data.</i>'
-                                                }
-                                                swal.hideLoading()
-                                            })
-                                    },
-                                })
+                                main.swal_fire_detail_kegiatan(nama_kegiatan, uid)
                             })
 
                             const create_badge = (text: string, state: StatusRapatVerifikasiKegiatan) => {

@@ -213,7 +213,8 @@
             swal.fire({
                 icon: 'warning',
                 title: `Verifikasi ${nama_rapat} batal?`,
-                html: `<small>Status akan berubah dari ${status_text} menjadi ${main.get_status_rapat_text(next_status, true)}.</small>`,
+                html: `<small>Status akan berubah dari ${status_text} menjadi ${main.get_status_rapat_text(next_status, true)}.
+                <i class="text-warning">Note:</i> apabila masih ada di <span class="text-bg-antrean px-1">antrean</span>, lakukan pembatalan lewat tombol tolak jadwal di menu rapat.</small>`,
                 showDenyButton: true,
                 confirmButtonText: 'Batal',
                 denyButtonText: 'Nanti',

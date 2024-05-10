@@ -196,6 +196,18 @@ const common = {
     remove_extra_spaces(text: string) {
         return text.replace(/\s+/g, ' ').trim()
     },
+    replace_all_char(s: string, replace_value: string, except?: string[]) {
+        let t = ''
+        for (let i = 0; i < s.length; i++) {
+            if (except && except.includes(s[i])) {
+                t += s[i]
+            }
+            else {
+                t += replace_value
+            }
+        }
+        return t
+    },
 }
 
 declare const CryptoJS: any
