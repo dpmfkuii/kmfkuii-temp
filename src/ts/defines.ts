@@ -84,6 +84,7 @@ const globals = {
         hide_antrean: false,
         show_available_week_onstart: false,
         show_dpm_onstart: false,
+        show_more_info: false,
     },
 }
 

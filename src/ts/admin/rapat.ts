@@ -48,6 +48,7 @@
     const jadwal_table = dom.q<'table'>('#jadwal_table')!
     const jadwal_table_thead_tr = dom.qe<'tr'>(jadwal_table, 'thead tr')!
     const jadwal_table_tbody = dom.qe<'tbody'>(jadwal_table, 'tbody')!
+    const jadwal_more_info = dom.q<'div'>('#jadwal_more_info')!
 
     const list_group_antrean = dom.q<'ul'>('#list_group_antrean')!
     const antrean_card = dom.q<'div'>('#antrean_card')!
@@ -193,8 +194,10 @@
 
             for (let i = 0; i < jadwal_days_amount; i++) {
                 const td = dom.c('td')
-                if (jam === '19.00') {
-                    td.innerHTML = '<span class="badge text-bg-danger">-</span>'
+                if (globals.rapat.show_more_info) {
+                    if (jam === '19.00') {
+                        td.innerHTML = '<span class="badge text-bg-danger">-</span>'
+                    }
                 }
                 const rapat_terjadwal = list_jadwal_rapat_by_jam[jam][i]
                 if (rapat_terjadwal) {
@@ -216,6 +219,15 @@
         }
     }
 
+    const update_jadwal_more_info_row = () => {
+        if (globals.rapat.show_more_info) {
+            jadwal_more_info.classList.remove('visually-hidden')
+        }
+        else {
+            jadwal_more_info.classList.add('visually-hidden')
+        }
+    }
+
     const update_jadwal = () => {
         span_jadwal_header_title.textContent = `Jadwal (${defines.rapat_dengan_text[rapat_dengan]})`
 
@@ -223,6 +235,7 @@
         update_jadwal_info_row()
         update_jadwal_table_thead()
         update_jadwal_table_tbody()
+        update_jadwal_more_info_row()
     }
 
     const create_antrean_list_group_item = (rapat: Rapat) => {
