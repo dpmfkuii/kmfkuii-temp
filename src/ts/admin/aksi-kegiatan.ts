@@ -385,17 +385,17 @@ Jangan lupa untuk mengirim link Zoom yang telah disiapkan melalui fitur yang sud
         return pre + {
             [TemplatEmail.KONFIRMASI_VERIFIKASI_PROPOSAL]: `proposal dan SPD`,
             [TemplatEmail.KONFIRMASI_VERIFIKASI_LPJ]: `LPJ`,
-            [TemplatEmail.ANTREAN_DITOLAK]: `Mohon maaf karena pengajuan verifikasi tidak sesuai dengan alur/ketentuan yang telah ditetapkan, maka pengajuan verifikasi kami tolak.\n\nSilahkan cermati alur/ketentuan yang sudah tertera di website.`,
-            [TemplatEmail.PERINTAH_REVISI]: `Terima kasih telah melakukan verifikasi, untuk selanjutnya karena masih ada yang perlu direvisi silahkan upload file hasil revisi melalui fitur yang tersedia di website.
+            [TemplatEmail.ANTREAN_DITOLAK]: `Mohon maaf karena pengajuan verifikasi tidak sesuai dengan alur/ketentuan yang telah ditetapkan, maka pengajuan verifikasi kami tolak.\n\nSilakan cermati alur/ketentuan yang sudah tertera di website.`,
+            [TemplatEmail.PERINTAH_REVISI]: `Terima kasih telah melakukan verifikasi, untuk selanjutnya karena masih ada yang perlu direvisi silakan upload file hasil revisi melalui fitur yang tersedia di website.
 
 *NOTE: jangan lupa kirim email konfirmasi jika sudah upload file hasil revisi melalui fitur yang tersedia di website.`,
-            [TemplatEmail.PERINTAH_REVISI_2]: `Terima kasih telah mengirim berkas hasil revisi, untuk selanjutnya masih ada yang perlu direvisi, silahkan upload file hasil revisi 2 melalui fitur yang tersedia di website.
+            [TemplatEmail.PERINTAH_REVISI_2]: `Terima kasih telah mengirim berkas hasil revisi, untuk selanjutnya masih ada yang perlu direvisi, silakan upload file hasil revisi 2 melalui fitur yang tersedia di website.
 
 *NOTE: jangan lupa kirim email konfirmasi jika sudah upload file hasil revisi 2 melalui fitur yang tersedia di website.`,
             [TemplatEmail.SELESAI_VERIFIKASI]: `Alhamdulillah proses verifikasi kegiatan sudah selesai, berikut file yang sudah ditandatangani.`,
-            [TemplatEmail.PEMBATALAN_VERIFIKASI]: `Mohon maaf, karena ada proses yang tidak dijalankan sesuai tenggat waktu/ketentuan yang berlaku, maka verifikasi kami batalkan.\n\nSilahkan daftar dan ajukan ulang verifikasi.`,
-            [TemplatEmail.ACC_DITANDAI_SELESAI]: `Terima kasih atas permohonannya, sudah kami tandai selesai. Silahkan melanjutkan alur verifikasi.`,
-            [TemplatEmail.LUPA_UID]: `Silahkan gunakan UID berikut untuk login di website.\n\n${_komunikasi_kegiatan.nama_kegiatan}\nUID: ${uid}`
+            [TemplatEmail.PEMBATALAN_VERIFIKASI]: `Mohon maaf, karena ada proses yang tidak dijalankan sesuai tenggat waktu/ketentuan yang berlaku, maka verifikasi kami batalkan.\n\nSilakan daftar dan ajukan ulang verifikasi.`,
+            [TemplatEmail.ACC_DITANDAI_SELESAI]: `Terima kasih atas permohonannya, sudah kami tandai selesai. Silakan melanjutkan alur verifikasi.`,
+            [TemplatEmail.LUPA_UID]: `Silakan gunakan UID berikut untuk login di website.\n\n${_komunikasi_kegiatan.nama_kegiatan}\nUID: ${uid}`
         }[templat] + post
     }
 
@@ -518,6 +518,16 @@ Jangan lupa untuk mengirim link Zoom yang telah disiapkan melalui fitur yang sud
     //#endregion
 })();
 
+// panel keuangan
+(() => {
+
+    const panel_keuangan = dom.q<'div'>('#panel_keuangan')!
+    // const panel_keuangan_list_group = dom.qe<'div'>(panel_keuangan, '.list-group')!
+
+    // panel_keuangan_list_group.innerHTML = '<i class="text-secondary">Tidak ada data.</i>'
+    panel_keuangan.innerHTML = '<div class="text-secondary m-3">Coming soon</div>'
+})();
+
 // panel log kegiatan
 (() => {
     const panel = dom.q<'div'>('#panel_log_kegiatan')!
@@ -546,7 +556,7 @@ Jangan lupa untuk mengirim link Zoom yang telah disiapkan melalui fitur yang sud
     db.on_kegiatan_logs(uid, snap => {
         if (!snap.exists()) return
 
-        list_group.innerHTML = `<li class="list-group-item list-group-item-${defines.log_colors.awal_log} text-center rounded-bottom">Awal log <i class="fa-solid fa-arrow-turn-up"></i></li>`
+        list_group.innerHTML = `<li class="list-group-item list-group-item-${defines.log_colors.awal_log} text-center rounded-bottom">Awal log kegiatan <i class="fa-solid fa-arrow-turn-up"></i></li>`
 
         const logs = snap.val()
         let _current_date_string = ''
@@ -567,7 +577,7 @@ Jangan lupa untuk mengirim link Zoom yang telah disiapkan melalui fitur yang sud
 
         list_group.prepend(dom.c('li', {
             classes: ['list-group-item', `list-group-item-${defines.log_colors.awal_log}`, 'text-center', 'rounded-bottom'],
-            html: 'Baca log dari bawah ke atas <i class="fa-solid fa-arrow-turn-up"></i>',
+            html: 'Baca log kegiatan dari bawah ke atas <i class="fa-solid fa-arrow-turn-up"></i>',
         }))
     })
 })()

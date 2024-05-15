@@ -315,7 +315,6 @@
                         })
 
                         if (formValues) {
-                            console.log(formValues)
                             swal.fire({
                                 title: 'Pindah Jadwal',
                                 html: '<div><i>Memproses...</i></div>',

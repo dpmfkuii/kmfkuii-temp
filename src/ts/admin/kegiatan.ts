@@ -83,7 +83,16 @@
                             return
                         }
 
-                        location.reload()
+                        for (let i = table_logbook_list.length - 1; i >= 0; i--) {
+                            const item = table_logbook_list[i]
+                            if (item.uid === uid && item.nama_kegiatan === nama_kegiatan) {
+                                table_logbook_list.splice(i, 1)
+                                break
+                            }
+                        }
+
+                        update_fuse(table_logbook_list)
+                        update_table_logbook_data(table_logbook_list)
 
                         swal.fire({
                             icon: 'success',
@@ -97,6 +106,28 @@
                     },
                 })
             }
+        })
+    }
+
+    const update_fuse = (list: TableLogbookData[]) => {
+        fuse = new Fuse(list, {
+            // isCaseSensitive: false,
+            // includeScore: false,
+            // shouldSort: true,
+            // includeMatches: false,
+            // findAllMatches: false,
+            // minMatchCharLength: 1,
+            // location: 0,
+            // threshold: 0.6,
+            // distance: 100,
+            // useExtendedSearch: false,
+            // ignoreLocation: false,
+            // ignoreFieldNorm: false,
+            // fieldNormWeight: 1,
+            keys: [
+                'uid',
+                'nama_kegiatan',
+            ]
         })
     }
 
@@ -122,25 +153,7 @@
 
         table_logbook_list.sort((a, b) => a.nama_kegiatan < b.nama_kegiatan ? -1 : a.nama_kegiatan > b.nama_kegiatan ? 1 : 0)
 
-        fuse = new Fuse(table_logbook_list, {
-            // isCaseSensitive: false,
-            // includeScore: false,
-            // shouldSort: true,
-            // includeMatches: false,
-            // findAllMatches: false,
-            // minMatchCharLength: 1,
-            // location: 0,
-            // threshold: 0.6,
-            // distance: 100,
-            // useExtendedSearch: false,
-            // ignoreLocation: false,
-            // ignoreFieldNorm: false,
-            // fieldNormWeight: 1,
-            keys: [
-                'uid',
-                'nama_kegiatan',
-            ]
-        })
+        update_fuse(table_logbook_list)
 
         update_table_logbook_data(table_logbook_list)
     }
@@ -167,13 +180,13 @@
         table_logbook_kegiatan_tbody.innerHTML = `
             <tr>
                 <td colspan=3 class="placeholder-glow"><span class="placeholder w-100"></span></td>
-                <td colspan=4 class="placeholder-glow"><span class="placeholder w-100"></span></td>
+                <td colspan=5 class="placeholder-glow"><span class="placeholder w-100"></span></td>
             </tr>
             <tr>
                 <td colspan=2 class="placeholder-glow"><span class="placeholder w-100"></span></td>
                 <td class="placeholder-glow"><span class="placeholder w-100"></span></td>
                 <td colspan=2 class="placeholder-glow"><span class="placeholder w-100"></span></td>
-                <td colspan=2 class="placeholder-glow"><span class="placeholder w-100"></span></td>
+                <td colspan=3 class="placeholder-glow"><span class="placeholder w-100"></span></td>
             </tr>
         `
     }

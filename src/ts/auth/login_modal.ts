@@ -41,7 +41,7 @@
                 dom.enable(...disabled_elements)
                 button_submit.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk'
 
-                input_uid_invalid_feedback.textContent = 'Maaf, UID tidak ditemukan. Silahkan periksa kembali.'
+                input_uid_invalid_feedback.textContent = 'Maaf, UID tidak ditemukan. Silakan periksa kembali.'
                 input_uid.classList.add('is-invalid')
 
                 input_uid.focus()

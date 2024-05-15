@@ -176,5 +176,86 @@ var _ = {
                 },
             },
         },
+
+        // db.ref('verifikasi/keuangan')
+        "keuangan": {
+            // db.ref('verifikasi/keuangan/rkat')
+            "rkat": {
+                // db.ref(`verifikasi/keuangan/rkat/${periode_rkat}`)
+                "2024": {
+                    // db.ref(`verifikasi/keuangan/rkat/${periode_rkat}/pembiayaan`)
+                    "pembiayaan": {
+                        "{sub_rkat}": 80000000,
+                    },
+                    // db.ref(`verifikasi/keuangan/rkat/${periode_rkat}/kegiatan`)
+                    "kegiatan": {
+                        // db.ref(`verifikasi/keuangan/rkat/${periode_rkat}/kegiatan/${organisasi_index}`)
+                        "{organisasi_index}": {
+                            // db.ref(`verifikasi/keuangan/rkat/${periode_rkat}/kegiatan/${organisasi_index}/${uid}`)
+                            "{uid}": {
+                                "nama_kegiatan": "Konferensi",
+                                "sub_rkat": "Sub Aktivitas Kegiatan Mahasiswa",
+                                "penggunaan": 1390000,
+                            },
+                        },
+                    },
+                },
+            },
+            // db.ref('verifikasi/keuangan/logbook')
+            "logbook": {
+                // db.ref(`verifikasi/keuangan/logbook/${periode}`)
+                "2023-2024": {
+                    // db.ref(`verifikasi/keuangan/logbook/${periode}/${organisasi_index}`)
+                    "{organisasi_index}": {
+                        // db.ref(`verifikasi/keuangan/logbook/${periode}/${organisasi_index}/${uid}`)
+                        "{uid}": {
+                            "nama_kegiatan": "Konferensi",
+                            "periode_rkat": "2024",
+                            "sub_rkat": "Sub Aktivitas Kegiatan Mahasiswa",
+                            "pencairan": {
+                                "RKAT": 700000,
+                                "DPM": 500000,
+                                "{jenis_transaksi}": 0,
+                            },
+                            "pengiriman": {
+                                "RKAT": 400000,
+                                "DPM": 500000,
+                                "{jenis_transaksi}": 0,
+                            },
+                            "penggunaan": {
+                                "Kegiatan": 19000,
+                                "{jenis_transaksi}": 0,
+                            },
+                            "pengembalian": {
+                                "RKAT": 300000,
+                                "Kegiatan": 19000,
+                                "{jenis_transaksi}": 0,
+                            },
+                            "updated_timestamp": 1234567890,
+                            "status_lpj": -1, // dont update timestamp
+                        },
+                    },
+                },
+            },
+            // db.ref(`verifikasi/keuangan/linimasa`)
+            "linimasa": {
+                // db.ref(`verifikasi/keuangan/linimasa/${uid}`)
+                "{uid}": {
+                    "{timestamp}": {
+                        "datetime": 1234567890,
+                        "tipe_index": 0,
+                        "icon_index": 0,
+                        "color_index": 0,
+                        "judul": "Perubahan pengajuan dana",
+                        "detail_transaksi": {
+                            "RKAT": 400000,
+                            "DPM": 190000,
+                            "{jenis_transaksi}": 0,
+                        },
+                        "keterangan": "",
+                    },
+                },
+            },
+        },
     },
 }

@@ -46,6 +46,15 @@
                 if (snap.exists()) {
                     const logbook_periode = snap.val()
 
+                    const quick_lookup_button = dom.c('button', {
+                        classes: ['btn', 'btn-success'],
+                        html: `<small>LIHAT LPJ ${periode.replace('-', '/')} YANG BELUM SELESAI <i class="fa-solid fa-comment-dots"></i></small>`,
+                    })
+
+                    logbook_container.appendChild(dom.c('div', { classes: ['d-grid', 'mb-3'], children: [quick_lookup_button] }))
+
+                    const quick_lookup_list: { [organisasi: string]: string[] } = {}
+
                     for (const organisasi_index in logbook_periode) {
                         const organisasi = Object.values(OrganisasiKegiatan)[parseInt(organisasi_index)]
 
@@ -136,6 +145,13 @@
                                 ],
                             })
 
+                            if (status.verifikasi.lpj.dpm < StatusRapat.MARKED_AS_DONE) {
+                                if (!quick_lookup_list[organisasi]) {
+                                    quick_lookup_list[organisasi] = []
+                                }
+                                quick_lookup_list[organisasi].push(nama_kegiatan, uid.substring(0, 4))
+                            }
+
                             list_group.appendChild(list_item_kegiatan)
                         }
 
@@ -144,6 +160,70 @@
                             ${organisasi_verifikasi_selesai_count}</span>/${Object.values(logbook_periode[organisasi_index]).length}
                         `
                     }
+
+                    let quick_lookup_button_html = ''
+                    let quick_lookup_text = ''
+
+                    if (Object.keys(quick_lookup_list).length > 0) {
+                        let quick_lookup_list_html = ''
+                        let quick_lookup_list_text = ''
+
+                        for (const org in quick_lookup_list) {
+                            const list = quick_lookup_list[org]
+                            let lis = '', lis_text = ''
+                            for (let i = 0; i < list.length; i += 2) {
+                                lis += `<li>${list[i]} <small class="text-secondary">#${list[i + 1]}</small></li>`
+                                lis_text += `\n${Math.floor(i / 2) + 1}. ${list[i]} #${list[i + 1]}`
+                            }
+                            quick_lookup_list_html += `
+                                <br />
+                                <strong>${org}:</strong>
+                                <ol class="mb-0 text-black">
+                                    ${lis}
+                                </ol>
+                            `
+                            quick_lookup_list_text += `\n\n${org}:${lis_text}`
+                        }
+
+                        quick_lookup_button_html = `
+                            <div class="text-start small">
+                                <strong>LPJ 2023/2024 yang belum selesai ke DPM:</strong><br />
+                                Keterangan: Nama Kegiatan #UID (4 karakter pertama)<br />
+                                ${quick_lookup_list_html}
+                            </div>
+                        `
+
+                        quick_lookup_text = `LPJ 2023/2024 yang belum selesai ke DPM:\nKeterangan: Nama Kegiatan #UID (4 karakter pertama)${quick_lookup_list_text}`
+                    }
+
+                    quick_lookup_button.addEventListener('click', () => {
+                        swal.fire({
+                            title: 'Logbook <i class="fa-solid fa-comment-dots"></i>',
+                            html: quick_lookup_button_html || '<strong>Semua sudah LPJ!</strong>',
+                            showDenyButton: true,
+                            denyButtonText: 'Tutup',
+                            confirmButtonText: 'Salin',
+                            customClass: {
+                                confirmButton: 'btn btn-success',
+                                denyButton: 'btn btn-secondary ms-2',
+                            },
+                            buttonsStyling: false,
+                            showCloseButton: true,
+                        }).then((result: any) => {
+                            if (result.isConfirmed) {
+                                common.copy(quick_lookup_text).then(() => {
+                                    swal.fire({
+                                        icon: 'success',
+                                        title: 'Logbook <i class="fa-solid fa-comment-dots"></i>',
+                                        html: 'Teks berhasil disalin!',
+                                        showConfirmButton: false,
+                                        timer: 1000,
+                                        timerProgressBar: true,
+                                    })
+                                })
+                            }
+                        })
+                    })
                 }
                 else {
                     success = false

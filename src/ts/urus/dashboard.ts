@@ -611,7 +611,7 @@ https://zoom.xxx`,
     db.on_kegiatan_logs(uid, snap => {
         if (!snap.exists()) return
 
-        list_group.innerHTML = `<li class="list-group-item list-group-item-${defines.log_colors.awal_log} text-center rounded-bottom">Awal log <i class="fa-solid fa-arrow-turn-up"></i></li>`
+        list_group.innerHTML = `<li class="list-group-item list-group-item-${defines.log_colors.awal_log} text-center rounded-bottom">Awal log kegiatan <i class="fa-solid fa-arrow-turn-up"></i></li>`
 
         const logs = snap.val()
         let _current_date_string = ''
@@ -632,7 +632,7 @@ https://zoom.xxx`,
 
         list_group.prepend(dom.c('li', {
             classes: ['list-group-item', `list-group-item-${defines.log_colors.awal_log}`, 'text-center', 'rounded-bottom'],
-            html: 'Baca log dari bawah ke atas <i class="fa-solid fa-arrow-turn-up"></i>',
+            html: 'Baca log kegiatan dari bawah ke atas <i class="fa-solid fa-arrow-turn-up"></i>',
         }))
     })
 })()
