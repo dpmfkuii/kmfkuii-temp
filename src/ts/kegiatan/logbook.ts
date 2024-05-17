@@ -46,9 +46,11 @@
                 if (snap.exists()) {
                     const logbook_periode = snap.val()
 
+                    const periode_text = periode.replace('-', '/')
+
                     const quick_lookup_button = dom.c('button', {
                         classes: ['btn', 'btn-success'],
-                        html: `<small>LIHAT LPJ ${periode.replace('-', '/')} YANG BELUM SELESAI <i class="fa-solid fa-comment-dots"></i></small>`,
+                        html: `<small>LIHAT LPJ ${periode_text} YANG BELUM SELESAI <i class="fa-solid fa-comment-dots"></i></small>`,
                     })
 
                     logbook_container.appendChild(dom.c('div', { classes: ['d-grid', 'mb-3'], children: [quick_lookup_button] }))
@@ -187,19 +189,19 @@
 
                         quick_lookup_button_html = `
                             <div class="text-start small">
-                                <strong>LPJ 2023/2024 yang belum selesai ke DPM:</strong><br />
+                                <strong>LPJ ${periode_text} yang belum selesai ke DPM:</strong><br />
                                 Keterangan: Nama Kegiatan #UID (4 karakter pertama)<br />
                                 ${quick_lookup_list_html}
                             </div>
                         `
 
-                        quick_lookup_text = `LPJ 2023/2024 yang belum selesai ke DPM:\nKeterangan: Nama Kegiatan #UID (4 karakter pertama)${quick_lookup_list_text}`
+                        quick_lookup_text = `LPJ ${periode_text} yang belum selesai ke DPM:\nKeterangan: Nama Kegiatan #UID (4 karakter pertama)${quick_lookup_list_text}`
                     }
 
                     quick_lookup_button.addEventListener('click', () => {
                         swal.fire({
                             title: 'Logbook <i class="fa-solid fa-comment-dots"></i>',
-                            html: quick_lookup_button_html || '<strong>Semua sudah LPJ!</strong>',
+                            html: quick_lookup_button_html || '<strong>Semua LPJ sudah selesai!</strong>',
                             showDenyButton: true,
                             denyButtonText: 'Tutup',
                             confirmButtonText: 'Salin',

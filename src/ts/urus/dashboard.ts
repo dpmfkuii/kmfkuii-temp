@@ -148,7 +148,7 @@
 
         let is_changed
             = kegiatan_changes.nama_kegiatan !== _kegiatan.nama_kegiatan
-            || kegiatan_changes.tanggal_kegiatan !== _kegiatan.tanggal_kegiatan
+            || !common.is_ordered_array_equal(kegiatan_changes.tanggal_kegiatan, _kegiatan.tanggal_kegiatan)
             || kegiatan_changes.periode_kegiatan !== _kegiatan.periode_kegiatan
             || kegiatan_changes.penyelenggara_kegiatan_index !== _kegiatan.penyelenggara_kegiatan_index
             || kegiatan_changes.lingkup_kegiatan_index !== _kegiatan.lingkup_kegiatan_index

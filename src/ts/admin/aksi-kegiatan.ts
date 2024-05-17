@@ -59,6 +59,185 @@
     }
     //#endregion
 
+    //#region detail panel logic
+    let _kegiatan: Kegiatan = {} as any
+    let _detail_form_kegiatan_prev: Kegiatan = {} as any
+
+    detail_button_batal.addEventListener('click', () => {
+        dom.disable(
+            detail_input_email_pendaftar,
+            detail_input_nama_pendaftar,
+            detail_input_nama_kegiatan,
+            detail_input_tanggal_pertama_kegiatan,
+            detail_select_periode_kegiatan,
+            detail_select_penyelenggara_kegiatan,
+            detail_select_lingkup_kegiatan,
+        )
+
+        detail_button_batal.classList.add('visually-hidden')
+
+        detail_button_ubah.classList.add('btn-km-primary')
+        detail_button_ubah.classList.remove('btn-success')
+        if (detail_button_ubah.hasAttribute('is-editing')) {
+            detail_button_ubah.removeAttribute('is-editing')
+        }
+
+        detail_panel_update(_detail_form_kegiatan_prev)
+    })
+
+    detail_form.addEventListener('submit', ev => {
+        ev.preventDefault()
+
+        if (!detail_button_ubah.hasAttribute('is-editing')) {
+            dom.enable(
+                detail_input_email_pendaftar,
+                detail_input_nama_pendaftar,
+                detail_input_nama_kegiatan,
+                detail_input_tanggal_pertama_kegiatan,
+                detail_select_periode_kegiatan,
+                detail_select_penyelenggara_kegiatan,
+                detail_select_lingkup_kegiatan,
+            )
+
+            detail_button_batal.classList.remove('visually-hidden')
+
+            detail_button_ubah.classList.add('btn-success')
+            detail_button_ubah.classList.remove('btn-km-primary')
+            detail_button_ubah.setAttribute('is-editing', '')
+
+            _detail_form_kegiatan_prev.email_pendaftar = detail_input_email_pendaftar.value
+            _detail_form_kegiatan_prev.nama_pendaftar = detail_input_nama_pendaftar.value
+            _detail_form_kegiatan_prev.nama_kegiatan = detail_input_nama_kegiatan.value
+            _detail_form_kegiatan_prev.tanggal_kegiatan = [detail_input_tanggal_pertama_kegiatan.value]
+            _detail_form_kegiatan_prev.periode_kegiatan = detail_select_periode_kegiatan.value
+            _detail_form_kegiatan_prev.penyelenggara_kegiatan_index = Object.values(PenyelenggaraKegiatan).indexOf(detail_select_penyelenggara_kegiatan.value as PenyelenggaraKegiatan)
+            _detail_form_kegiatan_prev.lingkup_kegiatan_index = Object.values(LingkupKegiatan).indexOf(detail_select_lingkup_kegiatan.value as LingkupKegiatan)
+
+            return
+        }
+
+        const kegiatan_changes = {
+            email_pendaftar: detail_input_email_pendaftar.value,
+            nama_pendaftar: detail_input_nama_pendaftar.value,
+            nama_kegiatan: detail_input_nama_kegiatan.value,
+            tanggal_kegiatan: [detail_input_tanggal_pertama_kegiatan.value],
+            periode_kegiatan: detail_select_periode_kegiatan.value,
+            penyelenggara_kegiatan_index: Object.values(PenyelenggaraKegiatan).indexOf(detail_select_penyelenggara_kegiatan.value as PenyelenggaraKegiatan),
+            lingkup_kegiatan_index: Object.values(LingkupKegiatan).indexOf(detail_select_lingkup_kegiatan.value as LingkupKegiatan),
+        } as Kegiatan
+
+        let is_changed
+            = kegiatan_changes.email_pendaftar !== _kegiatan.email_pendaftar
+            || kegiatan_changes.nama_pendaftar !== _kegiatan.nama_pendaftar
+            || kegiatan_changes.nama_kegiatan !== _kegiatan.nama_kegiatan
+            || !common.is_ordered_array_equal(kegiatan_changes.tanggal_kegiatan, _kegiatan.tanggal_kegiatan)
+            || kegiatan_changes.periode_kegiatan !== _kegiatan.periode_kegiatan
+            || kegiatan_changes.penyelenggara_kegiatan_index !== _kegiatan.penyelenggara_kegiatan_index
+            || kegiatan_changes.lingkup_kegiatan_index !== _kegiatan.lingkup_kegiatan_index
+
+        if (!is_changed) {
+            swal.fire({
+                icon: 'info',
+                title: 'Tidak ada perubahan.',
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+            })
+            detail_button_batal.click()
+            return
+        }
+
+        swal.fire({
+            title: 'Ubah Detail Kegiatan',
+            html: '<div><i>Memperbarui detail...</i></div>',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            async didOpen() {
+                swal.showLoading()
+
+                const changes = {} as { [key in keyof Kegiatan]: string[] }
+                const old_periode_kegiatan = _kegiatan.periode_kegiatan
+
+                const prop_name = {
+                    email_pendaftar: 'Email Pendaftar',
+                    nama_pendaftar: 'Nama Pendaftar',
+                    nama_kegiatan: 'Nama Kegiatan',
+                    tanggal_kegiatan: 'Tanggal Pertama Kegiatan',
+                    periode_kegiatan: 'Periode Kegiatan',
+                    penyelenggara_kegiatan_index: 'Penyelenggara Kegiatan',
+                    lingkup_kegiatan_index: 'Lingkup Kegiatan',
+                } as { [key in keyof Kegiatan]: string }
+
+                for (const prop of [
+                    'email_pendaftar',
+                    'nama_pendaftar',
+                    'nama_kegiatan',
+                    'tanggal_kegiatan',
+                    'periode_kegiatan',
+                    'penyelenggara_kegiatan_index',
+                    'lingkup_kegiatan_index'
+                ] as (keyof Kegiatan)[]) {
+                    if (kegiatan_changes[prop] !== _kegiatan[prop]) {
+                        changes[prop] = [prop, prop_name[prop], _kegiatan[prop] as string, kegiatan_changes[prop] as string]
+                        Object.assign(_kegiatan, { [prop]: kegiatan_changes[prop] })
+                    }
+                }
+
+                const changes_text: string[] = []
+                for (const change of Object.values(changes)) {
+                    const prop = change[0] as keyof Kegiatan
+                    const prop_name = change[1]
+                    let old_value = change[2]
+                    let new_value = change[3]
+                    if (prop === 'periode_kegiatan') {
+                        old_value = old_value.replace('-', '/')
+                        new_value = new_value.replace('-', '/')
+                    }
+                    else if (prop === 'penyelenggara_kegiatan_index') {
+                        old_value = Object.values(PenyelenggaraKegiatan)[parseInt(old_value)]
+                        new_value = Object.values(PenyelenggaraKegiatan)[parseInt(new_value)]
+                    }
+                    else if (prop === 'lingkup_kegiatan_index') {
+                        old_value = Object.values(LingkupKegiatan)[parseInt(old_value)]
+                        new_value = Object.values(LingkupKegiatan)[parseInt(new_value)]
+                    }
+                    changes_text.push(`<li>${prop_name}: "${new_value}" ← "${old_value}"</li>`)
+                }
+
+                const log_text = `@html Pembaruan data kegiatan oleh admin.<ul>${changes_text.join('')}</ul>`
+
+                try {
+                    await Promise.all([
+                        db.update_kegiatan(uid, kegiatan_changes),
+                        db.change_logbook(old_periode_kegiatan, _kegiatan),
+                    ])
+                    await Promise.all([
+                        db.add_kegiatan_log(uid, defines.log_colors.pembaruan_data_kegiatan, log_text),
+                        db.set_kegiatan_updated_timestamp(uid),
+                    ])
+                    swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil tersimpan!',
+                        showConfirmButton: false,
+                        timer: 1000,
+                        timerProgressBar: true,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                    })
+                }
+                catch (err) {
+                    main.show_unexpected_error_message(err)
+                }
+
+                detail_button_batal.click()
+            },
+        })
+    })
+    //#endregion
+
     //#region detail panel initial state
     dom.disable(
         detail_input_uid_kegiatan,
@@ -70,7 +249,6 @@
         detail_select_periode_kegiatan,
         detail_select_penyelenggara_kegiatan,
         detail_select_lingkup_kegiatan,
-        detail_button_ubah,
     )
     //#endregion
 
@@ -322,7 +500,6 @@
         LUPA_UID = 'Lupa UID',
     }
 
-    let _komunikasi_kegiatan: Kegiatan = {} as any
     let _pengajuan_rapat_kegiatan: PengajuanRapatKegiatan = {} as any
 
     const panel_komunikasi = dom.q<'div'>('#panel_urus_komunikasi')!
@@ -353,15 +530,15 @@
 
     const get_subjek_email = () => {
         return {
-            [TemplatEmail.KONFIRMASI_VERIFIKASI_PROPOSAL]: `KONFIRMASI VERIFIKASI PROPOSAL_${_komunikasi_kegiatan.nama_kegiatan}`,
-            [TemplatEmail.KONFIRMASI_VERIFIKASI_LPJ]: `KONFIRMASI VERIFIKASI LPJ_${_komunikasi_kegiatan.nama_kegiatan}`,
-            [TemplatEmail.ANTREAN_DITOLAK]: `ANTREAN DITOLAK_${_komunikasi_kegiatan.nama_kegiatan}`,
-            [TemplatEmail.PERINTAH_REVISI]: `PERINTAH REVISI_${_komunikasi_kegiatan.nama_kegiatan}`,
-            [TemplatEmail.PERINTAH_REVISI_2]: `PERINTAH REVISI 2_${_komunikasi_kegiatan.nama_kegiatan}`,
-            [TemplatEmail.SELESAI_VERIFIKASI]: `SELESAI VERIFIKASI_${_komunikasi_kegiatan.nama_kegiatan}`,
-            [TemplatEmail.PEMBATALAN_VERIFIKASI]: `PEMBATALAN VERIFIKASI_${_komunikasi_kegiatan.nama_kegiatan}`,
+            [TemplatEmail.KONFIRMASI_VERIFIKASI_PROPOSAL]: `KONFIRMASI VERIFIKASI PROPOSAL_${_kegiatan.nama_kegiatan}`,
+            [TemplatEmail.KONFIRMASI_VERIFIKASI_LPJ]: `KONFIRMASI VERIFIKASI LPJ_${_kegiatan.nama_kegiatan}`,
+            [TemplatEmail.ANTREAN_DITOLAK]: `ANTREAN DITOLAK_${_kegiatan.nama_kegiatan}`,
+            [TemplatEmail.PERINTAH_REVISI]: `PERINTAH REVISI_${_kegiatan.nama_kegiatan}`,
+            [TemplatEmail.PERINTAH_REVISI_2]: `PERINTAH REVISI 2_${_kegiatan.nama_kegiatan}`,
+            [TemplatEmail.SELESAI_VERIFIKASI]: `SELESAI VERIFIKASI_${_kegiatan.nama_kegiatan}`,
+            [TemplatEmail.PEMBATALAN_VERIFIKASI]: `PEMBATALAN VERIFIKASI_${_kegiatan.nama_kegiatan}`,
             [TemplatEmail.ACC_DITANDAI_SELESAI]: `ACC DITANDAI SELESAI`,
-            [TemplatEmail.LUPA_UID]: `UID [${uid}]_${_komunikasi_kegiatan.nama_kegiatan}`,
+            [TemplatEmail.LUPA_UID]: `UID [${uid}]_${_kegiatan.nama_kegiatan}`,
         }[select_templat_email.value as TemplatEmail] || ''
     }
 
@@ -395,7 +572,7 @@ Jangan lupa untuk mengirim link Zoom yang telah disiapkan melalui fitur yang sud
             [TemplatEmail.SELESAI_VERIFIKASI]: `Alhamdulillah proses verifikasi kegiatan sudah selesai, berikut file yang sudah ditandatangani.`,
             [TemplatEmail.PEMBATALAN_VERIFIKASI]: `Mohon maaf, karena ada proses yang tidak dijalankan sesuai tenggat waktu/ketentuan yang berlaku, maka verifikasi kami batalkan.\n\nSilakan daftar dan ajukan ulang verifikasi.`,
             [TemplatEmail.ACC_DITANDAI_SELESAI]: `Terima kasih atas permohonannya, sudah kami tandai selesai. Silakan melanjutkan alur verifikasi.`,
-            [TemplatEmail.LUPA_UID]: `Silakan gunakan UID berikut untuk login di website.\n\n${_komunikasi_kegiatan.nama_kegiatan}\nUID: ${uid}`
+            [TemplatEmail.LUPA_UID]: `Silakan gunakan UID berikut untuk login di website.\n\n${_kegiatan.nama_kegiatan}\nUID: ${uid}`
         }[templat] + post
     }
 
@@ -506,7 +683,8 @@ Jangan lupa untuk mengirim link Zoom yang telah disiapkan melalui fitur yang sud
             if (!snap.exists()) throw new Error('Data tidak ditemukan.')
 
             const kegiatan = snap.val()
-            _komunikasi_kegiatan = kegiatan
+            _kegiatan = kegiatan
+            _detail_form_kegiatan_prev = { ..._kegiatan }
             detail_panel_update(kegiatan)
             rapat_panel_update(kegiatan)
             init_komunikasi_panel(kegiatan)
