@@ -194,10 +194,13 @@
                     'penyelenggara_kegiatan_index',
                     'lingkup_kegiatan_index'
                 ] as (keyof Kegiatan)[]) {
-                    if (kegiatan_changes[prop] !== _kegiatan[prop]) {
-                        changes[prop] = [prop, prop_name[prop], _kegiatan[prop] as string, kegiatan_changes[prop] as string]
-                        Object.assign(_kegiatan, { [prop]: kegiatan_changes[prop] })
+                    if (prop === 'tanggal_kegiatan') {
+                        if (common.is_ordered_array_equal(kegiatan_changes[prop], _kegiatan[prop])) continue
                     }
+                    if (kegiatan_changes[prop] === _kegiatan[prop]) continue
+
+                    changes[prop] = [prop, prop_name[prop], _kegiatan[prop] as string, kegiatan_changes[prop] as string]
+                    Object.assign(_kegiatan, { [prop]: kegiatan_changes[prop] })
                 }
 
                 const changes_text: string[] = []
@@ -226,7 +229,7 @@
                 try {
                     await Promise.all([
                         db.update_kegiatan(uid, kegiatan_changes),
-                        db.change_logbook(old_periode_kegiatan, _kegiatan),
+                        db.change_logbook(old_periode_kegiatan, _kegiatan.organisasi_index, _kegiatan),
                     ])
                     await Promise.all([
                         db.add_kegiatan_log(uid, defines.log_colors.pembaruan_data_kegiatan, log_text),

@@ -503,12 +503,12 @@ const db = {
         return main_db.ref(`verifikasi/kegiatan/logbook/${kegiatan.periode_kegiatan}/${kegiatan.organisasi_index}/${kegiatan.uid}`)
             .remove()
     },
-    change_logbook(old_periode_kegiatan: string, new_kegiatan: Kegiatan) {
-        if (old_periode_kegiatan === new_kegiatan.periode_kegiatan) {
+    change_logbook(old_periode_kegiatan: string, old_organisasi_index: number, new_kegiatan: Kegiatan) {
+        if (old_periode_kegiatan === new_kegiatan.periode_kegiatan && old_organisasi_index === new_kegiatan.organisasi_index) {
             return this.set_logbook(new_kegiatan)
         }
         return Promise.all([
-            main_db.ref(`verifikasi/kegiatan/logbook/${old_periode_kegiatan}/${new_kegiatan.organisasi_index}/${new_kegiatan.uid}`)
+            main_db.ref(`verifikasi/kegiatan/logbook/${old_periode_kegiatan}/${old_organisasi_index}/${new_kegiatan.uid}`)
                 .remove(),
             this.set_logbook(new_kegiatan),
         ])
