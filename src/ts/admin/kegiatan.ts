@@ -7,6 +7,12 @@
     const select_periode = dom.q<'select'>('.card-header select')!
     const select_periode_info_button = dom.q<'i'>('.card-header i.fa-circle-info')!
 
+    const pagination_select_jumlah_ditampilkan = dom.q<'select'>('#logbook_table_select_jumlah_ditampilkan')!
+    const pagination_span_jumlah_data = dom.q<'span'>('#logbook_table_jumlah_data')!
+    const pagination_button_container = dom.q<'ul'>('.pagination')!
+    const pagination_button_prev = dom.qe<'button'>(pagination_button_container, 'button[aria-label="Previous"]')!
+    const pagination_button_next = dom.qe<'button'>(pagination_button_container, 'button[aria-label="Next"]')!
+
     const current_year = new Date().getFullYear()
     let select_periode_previous_value = select_periode.value = `${current_year}`
     const get_periode_option = (year: number) => `${year - 1}—${year + 1}`
@@ -37,6 +43,71 @@
         })
     })
 
+    const pagination_display_amount_options = [10, 25, 50, 100]
+    let _paginated_list: TableLogbookData[] = []
+    let pagination_current_page = 0
+    let pagination_display_amount = pagination_display_amount_options[0]
+    const get_pagination_index = () => pagination_current_page * pagination_display_amount
+
+    const get_paginated_sliced_list = () => {
+        const index = get_pagination_index()
+        return _paginated_list.slice(index, index + pagination_display_amount)
+    }
+
+    pagination_select_jumlah_ditampilkan.addEventListener('change', () => {
+        pagination_current_page = 0
+        pagination_display_amount = Number(pagination_select_jumlah_ditampilkan.value)
+        update_table_logbook_paginated()
+    })
+
+    const update_pagination_buttons = () => {
+        const page_amount = Math.ceil(_paginated_list.length / pagination_display_amount)
+
+        dom.enable(pagination_button_prev, pagination_button_next)
+
+        if (pagination_current_page === 0) {
+            dom.disable(pagination_button_prev)
+        }
+
+        if (pagination_current_page === page_amount - 1) {
+            dom.disable(pagination_button_next)
+        }
+
+        dom.qea(pagination_button_container, 'li.page-number').forEach(n => {
+            n.parentElement!.removeChild(n)
+        })
+
+        let starting_i = Math.max(0, pagination_current_page - 1)
+        if (pagination_current_page + 1 > page_amount - 1) {
+            starting_i = Math.max(0, starting_i - 1)
+        }
+
+        for (let i = 0; i < Math.min(3, page_amount); i++, starting_i++) {
+            const li = dom.c('li', {
+                classes: ['page-item', 'page-number'],
+                html: `<button class="page-link ${starting_i === pagination_current_page ? 'active' : ''}">${starting_i + 1}</button>`,
+            })
+
+            const goto_page = starting_i
+            dom.qe(li, 'button')!.addEventListener('click', () => {
+                pagination_current_page = Math.max(0, Math.min(Math.ceil(_paginated_list.length / pagination_display_amount) - 1, goto_page))
+                update_table_logbook_paginated()
+            })
+
+            pagination_button_container.insertBefore(li, pagination_button_next.parentNode!)
+        }
+    }
+
+    pagination_button_prev.addEventListener('click', () => {
+        pagination_current_page = Math.max(0, pagination_current_page - 1)
+        update_table_logbook_paginated()
+    })
+
+    pagination_button_next.addEventListener('click', () => {
+        pagination_current_page = Math.min(Math.ceil(_paginated_list.length / pagination_display_amount) - 1, pagination_current_page + 1)
+        update_table_logbook_paginated()
+    })
+
     type TableLogbookData = {
         uid: string
         nama_kegiatan: string
@@ -46,13 +117,21 @@
     const table_logbook_list: TableLogbookData[] = []
     let fuse: any = null
 
-    const update_table_logbook_data = (list: TableLogbookData[]) => {
+    const update_table_logbook = (list: TableLogbookData[], starting_number = 1) => {
+        if (list.length === 0) {
+            table_logbook_kegiatan_tbody.innerHTML = `
+                <tr>
+                    <td colspan="8"><i class="text-secondary">Tidak ada data.</i></td>
+                </tr>
+            `
+            return
+        }
+
         table_logbook_kegiatan_tbody.innerHTML = ''
-        let no = 1
         for (const item of list) {
             const tr = dom.c('tr')
             tr.innerHTML = `
-                <td>${no++}</td>
+                <td>${starting_number++}</td>
                 <td>${item.uid}</td>
                 <td>${item.nama_kegiatan}</td>
                 <td>${main.get_status_rapat_icon(item.status_verifikasi.proposal.lem)}</td>
@@ -81,6 +160,39 @@
 
             table_logbook_kegiatan_tbody.appendChild(tr)
         }
+    }
+
+    const update_pagination = (list: TableLogbookData[]) => {
+        _paginated_list = list
+        pagination_current_page = 0
+        pagination_span_jumlah_data.innerText = `dari ${list.length} data`
+
+        const opts = []
+        if (_paginated_list.length < pagination_display_amount_options[pagination_display_amount_options.length - 1]) {
+            opts.push(_paginated_list.length)
+        }
+        for (const opt of pagination_display_amount_options) {
+            if (opt < _paginated_list.length) {
+                opts.push(opt)
+            }
+        }
+
+        opts.sort((a, b) => a < b ? -1 : 1)
+
+        pagination_select_jumlah_ditampilkan.innerHTML = ''
+        for (const opt of opts) {
+            pagination_select_jumlah_ditampilkan.innerHTML += `<option value="${opt}" ${opt === pagination_display_amount ? 'selected' : ''}>${opt}</option>`
+        }
+    }
+
+    const update_table_logbook_paginated = () => {
+        update_table_logbook(get_paginated_sliced_list(), 1 + get_pagination_index())
+        update_pagination_buttons()
+    }
+
+    const generate_table_logbook = (list: TableLogbookData[]) => {
+        update_pagination(list)
+        update_table_logbook_paginated()
     }
 
     const button_action_hapus_kegiatan = (nama_kegiatan: string, uid: string) => {
@@ -124,7 +236,7 @@
                         }
 
                         update_fuse(table_logbook_list)
-                        update_table_logbook_data(table_logbook_list)
+                        generate_table_logbook(table_logbook_list)
 
                         swal.fire({
                             icon: 'success',
@@ -187,7 +299,7 @@
 
         update_fuse(table_logbook_list)
 
-        update_table_logbook_data(table_logbook_list)
+        generate_table_logbook(table_logbook_list)
     }
 
     const update_table_logbook_kegiatan = () => {
@@ -197,14 +309,14 @@
     input_table_search.addEventListener('keyup', () => {
         const search_pattern = input_table_search.value
         if (search_pattern === '') {
-            update_table_logbook_data(table_logbook_list)
+            generate_table_logbook(table_logbook_list)
         }
         else if (fuse && fuse.search) {
             const list = []
             for (const item of fuse.search(`'${search_pattern}`)) {
                 list.push(item.item)
             }
-            update_table_logbook_data(list)
+            generate_table_logbook(list)
         }
     })
 

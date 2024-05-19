@@ -1,6 +1,6 @@
 <div class="table-responsive">
     <table
-        class="table table-striped align-middle text-center"
+        class="table table-striped align-middle text-center mb-1"
         style="min-width: max-content"
         id="table_logbook_kegiatan"
     >
@@ -38,6 +38,33 @@
         </thead>
         <tbody class="small"></tbody>
     </table>
+</div>
+<div class="d-flex justify-content-between align-items-center p-3">
+    <span class="d-flex align-items-center small"
+        >Menampilkan tiap
+        <select
+            class="form-select form-select-sm w-auto mx-1"
+            id="logbook_table_select_jumlah_ditampilkan"
+        >
+            <option disabled selected>--</option>
+        </select>
+        <span id="logbook_table_jumlah_data">dari -- data</span>.
+    </span>
+    <ul class="pagination m-0">
+        <li class="page-item">
+            <button class="page-link disabled" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </button>
+        </li>
+        <li class="page-item page-number">
+            <button class="page-link active">1</button>
+        </li>
+        <li class="page-item">
+            <button class="page-link disabled" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </button>
+        </li>
+    </ul>
 </div>
 
 <style>
