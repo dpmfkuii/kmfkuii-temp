@@ -395,6 +395,9 @@ const main = {
                             div.innerHTML = `
                                 <h6>UID</h6>
                                 <p class="small">${uid_text}</p>
+                                ${role === UserRole.ADMIN ? `
+                                    <h6>Nama Pendaftar</h6>
+                                    <p class="small">${kegiatan.nama_pendaftar}</p>` : ''}
                                 <h6>Organisasi</h6>
                                 <p class="small">${Object.values(OrganisasiKegiatan)[kegiatan.organisasi_index]}</p>
                                 <h6>Nama Kegiatan</h6>

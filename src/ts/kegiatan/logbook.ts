@@ -56,6 +56,7 @@
                     logbook_container.appendChild(dom.c('div', { classes: ['d-grid', 'mb-3'], children: [quick_lookup_button] }))
 
                     const quick_lookup_list: { [organisasi: string]: string[] } = {}
+                    let quick_lookup_list_count = 0
 
                     for (const organisasi_index in logbook_periode) {
                         const organisasi = Object.values(OrganisasiKegiatan)[parseInt(organisasi_index)]
@@ -65,6 +66,7 @@
                             html: `
                                 <span class="fs-4 pe-1">${organisasi}</span>
                                 <span class="badge text-bg-success"></span>
+                                <span class="badge text-bg-secondary ms-1"></span>
                             `
                         })
 
@@ -83,6 +85,7 @@
                         logbook_container.appendChild(list_group)
 
                         let organisasi_verifikasi_selesai_count = 0
+                        let organisasi_verifikasi_dimulai_count = 0
                         for (const uid in logbook_periode[organisasi_index]) {
                             kegiatan_periode_count++
 
@@ -147,19 +150,28 @@
                                 ],
                             })
 
-                            if (status.verifikasi.lpj.dpm < StatusRapat.MARKED_AS_DONE) {
-                                if (!quick_lookup_list[organisasi]) {
-                                    quick_lookup_list[organisasi] = []
+                            if (status.verifikasi.proposal.lem > StatusRapat.NOT_STARTED || status.verifikasi.lpj.lem > StatusRapat.NOT_STARTED) {
+                                organisasi_verifikasi_dimulai_count++
+                                if (status.verifikasi.lpj.dpm < StatusRapat.MARKED_AS_DONE) {
+                                    if (!quick_lookup_list[organisasi]) {
+                                        quick_lookup_list[organisasi] = []
+                                    }
+                                    quick_lookup_list[organisasi].push(nama_kegiatan, uid.substring(0, 4))
+                                    quick_lookup_list_count++
                                 }
-                                quick_lookup_list[organisasi].push(nama_kegiatan, uid.substring(0, 4))
                             }
 
                             list_group.appendChild(list_item_kegiatan)
                         }
 
-                        dom.qe(list_item_organisasi, 'span.badge')!.innerHTML = `
+                        dom.qe(list_item_organisasi, 'span.badge.text-bg-success')!.innerHTML = `
                             <span><i class="fa-solid fa-check-double"></i>:
-                            ${organisasi_verifikasi_selesai_count}</span>/${Object.values(logbook_periode[organisasi_index]).length}
+                            ${organisasi_verifikasi_selesai_count}/${organisasi_verifikasi_dimulai_count}</span>
+                        `
+
+                        dom.qe(list_item_organisasi, 'span.badge.text-bg-secondary')!.innerHTML = `
+                            <span><i class="fa-solid fa-asterisk"></i>:
+                            ${Object.values(logbook_periode[organisasi_index]).length - organisasi_verifikasi_dimulai_count}</span>
                         `
                     }
 
@@ -189,22 +201,24 @@
 
                         quick_lookup_button_html = `
                             <div class="text-start small">
-                                <strong>LPJ ${periode_text} yang belum selesai ke DPM:</strong><br />
+                                <strong>LPJ ${periode_text} yang belum selesai ke DPM (${quick_lookup_list_count}):</strong><br />
                                 Keterangan: Nama Kegiatan #UID (4 karakter pertama)<br />
                                 ${quick_lookup_list_html}
                             </div>
                         `
 
-                        quick_lookup_text = `LPJ ${periode_text} yang belum selesai ke DPM:\nKeterangan: Nama Kegiatan #UID (4 karakter pertama)${quick_lookup_list_text}`
+                        quick_lookup_text = `LPJ ${periode_text} yang belum selesai ke DPM (${quick_lookup_list_count}):\nKeterangan: Nama Kegiatan #UID (4 karakter pertama)${quick_lookup_list_text}`
                     }
 
                     quick_lookup_button.addEventListener('click', () => {
+                        const swal_title = `LPJ Belum Selesai${quick_lookup_list_count > 0 ? ` (${quick_lookup_list_count})` : ''}`
                         swal.fire({
-                            title: 'Logbook <i class="fa-solid fa-comment-dots"></i>',
-                            html: quick_lookup_button_html || '<strong>Semua LPJ sudah selesai!</strong>',
+                            title: swal_title,
+                            html: quick_lookup_button_html || `<strong>Tidak ada LPJ ${periode_text} yang belum selesai!</strong>`,
                             showDenyButton: true,
                             denyButtonText: 'Tutup',
                             confirmButtonText: 'Salin',
+                            showConfirmButton: quick_lookup_button_html ? true : false,
                             customClass: {
                                 confirmButton: 'btn btn-success',
                                 denyButton: 'btn btn-secondary ms-2',
@@ -216,7 +230,7 @@
                                 common.copy(quick_lookup_text).then(() => {
                                     swal.fire({
                                         icon: 'success',
-                                        title: 'Logbook <i class="fa-solid fa-comment-dots"></i>',
+                                        title: swal_title,
                                         html: 'Teks berhasil disalin!',
                                         showConfirmButton: false,
                                         timer: 1000,
