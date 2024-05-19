@@ -1,0 +1,107 @@
+<div class="container">
+    <h1 class="display-3 mb-4">
+        <span
+            class="display-6 mb-0 material-symbols-outlined"
+            style="transform: translateY(-0.1rem)"
+        >
+            handshake
+        </span>
+        Panduan
+    </h1>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Beranda</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Panduan</li>
+        </ol>
+    </nav>
+    <hr />
+    <div class="mb-3 animate animate-fade-on-enter animate-speed-50">
+        <a role="button" href="/" class="btn btn-secondary">Kembali</a>
+    </div>
+    <div class="card animate animate-rise-on-enter mb-3">
+        <div class="card-header">
+            <span class="fs-4">FAQ</span>
+        </div>
+        <div class="card-body">
+            <div class="border-start border-4 border-primary rounded">
+                <h6
+                    class="mb-2 ms-2 text-primary"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#callout_faq_lupa_uid"
+                    aria-expanded="false"
+                    aria-controls="callout_faq_lupa_uid"
+                >
+                    <i class="fa-solid fa-circle-info"></i> Lupa UID
+                </h6>
+                <ol class="small collapse" id="callout_faq_lupa_uid">
+                    <li class="mb-2">
+                        <strong>Hubungi sekretariat</strong> LEM/DPM melalui
+                        email atau <i>chat</i>.
+                        <ul class="small">
+                            <li>
+                                Sertakan
+                                <strong
+                                    >nama kegiatan dan 4 karakter pertama
+                                    UID</strong
+                                >
+                                dari akun yang terkait.
+                            </li>
+                            <li>
+                                Lihat nama kegiatan dan 4 karakter pertama UID
+                                (contoh: AORTA 2024 #aor9) di
+                                <a
+                                    href="/kegiatan/logbook/"
+                                    class="btn-link text-black"
+                                    >logbook</a
+                                >.
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>UID akan dikirimkan</strong> melalui email
+                        LEM/DPM <strong>ke email yang terdaftar</strong> pada
+                        akun terkait.
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="card animate animate-rise-on-enter mb-3 animate-delay-100">
+        <div class="card-header">
+            <span class="fs-4">Panduan Verifikasi</span>
+        </div>
+        <div class="card-body">
+            <p>Masuk dengan UID untuk menggunakan fitur-fitur di bawah ini.</p>
+            <insert-component-urus/dashboard/ketentuan-daftar-rapat />
+            <hr />
+            <insert-component-urus/dashboard/ketentuan-up-berkas />
+            <hr />
+            <insert-component-urus/dashboard/ketentuan-komunikasi />
+        </div>
+    </div>
+    <div class="card animate animate-rise-on-enter animate-delay-200">
+        <div class="card-header">
+            <span class="fs-4">Evaluasi</span>
+        </div>
+        <div class="card-body">
+            <ul class="list-group">
+                <li class="list-group-item d-flex align-items-center">
+                    <div class="flex-grow-1 pe-2">
+                        Evaluasi Kinerja DPM FK UII dan Survei KM FK UII
+                    </div>
+                    <a
+                        role="button"
+                        href="https://bit.ly/Evaluasi-Survei-DPMFKUII"
+                        class="btn btn-primary"
+                        target="_blank"
+                        style="min-width: max-content"
+                    >
+                        Isi Form
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

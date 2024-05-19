@@ -428,12 +428,16 @@ const main = {
                                     attributes: {
                                         href: `/admin/kegiatan/aksi/?uid=${uid}`,
                                         role: 'button',
+                                        'aria-label': 'Action',
                                     },
                                     html: '<i class="fa-solid fa-gear"></i>'
                                 })
 
+
                                 if (options.action_el_group) {
-                                    options.action_el_group.prepend(aksi_button)
+                                    if (!dom.qe(options.action_el_group, 'a[aria-label="Action"]')) {
+                                        options.action_el_group.prepend(aksi_button)
+                                    }
                                 }
                                 else {
                                     options.action_el_group = dom.c('div', {
