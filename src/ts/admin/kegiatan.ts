@@ -161,19 +161,7 @@
             const span_nama_kegiatan = dom.qe<'span'>(tr, 'td:nth-child(3) > span')!
             span_nama_kegiatan.style.borderBottom = '1px dotted rgba(0, 0, 0, 0.5)'
 
-            const action_el_group = dom.c('div', {
-                classes: ['d-flex', 'gap-1'],
-                children: [dom.c('a', {
-                    classes: ['btn', 'btn-km-primary'],
-                    attributes: {
-                        href: `/admin/kegiatan/aksi/?uid=${item.uid}`,
-                        role: 'button',
-                    },
-                    html: '<i class="fa-solid fa-gear"></i>'
-                })]
-            })
-
-            span_nama_kegiatan.addEventListener('click', () => main.swal_fire_detail_kegiatan(item.nama_kegiatan, item.uid, { action_el_group }))
+            span_nama_kegiatan.addEventListener('click', () => main.swal_fire_detail_kegiatan(item.nama_kegiatan, item.uid))
 
             table_logbook_kegiatan_tbody.appendChild(tr)
         }

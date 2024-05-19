@@ -422,7 +422,26 @@ const main = {
                                 <h6>Terakhir Diperbarui</h6>
                                 <p class="small">${new Date(kegiatan.updated_timestamp).toLocaleString()}</p>
                             `
-                            if (role === UserRole.ADMIN && options.action_el_group) {
+                            if (role === UserRole.ADMIN) {
+                                const aksi_button = dom.c('a', {
+                                    classes: ['btn', 'btn-km-primary'],
+                                    attributes: {
+                                        href: `/admin/kegiatan/aksi/?uid=${uid}`,
+                                        role: 'button',
+                                    },
+                                    html: '<i class="fa-solid fa-gear"></i>'
+                                })
+
+                                if (options.action_el_group) {
+                                    options.action_el_group.prepend(aksi_button)
+                                }
+                                else {
+                                    options.action_el_group = dom.c('div', {
+                                        classes: ['d-flex', 'gap-1'],
+                                        children: [aksi_button]
+                                    })
+                                }
+
                                 div.innerHTML += '<h6>Aksi</h6>'
                                 div.appendChild(options.action_el_group)
                             }
