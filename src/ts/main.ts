@@ -395,6 +395,8 @@ const main = {
                                 <h6>UID</h6>
                                 <p class="small">${uid_text}</p>
                                 ${role === UserRole.ADMIN ? `
+                                    <h6>Email Pendaftar</h6>
+                                    <p class="small">${kegiatan.email_pendaftar}</p>
                                     <h6>Nama Pendaftar</h6>
                                     <p class="small">${kegiatan.nama_pendaftar}</p>` : ''}
                                 <h6>Organisasi</h6>
@@ -407,6 +409,9 @@ const main = {
                                 <p class="small">${Object.values(PenyelenggaraKegiatan)[kegiatan.penyelenggara_kegiatan_index]}</p>
                                 <h6>Lingkup Kegiatan</h6>
                                 <p class="small">${Object.values(LingkupKegiatan)[kegiatan.lingkup_kegiatan_index]}</p>
+                                ${role === UserRole.ADMIN ? `
+                                    <h6>Tanggal Pertama Kegiatan</h6>
+                                    <p class="small">${kegiatan.tanggal_kegiatan[0]}</p>` : ''}
                                 <h6>Status Verifikasi</h6>
                                 <p class="small">Proposal LEM ${main.get_status_rapat_text(kegiatan.status.verifikasi.proposal.lem, true)}.<br />
                                 Proposal DPM ${main.get_status_rapat_text(kegiatan.status.verifikasi.proposal.dpm, true)}.<br />

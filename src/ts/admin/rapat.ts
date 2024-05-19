@@ -215,7 +215,7 @@
 
                     const batal_button = dom.c('button', {
                         classes: ['btn', 'btn-danger'],
-                        html: '<i class="fa-solid fa-trash-can"></i>'
+                        html: '<i class="fa-solid fa-calendar-xmark"></i>'
                     })
 
                     const nama_rapat = main.get_nama_rapat(rapat_terjadwal)
@@ -474,11 +474,21 @@
                         })
                     })
 
+                    const aksi_button = dom.c('a', {
+                        classes: ['btn', 'btn-km-primary'],
+                        attributes: {
+                            href: `/admin/kegiatan/aksi/?uid=${rapat_terjadwal.uid}`,
+                            role: 'button',
+                        },
+                        html: '<i class="fa-solid fa-gear"></i>'
+                    })
+
                     const action_el_group = dom.c('div', {
                         classes: ['d-flex', 'gap-1'],
                         children: [
                             pindah_button,
                             batal_button,
+                            aksi_button,
                         ]
                     })
 

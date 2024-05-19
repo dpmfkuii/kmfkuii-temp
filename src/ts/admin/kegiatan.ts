@@ -133,13 +133,13 @@
             tr.innerHTML = `
                 <td>${starting_number++}</td>
                 <td>${item.uid}</td>
-                <td>${item.nama_kegiatan}</td>
+                <td><span role="button">${item.nama_kegiatan}</span></td>
                 <td>${main.get_status_rapat_icon(item.status_verifikasi.proposal.lem)}</td>
                 <td>${main.get_status_rapat_icon(item.status_verifikasi.proposal.dpm)}</td>
                 <td>${main.get_status_rapat_icon(item.status_verifikasi.lpj.lem)}</td>
                 <td>${main.get_status_rapat_icon(item.status_verifikasi.lpj.dpm)}</td>
                 <td>
-                    <div class="d-flex gap-1 justify-content-center">
+                    <div class="d-flex gap-1 justify-content-center fs-5">
                         <a
                             href="/admin/kegiatan/aksi/?uid=${item.uid}"
                             class="text-km-primary"
@@ -157,6 +157,23 @@
 
             const aksi_button_danger = dom.qe<'span'>(tr, 'td:last-child span.text-danger')!
             aksi_button_danger.addEventListener('click', () => button_action_hapus_kegiatan(item.nama_kegiatan, item.uid))
+
+            const span_nama_kegiatan = dom.qe<'span'>(tr, 'td:nth-child(3) > span')!
+            span_nama_kegiatan.style.borderBottom = '1px dotted rgba(0, 0, 0, 0.5)'
+
+            const action_el_group = dom.c('div', {
+                classes: ['d-flex', 'gap-1'],
+                children: [dom.c('a', {
+                    classes: ['btn', 'btn-km-primary'],
+                    attributes: {
+                        href: `/admin/kegiatan/aksi/?uid=${item.uid}`,
+                        role: 'button',
+                    },
+                    html: '<i class="fa-solid fa-gear"></i>'
+                })]
+            })
+
+            span_nama_kegiatan.addEventListener('click', () => main.swal_fire_detail_kegiatan(item.nama_kegiatan, item.uid, { action_el_group }))
 
             table_logbook_kegiatan_tbody.appendChild(tr)
         }
