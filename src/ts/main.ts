@@ -228,8 +228,7 @@ interface JenisPengajuanRapatKegiatan {
 type LogColor = 'light' | 'info' | 'success' | 'warning' | 'danger'
 
 const main = {
-    get_opsi_periode_kegiatan() {
-        const current_year = new Date().getFullYear()
+    get_opsi_periode_kegiatan(current_year = new Date().getFullYear()) {
         return [
             `${current_year - 2}-${current_year - 1}`,
             `${current_year - 1}-${current_year}`,
@@ -290,7 +289,7 @@ const main = {
             html: `Terjadi kesalahan tak terduga! Coba hubungi sekretariat LEM atau DPM.<br /><code>${error}</code>`,
             confirmButtonText: 'Tutup',
             customClass: {
-                confirmButton: 'btn btn-primary',
+                confirmButton: 'btn btn-secondary',
             },
             buttonsStyling: false,
             showCloseButton: true,
@@ -366,7 +365,7 @@ const main = {
             html: '<div><i>Memuat detail...</i></div>',
             confirmButtonText: 'Tutup',
             customClass: {
-                confirmButton: 'btn btn-primary',
+                confirmButton: 'btn btn-secondary',
             },
             buttonsStyling: false,
             showCloseButton: true,
@@ -497,6 +496,23 @@ const db = {
     get_logbook_periode(periode: string): Promise<FirebaseSnapshot<LogbookPeriode>> {
         return main_db.ref(`verifikasi/kegiatan/logbook/${periode}`)
             .once<LogbookPeriode>('value')
+    },
+    async get_logbook_in_periode_range(year: number): Promise<LogbookKegiatan> {
+        const logbook_in_periode_range: LogbookKegiatan = {}
+
+        const promises = []
+
+        for (const periode of main.get_opsi_periode_kegiatan(year)) {
+            promises.push(this.get_logbook_periode(periode).then(snap => {
+                if (snap.exists()) {
+                    logbook_in_periode_range[periode] = snap.val()
+                }
+            }))
+        }
+
+        await Promise.all(promises)
+
+        return logbook_in_periode_range
     },
     set_logbook(kegiatan: Kegiatan) {
         return main_db.ref(`verifikasi/kegiatan/logbook/${kegiatan.periode_kegiatan}/${kegiatan.organisasi_index}/${kegiatan.uid}`)

@@ -366,7 +366,7 @@
                                             html: `<small>Jadwal pada ${new_waktu_rapat} sudah diambil ${already_taken}. Coba waktu lain.</small>`,
                                             confirmButtonText: 'Tutup',
                                             customClass: {
-                                                confirmButton: 'btn btn-primary',
+                                                confirmButton: 'btn btn-secondary',
                                             },
                                             buttonsStyling: false,
                                             showCloseButton: true,

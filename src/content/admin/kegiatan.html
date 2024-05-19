@@ -11,7 +11,13 @@
         <div class="col-12 col-lg-9 animate animate-rise-on-enter">
             <div class="card">
                 <div class="card-header">
-                    <span class="fs-4">Kegiatan</span>
+                    <div class="fs-4 d-flex align-items-center gap-2">
+                        Kegiatan
+                        <select class="form-select form-select-lg w-auto">
+                            <option disabled selected>--</option>
+                        </select>
+                        <i class="fa-solid fa-circle-info" role="button"></i>
+                    </div>
                 </div>
                 <div class="card-body p-0">
                     <insert-component-admin/kegiatan/logbook-table />

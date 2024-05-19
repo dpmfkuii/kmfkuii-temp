@@ -221,7 +221,7 @@
                             showConfirmButton: quick_lookup_button_html ? true : false,
                             customClass: {
                                 confirmButton: 'btn btn-success',
-                                denyButton: 'btn btn-secondary ms-2',
+                                denyButton: `btn btn-secondary${quick_lookup_button_html ? ' ms-2' : ''}`,
                             },
                             buttonsStyling: false,
                             showCloseButton: true,

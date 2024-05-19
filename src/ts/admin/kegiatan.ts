@@ -4,6 +4,38 @@
     const table_logbook_kegiatan = dom.q<'table'>('#table_logbook_kegiatan')!
     const table_logbook_kegiatan_tbody = dom.qe<'tbody'>(table_logbook_kegiatan, 'tbody')!
     const input_table_search = dom.q<'input'>('#input_table_search')!
+    const select_periode = dom.q<'select'>('.card-header select')!
+    const select_periode_info_button = dom.q<'i'>('.card-header i.fa-circle-info')!
+
+    const current_year = new Date().getFullYear()
+    let select_periode_previous_value = select_periode.value = `${current_year}`
+    const get_periode_option = (year: number) => `${year - 1}—${year + 1}`
+    select_periode.innerHTML = `
+        <option value="${current_year}" selected>${get_periode_option(current_year)}</option>
+        <option value="${current_year - 1}">${get_periode_option(current_year - 1)}</option>
+        <option value="${current_year - 2}">${get_periode_option(current_year - 2)}</option>
+        <option value="">Semua</option>
+    `
+
+    select_periode_info_button.addEventListener('click', () => {
+        swal.fire({
+            title: 'Kegiatan',
+            html: `
+                <div class="text-start small">
+                    <div><strong>${get_periode_option(current_year)}:</strong><br />Sesuai periode di logbook.</div><br />
+                    <div><strong>${get_periode_option(current_year - 1)}:</strong><br />Sesuai periode di logbook 1 tahun yang lalu.</div><br />
+                    <div><strong>${get_periode_option(current_year - 2)}:</strong><br />Sesuai periode di logbook 2 tahun yang lalu.</div><br />
+                    <div><strong>Semua:</strong><br />Seluruh periode (lebih banyak data.)</div>
+                </div>
+            `,
+            confirmButtonText: 'Tutup',
+            customClass: {
+                confirmButton: 'btn btn-secondary',
+            },
+            buttonsStyling: false,
+            showCloseButton: true,
+        })
+    })
 
     type TableLogbookData = {
         uid: string
@@ -191,22 +223,59 @@
         `
     }
 
-    start_loading()
+    const load_kegiatan = async (year: number) => {
+        start_loading()
 
-    try {
-        await db.get_logbook()
-            .then(snap => {
-                if (!snap.exists()) return
+        try {
+            if (year) {
+                await db.get_logbook_in_periode_range(year)
+                    .then(value => _logbook_snapshot = value)
+            }
+            else {
+                await db.get_logbook()
+                    .then(snap => { if (snap.exists()) _logbook_snapshot = snap.val() })
+            }
+        }
+        catch (err) {
+            main.show_unexpected_error_message(err)
+        }
 
-                _logbook_snapshot = snap.val()
+        if (!_logbook_snapshot) return
+
+        update_table_logbook_kegiatan()
+    }
+
+    select_periode.addEventListener('change', () => {
+        const year = Number(select_periode.value)
+        if (!year) {
+            swal.fire({
+                icon: 'question',
+                title: `Tampilkan semua data?`,
+                html: `<small>Proses dapat memakan waktu dan paket data lebih banyak.</small>`,
+                showDenyButton: true,
+                confirmButtonText: 'Tampilkan',
+                denyButtonText: 'Nanti',
+                customClass: {
+                    confirmButton: 'btn btn-secondary',
+                    denyButton: 'btn btn-success ms-2',
+                },
+                buttonsStyling: false,
+                showCloseButton: true,
+            }).then((result: any) => {
+                if (result.isConfirmed) {
+                    load_kegiatan(year)
+                    select_periode_previous_value = select_periode.value
+                }
+                else {
+                    select_periode.value = select_periode_previous_value
+                }
             })
-    }
-    catch (err) {
-        main.show_unexpected_error_message(err)
-    }
+        }
+        else {
+            load_kegiatan(year)
+            select_periode_previous_value = select_periode.value
+        }
+    })
 
-    if (!_logbook_snapshot) return
-
-    update_table_logbook_kegiatan()
-
+    load_kegiatan(current_year)
 })()
