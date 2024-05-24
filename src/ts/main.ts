@@ -252,16 +252,16 @@ const main = {
             ? `<span class="text-${status === 0 ? 'primary' : status > 0 ? 'success' : 'secondary'}">${text}</span>`
             : text
     },
-    get_status_rapat_icon(status: StatusRapatVerifikasiKegiatan) {
+    get_status_rapat_icon(status: StatusRapatVerifikasiKegiatan, no_color = false) {
         switch (status) {
             case StatusRapat.NOT_STARTED:
-                return '<i class="fa-solid fa-asterisk text-secondary"></i>'
+                return `<i class="fa-solid fa-asterisk ${no_color ? '' : 'text-secondary'}"></i>`
             case StatusRapat.IN_PROGRESS:
-                return '<i class="fa-solid fa-spinner text-primary"></i>'
+                return `<i class="fa-solid fa-spinner ${no_color ? '' : 'text-primary'}"></i>`
             case StatusRapat.MARKED_AS_DONE:
             case StatusRapat.DONE_TIMESTAMP:
             default:
-                return '<i class="fa-solid fa-check text-success"></i>'
+                return `<i class="fa-solid fa-check ${no_color ? '' : 'text-success'}"></i>`
         }
     },
     is_status_verifikasi_selesai(status_verifikasi: Kegiatan['status']['verifikasi']) {

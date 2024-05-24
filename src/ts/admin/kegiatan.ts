@@ -108,6 +108,81 @@
         update_table_logbook_paginated()
     })
 
+    const filter_button_th_status_proposal_lem = dom.q<'th'>('#th_status_proposal_lem')!
+    const filter_button_th_status_proposal_dpm = dom.q<'th'>('#th_status_proposal_dpm')!
+    const filter_button_th_status_lpj_lem = dom.q<'th'>('#th_status_lpj_lem')!
+    const filter_button_th_status_lpj_dpm = dom.q<'th'>('#th_status_lpj_dpm')!
+
+    /**
+     * 0 = all
+     * 1 = not started
+     * 2 = in progress
+     * 3 = done
+     */
+    const filter_status = [0, 0, 0, 0]
+    const is_filter_status_matched_status_rapat = (filter: number, status_rapat: number) => {
+        if (filter === 1) {
+            if (status_rapat !== StatusRapat.NOT_STARTED) {
+                return false
+            }
+        }
+        else if (filter === 2) {
+            if (status_rapat !== StatusRapat.IN_PROGRESS) {
+                return false
+            }
+        }
+        else if (filter === 3) {
+            if (status_rapat < StatusRapat.MARKED_AS_DONE) {
+                return false
+            }
+        }
+        return true
+    }
+
+    const setup_filter_button_th_status = (button: HTMLElement, filter_status_index: number) => {
+        const button_small = dom.qe<'small'>(button, 'small')!
+        button.addEventListener('click', () => {
+            filter_status[filter_status_index] = (filter_status[filter_status_index] + 1) % 4
+            switch (filter_status[filter_status_index]) {
+                case 1:
+                    button_small.innerHTML = main.get_status_rapat_icon(StatusRapat.NOT_STARTED, true)
+                    button.className = `text-bg-secondary`
+                    break
+                case 2:
+                    button_small.innerHTML = main.get_status_rapat_icon(StatusRapat.IN_PROGRESS, true)
+                    button.className = `text-bg-primary`
+                    break
+                case 3:
+                    button_small.innerHTML = main.get_status_rapat_icon(StatusRapat.MARKED_AS_DONE, true)
+                    button.className = `text-bg-success`
+                    break
+                default:
+                    button_small.innerHTML = `<i class="fa-solid fa-filter"></i>`
+                    button.className = ''
+                    break
+            }
+
+            const list = table_logbook_list.filter(n => {
+                const s = n.status_verifikasi
+                const filter_propo_lem = filter_status[0]
+                const filter_propo_dpm = filter_status[1]
+                const filter_lpj_lem = filter_status[2]
+                const filter_lpj_dpm = filter_status[3]
+                if (!is_filter_status_matched_status_rapat(filter_propo_lem, s.proposal.lem)) return false
+                if (!is_filter_status_matched_status_rapat(filter_propo_dpm, s.proposal.dpm)) return false
+                if (!is_filter_status_matched_status_rapat(filter_lpj_lem, s.lpj.lem)) return false
+                if (!is_filter_status_matched_status_rapat(filter_lpj_dpm, s.lpj.dpm)) return false
+                return true
+            })
+            generate_table_logbook(list)
+        })
+    }
+
+    setup_filter_button_th_status(filter_button_th_status_proposal_lem, 0)
+    setup_filter_button_th_status(filter_button_th_status_proposal_dpm, 1)
+    setup_filter_button_th_status(filter_button_th_status_lpj_lem, 2)
+    setup_filter_button_th_status(filter_button_th_status_lpj_dpm, 3)
+
     type TableLogbookData = {
         uid: string
         nama_kegiatan: string
