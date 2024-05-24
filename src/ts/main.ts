@@ -664,4 +664,26 @@ setTimeout(() => {
                 el.classList.remove(`animate-${animation_name}`)
             })
     }
-}, 100)
+}, 100);
+
+(() => {
+    const el = dom.q('#hbdhbdhbd')
+    if (el) {
+        el.role = 'button'
+        el.addEventListener('click', () => {
+            swal.fire({
+                title: 'Web KM FK UII',
+                html: `<i class="small">${'dami yb 3< htiw edam'.split('').reverse().join('')}</i>`,
+                confirmButtonText: 'take care',
+                customClass: {
+                    popup: 'w-auto small',
+                    title: 'fs-6 p-3',
+                    htmlContainer: 'border-bottom border-top m-0 p-3',
+                    confirmButton: 'btn btn-sm btn-km-primary',
+                },
+                buttonsStyling: false,
+                allowEnterKey: false,
+            })
+        })
+    }
+})()
