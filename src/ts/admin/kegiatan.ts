@@ -1,5 +1,6 @@
 (async () => {
     let _logbook_snapshot: LogbookKegiatan | null = null
+    let _recent_fuse_list: TableLogbookData[] = []
 
     const table_logbook_kegiatan = dom.q<'table'>('#table_logbook_kegiatan')!
     const table_logbook_kegiatan_tbody = dom.qe<'tbody'>(table_logbook_kegiatan, 'tbody')!
@@ -139,6 +140,21 @@
         return true
     }
 
+    const run_filter = (list: TableLogbookData[]) => {
+        return list.filter(n => {
+            const s = n.status_verifikasi
+            const filter_propo_lem = filter_status[0]
+            const filter_propo_dpm = filter_status[1]
+            const filter_lpj_lem = filter_status[2]
+            const filter_lpj_dpm = filter_status[3]
+            if (!is_filter_status_matched_status_rapat(filter_propo_lem, s.proposal.lem)) return false
+            if (!is_filter_status_matched_status_rapat(filter_propo_dpm, s.proposal.dpm)) return false
+            if (!is_filter_status_matched_status_rapat(filter_lpj_lem, s.lpj.lem)) return false
+            if (!is_filter_status_matched_status_rapat(filter_lpj_dpm, s.lpj.dpm)) return false
+            return true
+        })
+    }
+
     const setup_filter_button_th_status = (button: HTMLElement, filter_status_index: number) => {
         const button_small = dom.qe<'small'>(button, 'small')!
         button.addEventListener('click', () => {
@@ -162,19 +178,12 @@
                     break
             }
 
-            const list = table_logbook_list.filter(n => {
-                const s = n.status_verifikasi
-                const filter_propo_lem = filter_status[0]
-                const filter_propo_dpm = filter_status[1]
-                const filter_lpj_lem = filter_status[2]
-                const filter_lpj_dpm = filter_status[3]
-                if (!is_filter_status_matched_status_rapat(filter_propo_lem, s.proposal.lem)) return false
-                if (!is_filter_status_matched_status_rapat(filter_propo_dpm, s.proposal.dpm)) return false
-                if (!is_filter_status_matched_status_rapat(filter_lpj_lem, s.lpj.lem)) return false
-                if (!is_filter_status_matched_status_rapat(filter_lpj_dpm, s.lpj.dpm)) return false
-                return true
-            })
-            generate_table_logbook(list)
+            if (input_table_search.value !== '') {
+                generate_table_logbook(_recent_fuse_list)
+            }
+            else {
+                generate_table_logbook(table_logbook_list)
+            }
         })
     }
 
@@ -271,7 +280,7 @@
     }
 
     const generate_table_logbook = (list: TableLogbookData[]) => {
-        update_pagination(list)
+        update_pagination(run_filter(list))
         update_table_logbook_paginated()
     }
 
@@ -396,6 +405,7 @@
             for (const item of fuse.search(`'${search_pattern}`)) {
                 list.push(item.item)
             }
+            _recent_fuse_list = list
             generate_table_logbook(list)
         }
     })
