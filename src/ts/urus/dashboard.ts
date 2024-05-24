@@ -93,6 +93,9 @@
 
     button_batal.addEventListener('click', () => {
         dom.disable(
+            input_email_pendaftar,
+            input_nama_pendaftar,
+            select_organisasi,
             input_nama_kegiatan,
             input_tanggal_pertama_kegiatan,
             select_periode_kegiatan,
@@ -116,6 +119,9 @@
 
         if (!button_ubah.hasAttribute('is-editing')) {
             dom.enable(
+                input_email_pendaftar,
+                input_nama_pendaftar,
+                select_organisasi,
                 input_nama_kegiatan,
                 input_tanggal_pertama_kegiatan,
                 select_periode_kegiatan,
@@ -129,6 +135,9 @@
             button_ubah.classList.remove('btn-km-primary')
             button_ubah.setAttribute('is-editing', '')
 
+            _form_edit_prev_kegiatan.email_pendaftar = input_email_pendaftar.value
+            _form_edit_prev_kegiatan.nama_pendaftar = input_nama_pendaftar.value
+            _form_edit_prev_kegiatan.organisasi_index = Object.values(OrganisasiKegiatan).indexOf(select_organisasi.value as OrganisasiKegiatan)
             _form_edit_prev_kegiatan.nama_kegiatan = input_nama_kegiatan.value
             _form_edit_prev_kegiatan.tanggal_kegiatan = [input_tanggal_pertama_kegiatan.value]
             _form_edit_prev_kegiatan.periode_kegiatan = select_periode_kegiatan.value
@@ -139,6 +148,9 @@
         }
 
         const kegiatan_changes = {
+            email_pendaftar: input_email_pendaftar.value,
+            nama_pendaftar: input_nama_pendaftar.value,
+            organisasi_index: Object.values(OrganisasiKegiatan).indexOf(select_organisasi.value as OrganisasiKegiatan),
             nama_kegiatan: input_nama_kegiatan.value,
             tanggal_kegiatan: [input_tanggal_pertama_kegiatan.value],
             periode_kegiatan: select_periode_kegiatan.value,
@@ -147,7 +159,10 @@
         } as Kegiatan
 
         let is_changed
-            = kegiatan_changes.nama_kegiatan !== _kegiatan.nama_kegiatan
+            = kegiatan_changes.email_pendaftar !== _kegiatan.email_pendaftar
+            || kegiatan_changes.nama_pendaftar !== _kegiatan.nama_pendaftar
+            || kegiatan_changes.organisasi_index !== _kegiatan.organisasi_index
+            || kegiatan_changes.nama_kegiatan !== _kegiatan.nama_kegiatan
             || !common.is_ordered_array_equal(kegiatan_changes.tanggal_kegiatan, _kegiatan.tanggal_kegiatan)
             || kegiatan_changes.periode_kegiatan !== _kegiatan.periode_kegiatan
             || kegiatan_changes.penyelenggara_kegiatan_index !== _kegiatan.penyelenggara_kegiatan_index
@@ -178,8 +193,12 @@
 
                 const changes = {} as { [key in keyof Kegiatan]: string[] }
                 const old_periode_kegiatan = _kegiatan.periode_kegiatan
+                const old_organisasi_index = _kegiatan.organisasi_index
 
                 const prop_name = {
+                    email_pendaftar: 'Email Pendaftar',
+                    nama_pendaftar: 'Nama Pendaftar',
+                    organisasi_index: 'Organisasi',
                     nama_kegiatan: 'Nama Kegiatan',
                     tanggal_kegiatan: 'Tanggal Pertama Kegiatan',
                     periode_kegiatan: 'Periode Kegiatan',
@@ -188,6 +207,9 @@
                 } as { [key in keyof Kegiatan]: string }
 
                 for (const prop of [
+                    'email_pendaftar',
+                    'nama_pendaftar',
+                    'organisasi_index',
                     'nama_kegiatan',
                     'tanggal_kegiatan',
                     'periode_kegiatan',
@@ -213,6 +235,10 @@
                         old_value = old_value.replace('-', '/')
                         new_value = new_value.replace('-', '/')
                     }
+                    else if (prop === 'organisasi_index') {
+                        old_value = Object.values(OrganisasiKegiatan)[parseInt(old_value)]
+                        new_value = Object.values(OrganisasiKegiatan)[parseInt(new_value)]
+                    }
                     else if (prop === 'penyelenggara_kegiatan_index') {
                         old_value = Object.values(PenyelenggaraKegiatan)[parseInt(old_value)]
                         new_value = Object.values(PenyelenggaraKegiatan)[parseInt(new_value)]
@@ -229,7 +255,7 @@
                 try {
                     await Promise.all([
                         db.update_kegiatan(uid, kegiatan_changes),
-                        db.change_logbook(old_periode_kegiatan, _kegiatan.organisasi_index, _kegiatan),
+                        db.change_logbook(old_periode_kegiatan, old_organisasi_index, _kegiatan),
                     ])
                     await Promise.all([
                         db.add_kegiatan_log(uid, defines.log_colors.pembaruan_data_kegiatan, log_text),
