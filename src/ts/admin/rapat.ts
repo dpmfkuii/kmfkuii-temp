@@ -127,8 +127,11 @@
         }
     }
 
+    let _jadwal_current_request_id = 0
     const update_jadwal_table_tbody = async () => {
         const current_pagination_item = jadwal_pagination_items[jadwal_pagination_index]
+        const request_id = common.timestamp()
+        _jadwal_current_request_id = request_id
 
         jadwal_table_tbody.innerHTML = `
             <tr><td colspan=${jadwal_days_amount + 1}>
@@ -152,9 +155,10 @@
 
         // filling the lists
         try {
+            const promises = []
             for (let i = 0; i < jadwal_days_amount; i++) {
                 const tanggal_rapat = common.to_date_string(common.add_date_new(current_pagination_item, i))
-                await db.get_jadwal_rapat_dengan_tanggal(rapat_dengan, tanggal_rapat.replaceAll('-', '/'))
+                promises.push(db.get_jadwal_rapat_dengan_tanggal(rapat_dengan, tanggal_rapat.replaceAll('-', '/'))
                     .then(snap => {
                         if (!snap.exists()) return
 
@@ -166,9 +170,9 @@
                                 timestamp,
                             }
                         }
-                    })
+                    }))
 
-                await db.get_antrean_rapat_dengan(rapat_dengan)
+                promises.push(db.get_antrean_rapat_dengan(rapat_dengan)
                     .then(snap => {
                         if (!snap.exists()) return
 
@@ -179,12 +183,15 @@
                                 list_antrean_rapat_by_jam[rapat.jam_rapat][i] = rapat
                             }
                         }
-                    })
+                    }))
             }
+            await Promise.all(promises)
         }
         catch (err) {
             main.show_unexpected_error_message(err)
         }
+
+        if (_jadwal_current_request_id !== request_id) return
 
         jadwal_table_tbody.innerHTML = ''
 
@@ -706,8 +713,11 @@
         return li
     }
 
+    let _antrean_current_request_id = 0
     const update_antrean = async () => {
         if (globals.rapat.hide_antrean) return
+        const request_id = common.timestamp()
+        _antrean_current_request_id = request_id
 
         span_antrean_header_title.textContent = `Antrean (${defines.rapat_dengan_text[rapat_dengan]})`
 
@@ -728,6 +738,8 @@
 
                 rapat_list = snap.val()
             })
+
+        if (_antrean_current_request_id !== request_id) return
 
         list_group_antrean.innerHTML = ''
 
