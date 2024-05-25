@@ -61,6 +61,31 @@ a.disabled {
     animation: 1.5s linear infinite spinner-border;
 }
 
+.text-bg-lpm-cardios {
+    color: #fff;
+    background-color: #89304c;
+}
+
+.text-bg-cmia {
+    color: #fff;
+    background-color: #a41643;
+}
+
+.text-bg-tbmm-humerus {
+    color: #222;
+    background-color: #97b7ea;
+}
+
+.text-bg-smart {
+    color: #fff;
+    background-color: #2a3968;
+}
+
+.text-bg-cimsa {
+    color: #fff;
+    background-color: #c8102e;
+}
+
 /* animate system */
 .animate {
     transition: all 500ms;
