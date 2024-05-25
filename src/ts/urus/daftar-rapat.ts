@@ -46,18 +46,15 @@
 
     // fill in options
     const set_jam_rapat_options = (_taken_hours?: string[]) => {
-        if (_taken_hours) {
-            if (!_taken_hours.includes('19.00')) _taken_hours.push('19.00')
-        }
         select_jam_rapat.innerHTML = '<option disabled selected value>-- Pilih jam --</option>'
         for (const jam of JamRapat) {
+            if (jam === '19.00') continue
             const option = dom.c('option')
             option.textContent = option.value = jam
-            if (jam.includes('--') || _taken_hours?.includes(jam)) {
+            if (jam.includes('--') || (_taken_hours && _taken_hours.includes(jam))) {
                 option.value = ''
                 option.disabled = true
             }
-            if (jam === '19.00') continue
             select_jam_rapat.appendChild(option)
         }
     }
