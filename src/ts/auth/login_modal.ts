@@ -47,15 +47,7 @@
                 input_uid.focus()
             }
             else {
-                swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil masuk!',
-                    showConfirmButton: false,
-                    timer: 1000,
-                    timerProgressBar: true,
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                }).then(() => {
+                main.swal_fire_success('Berhasil masuk!').then(() => {
                     auth.redirect_home(user.role)
                 })
             }

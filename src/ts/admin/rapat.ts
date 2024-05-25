@@ -406,15 +406,7 @@
                                     update_jadwal()
                                     update_antrean()
 
-                                    swal.fire({
-                                        icon: 'success',
-                                        title: 'Pindah berhasil!',
-                                        showConfirmButton: false,
-                                        timer: 1000,
-                                        timerProgressBar: true,
-                                        allowOutsideClick: false,
-                                        allowEscapeKey: false,
-                                    })
+                                    main.swal_fire_success('Pindah berhasil!')
                                 },
                             })
                         }
@@ -466,15 +458,7 @@
                                         update_jadwal()
                                         update_antrean()
 
-                                        swal.fire({
-                                            icon: 'success',
-                                            title: 'Hapus berhasil!',
-                                            showConfirmButton: false,
-                                            timer: 1000,
-                                            timerProgressBar: true,
-                                            allowOutsideClick: false,
-                                            allowEscapeKey: false,
-                                        })
+                                        main.swal_fire_success('Hapus berhasil!')
                                     },
                                 })
                             }
@@ -630,15 +614,7 @@
                             update_jadwal()
                             update_antrean()
 
-                            swal.fire({
-                                icon: 'success',
-                                title: 'Konfirmasi berhasil!',
-                                showConfirmButton: false,
-                                timer: 1000,
-                                timerProgressBar: true,
-                                allowOutsideClick: false,
-                                allowEscapeKey: false,
-                            })
+                            main.swal_fire_success('Konfirmasi berhasil!')
                         },
                     })
                 }
@@ -695,15 +671,7 @@
                             update_jadwal()
                             update_antrean()
 
-                            swal.fire({
-                                icon: 'success',
-                                title: 'Tolak berhasil!',
-                                showConfirmButton: false,
-                                timer: 1000,
-                                timerProgressBar: true,
-                                allowOutsideClick: false,
-                                allowEscapeKey: false,
-                            })
+                            main.swal_fire_success('Tolak berhasil!')
                         },
                     })
                 }

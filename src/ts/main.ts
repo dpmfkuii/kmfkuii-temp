@@ -458,6 +458,17 @@ const main = {
             },
         })
     },
+    swal_fire_success(title: string) {
+        return swal.fire({
+            icon: 'success',
+            title,
+            showConfirmButton: false,
+            timer: 1000,
+            timerProgressBar: true,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+        })
+    },
 }
 
 const db = {

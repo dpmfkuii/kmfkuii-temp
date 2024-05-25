@@ -327,15 +327,7 @@
                         update_fuse(table_logbook_list)
                         generate_table_logbook(table_logbook_list)
 
-                        swal.fire({
-                            icon: 'success',
-                            title: 'Hapus berhasil!',
-                            showConfirmButton: false,
-                            timer: 1000,
-                            timerProgressBar: true,
-                            allowOutsideClick: false,
-                            allowEscapeKey: false,
-                        })
+                        main.swal_fire_success('Hapus berhasil!')
                     },
                 })
             }

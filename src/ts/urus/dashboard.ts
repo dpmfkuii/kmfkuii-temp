@@ -261,15 +261,7 @@
                         db.add_kegiatan_log(uid, defines.log_colors.pembaruan_data_kegiatan, log_text),
                         db.set_kegiatan_updated_timestamp(uid),
                     ])
-                    swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil tersimpan!',
-                        showConfirmButton: false,
-                        timer: 1000,
-                        timerProgressBar: true,
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                    })
+                    main.swal_fire_success('Berhasil tersimpan!')
                 }
                 catch (err) {
                     main.show_unexpected_error_message(err)
