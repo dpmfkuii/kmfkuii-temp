@@ -1,8 +1,7 @@
-(() => {
-    let count = 0
-
+(async () => {
     const card_container = dom.q<'div'>('#card_container')!
 
+    let count = 0
     const add_org_card = (tab_name: string, color_class: string, title: string, profil_text: string, keunggulan_text: string, href: string) => {
         const tab_profil_value = `${tab_name}_profil`
         const tab_keunggulan_value = `${tab_name}_keunggulan`
@@ -61,102 +60,36 @@
         count++
     }
 
-    add_org_card(
-        OrganisasiKegiatan.LEM,
-        `text-bg-km-primary`,
-        `[ LEM FK UII ]<br /><small>Lembaga Eksekutif Mahasiswa FK UII</small>`,
-        `Profil LEM belum diisi.`,
-        `Keunggulan LEM belum diisi.`,
-        `https://www.instagram.com/lem_fkuii`,
-    )
+    const div_loading = dom.c('div', {
+        classes: ['d-flex', 'align-items-center'],
+        html: `
+            <strong role="status" class="text-secondary fst-italic">Memuat...</strong>
+            <div class="spinner-border ms-auto" aria-hidden="true"></div>
+        `
+    })
 
-    add_org_card(
-        OrganisasiKegiatan.LPM_CARDIOS,
-        `text-bg-lpm-cardios`,
-        `[ LPM FK UII ]<br /><small>Lembaga Pers Mahasiswa FK UII</small>`,
-        `Profil LPM belum diisi.`,
-        `Keunggulan LPM belum diisi.`,
-        `https://www.instagram.com/lpmcardios/`,
-    )
+    card_container.parentElement!.insertBefore(div_loading, card_container)
 
-    add_org_card(
-        OrganisasiKegiatan.CMIA,
-        `text-bg-cmia`,
-        `[ CMIA FK UII ]<br /><small>Center for Medical Islamic Activities FK UII</small>`,
-        `Profil CMIA belum diisi.`,
-        `Keunggulan CMIA belum diisi.`,
-        `https://www.instagram.com/cmiafkuii/`,
-    )
+    try {
+        await db.get_sistem_data_organisasi().then(snap => {
+            if (!snap.exists()) return
 
-    add_org_card(
-        OrganisasiKegiatan.TBMM_HUMERUS,
-        `text-bg-tbmm-humerus`,
-        `[ TBMM Humerus FK UII ]<br /><small>Tim Bantuan Medis Mahasiswa Humanity Mission in Medical Rescue FK UII</small>`,
-        `Profil TBMM Humerus belum diisi.`,
-        `Keunggulan TBMM Humerus belum diisi.`,
-        `https://www.instagram.com/tbmmhumerus/`,
-    )
+            const val = snap.val()
+            for (const org of val) {
+                add_org_card(
+                    org.nama,
+                    org.color,
+                    org.title,
+                    org.profil,
+                    org.keunggulan,
+                    org.link,
+                )
+            }
+        })
+    }
+    catch (err) {
+        main.show_unexpected_error_message(err)
+    }
 
-    add_org_card(
-        OrganisasiKegiatan.SMART,
-        `text-bg-smart`,
-        `[ SMART FK UII ]<br /><small>Scientific Medical Activities of Research and Technology FK UII</small>`,
-        `Profil SMART belum diisi.`,
-        `Keunggulan SMART belum diisi.`,
-        `https://www.instagram.com/smartfkuii/`,
-    )
-
-    add_org_card(
-        OrganisasiKegiatan.CIMSA,
-        `text-bg-cimsa`,
-        `[ CIMSA FK UII ]<br /><small>Center for Indonesian Medical Students’ Activities FK UII</small>`,
-        `Profil CIMSA belum diisi.`,
-        `Keunggulan CIMSA belum diisi.`,
-        `https://www.instagram.com/cimsa.uii/`,
-    )
-
-    add_org_card(
-        OrganisasiKegiatan.MEDICAL_UII_FC,
-        `text-bg-km-primary`,
-        `[ Medical UII FC ]<br /><small>UKM Bola FK UII</small>`,
-        `Profil Medical UII FC belum diisi.`,
-        `Keunggulan Medical UII FC belum diisi.`,
-        `https://www.instagram.com/medicaluiifc/`,
-    )
-
-    add_org_card(
-        OrganisasiKegiatan.BASKET,
-        `text-bg-km-primary`,
-        `[ Basket FK UII ]<br /><small>UKM Basket FK UII</small>`,
-        `Profil Basket FK UII belum diisi.`,
-        `Keunggulan Basket FK UII belum diisi.`,
-        `https://www.instagram.com/basketfkuii/`,
-    )
-
-    add_org_card(
-        OrganisasiKegiatan.DARA_MEUTUWAH,
-        `text-bg-km-primary`,
-        `[ Dara Meutuwah FK UII ]<br /><small>UKM Tari FK UII</small>`,
-        `Profil Dara Meutuwah FK UII belum diisi.`,
-        `Keunggulan Dara Meutuwah FK UII belum diisi.`,
-        `https://www.instagram.com/tarifkuii/`,
-    )
-
-    add_org_card(
-        OrganisasiKegiatan.BADMINTON,
-        `text-bg-km-primary`,
-        `[ Badminton FK UII ]<br /><small>UKM Badminton FK UII</small>`,
-        `Profil Badminton FK UII belum diisi.`,
-        `Keunggulan Badminton FK UII belum diisi.`,
-        `https://www.instagram.com/badmintonfkuii/`,
-    )
-
-    add_org_card(
-        OrganisasiKegiatan.NADA_MEDIKA,
-        `text-bg-km-primary`,
-        `[ Nada Medika FK UII ]<br /><small>UKM Musik FK UII</small>`,
-        `Profil Nada Medika FK UII belum diisi.`,
-        `Keunggulan Nada Medika FK UII belum diisi.`,
-        `https://www.instagram.com/nadamedikafkuii/`,
-    )
+    card_container.parentElement!.removeChild(div_loading)
 })()

@@ -100,3 +100,19 @@ const sistem = {
         link_berkas_dpm: 'https://drive.google.com/drive/folders/1xZ8mS5auho8IH4omtOqBXBrZDThIdFER?usp=sharing',
     },
 }
+
+namespace SistemData {
+    export interface Verifikasi {
+        link_berkas_lem: string
+        link_berkas_dpm: string
+    }
+
+    export interface Organisasi {
+        nama: string
+        color: string
+        title: string
+        profil: string
+        keunggulan: string
+        link: string
+    }
+}

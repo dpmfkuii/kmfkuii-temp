@@ -258,4 +258,27 @@ var _ = {
             },
         },
     },
+
+    // db.ref(`sistem`)
+    "sistem": {
+        // db.ref(`sistem/data`)
+        "data": {
+            // db.ref(`sistem/data/verifikasi`) => SistemData.Verifikasi[]
+            "verifikasi": {
+                "link_berkas_lem": "drivelink",
+                "link_berkas_dpm": "drivelink",
+            },
+            // db.ref(`sistem/data/organisasi`) => SistemData.Organisasi[]
+            "organisasi": [
+                {
+                    nama: 'DPM',
+                    color: `text-bg-light`,
+                    title: `[ DPM FK UII ]<br /><small>Dewan Perwakilan Mahasiswa FK UII</small>`,
+                    profil: `Profil DPM belum diisi.`,
+                    keunggulan: `Keunggulan DPM belum diisi.`,
+                    link: `https://www.instagram.com/dpmfkuii/`
+                }
+            ],
+        },
+    },
 }
