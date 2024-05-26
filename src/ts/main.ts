@@ -469,6 +469,20 @@ const main = {
             allowEscapeKey: false,
         })
     },
+    invoke_animation(refresh_time = 100) {
+        setTimeout(() => {
+            for (const animation_name of [
+                'fade-on-enter',
+                'rise-on-enter',
+            ]) {
+                document
+                    .querySelectorAll(`.animate.animate-${animation_name}`)
+                    .forEach((el) => {
+                        el.classList.remove(`animate-${animation_name}`)
+                    })
+            }
+        }, refresh_time)
+    },
 }
 
 const db = {
@@ -667,19 +681,7 @@ const db = {
     },
 }
 
-// animate system
-setTimeout(() => {
-    for (const animation_name of [
-        'fade-on-enter',
-        'rise-on-enter',
-    ]) {
-        document
-            .querySelectorAll(`.animate.animate-${animation_name}`)
-            .forEach((el) => {
-                el.classList.remove(`animate-${animation_name}`)
-            })
-    }
-}, 100);
+main.invoke_animation();
 
 (() => {
     const el = dom.q('#hbdhbdhbd')

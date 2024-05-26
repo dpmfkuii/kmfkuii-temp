@@ -85,6 +85,8 @@
                     org.link,
                 )
             }
+
+            main.invoke_animation()
         })
     }
     catch (err) {
