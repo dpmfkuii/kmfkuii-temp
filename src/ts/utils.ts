@@ -1,3 +1,58 @@
+interface EventsMap {
+    test: {
+        text: string,
+    }
+}
+
+// add events by doing this
+// interface EventsMap {
+//     load_rapat_done: {
+//         amount: number,
+//     }
+// }
+
+interface Events {
+    /**
+     * CAREFUL: `_list[name]` might be empty
+     * 
+     * use `events.get_callbacks(name)` instead
+     */
+    _list: { [T in keyof EventsMap]: ((event: EventsMap[T]) => any)[] }
+    get_callbacks<T extends keyof EventsMap>(event_name: T): Events['_list'][T]
+    on<T extends keyof EventsMap>(event_name: T, callback: (event: EventsMap[T]) => any): (event: EventsMap[T]) => any
+    off<T extends keyof EventsMap>(event_name: T, callback: (event: EventsMap[T]) => any): void
+    trigger<T extends keyof EventsMap>(event_name: T, event: EventsMap[T]): void
+}
+
+const events: Events = {
+    _list: {} as any,
+    get_callbacks(name) {
+        return this._list[name] || []
+    },
+    on(name, callback) {
+        this._list[name] = this._list[name] || []
+        this._list[name].push(callback)
+        return callback
+    },
+    off(name, callback) {
+        if (this._list[name]) {
+            for (let i = this._list[name].length - 1; i >= 0; i--) {
+                if (this._list[name][i] === callback) {
+                    this._list[name].splice(i, 1)
+                    return
+                }
+            }
+        }
+    },
+    trigger(name, event) {
+        if (this._list[name]) {
+            for (const callback of this._list[name]) {
+                callback.apply(this, [event])
+            }
+        }
+    },
+}
+
 const dom = {
     q<K extends keyof HTMLElementTagNameMap>(selectors: K | string): HTMLElementTagNameMap[K] | null {
         return document.querySelector(selectors)

@@ -675,7 +675,11 @@ const db = {
         return main_db.ref(`verifikasi/rapat/pengajuan/${uid}`)
             .remove()
     },
-    get_sistem_data_organisasi<T = SistemData.Organisasi[]>(): Promise<FirebaseSnapshot<T>> {
+    get_sistem_data<T = SistemData.Snapshot>(): Promise<FirebaseSnapshot<T>> {
+        return main_db.ref(`sistem/data`)
+            .once<T>('value')
+    },
+    get_sistem_data_organisasi<T = SistemData.Snapshot['organisasi']>(): Promise<FirebaseSnapshot<T>> {
         return main_db.ref(`sistem/data/organisasi`)
             .once<T>('value')
     },

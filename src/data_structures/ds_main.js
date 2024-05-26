@@ -263,7 +263,7 @@ var _ = {
     "sistem": {
         // db.ref(`sistem/data`)
         "data": {
-            // db.ref(`sistem/data/verifikasi`) => SistemData.Verifikasi[]
+            // db.ref(`sistem/data/verifikasi`) => SistemData.Verifikasi
             "verifikasi": {
                 "link_berkas_lem": "drivelink",
                 "link_berkas_dpm": "drivelink",

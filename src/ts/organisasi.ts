@@ -1,4 +1,4 @@
-(async () => {
+(() => {
     const card_container = dom.q<'div'>('#card_container')!
 
     let count = 0
@@ -70,28 +70,19 @@
 
     card_container.parentElement!.insertBefore(div_loading, card_container)
 
-    try {
-        await db.get_sistem_data_organisasi().then(snap => {
-            if (!snap.exists()) return
+    events.on('sistem_data_organisasi_loaded', ev => {
+        for (const org of ev) {
+            add_org_card(
+                org.nama,
+                org.color,
+                org.title,
+                org.profil,
+                org.keunggulan,
+                org.link,
+            )
+        }
 
-            const val = snap.val()
-            for (const org of val) {
-                add_org_card(
-                    org.nama,
-                    org.color,
-                    org.title,
-                    org.profil,
-                    org.keunggulan,
-                    org.link,
-                )
-            }
-
-            main.invoke_animation()
-        })
-    }
-    catch (err) {
-        main.show_unexpected_error_message(err)
-    }
-
-    card_container.parentElement!.removeChild(div_loading)
+        main.invoke_animation()
+        card_container.parentElement!.removeChild(div_loading)
+    })
 })()

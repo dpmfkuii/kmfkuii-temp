@@ -102,6 +102,11 @@ const sistem = {
 }
 
 namespace SistemData {
+    export interface Snapshot {
+        verifikasi: Verifikasi
+        organisasi: Organisasi[]
+    }
+
     export interface Verifikasi {
         link_berkas_lem: string
         link_berkas_dpm: string
