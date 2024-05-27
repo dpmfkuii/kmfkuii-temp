@@ -87,10 +87,15 @@
 </div>
 
 <style>
+    input[name="uid"] {
+        transition: color 200ms linear;
+    }
     input[name="uid"][autocomplete="off"]:not(:placeholder-shown) {
         color: transparent;
         caret-color: var(--bs-body-color);
-        text-decoration: line-through wavy var(--bs-body-color);
+        text-decoration-line: line-through;
+        text-decoration-style: wavy;
+        text-decoration-color: var(--bs-body-color);
     }
     #login_modal_hide_uid_input + label {
         transition-property: font-size;
