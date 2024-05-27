@@ -20,15 +20,32 @@
                 </div>
                 <div class="modal-body">
                     <div class="text-center">
-                        <input
-                            name="uid"
-                            type="text"
-                            class="form-control form-control-lg text-center"
-                            placeholder="UID"
-                            autocomplete="on"
-                            autofocus
-                            required
-                        />
+                        <div class="input-group">
+                            <input
+                                name="uid"
+                                type="text"
+                                class="form-control form-control-lg text-center border-end-0"
+                                placeholder="~ UID ~"
+                                autocomplete="off"
+                                spellcheck="false"
+                                autofocus
+                                required
+                            />
+                            <input
+                                type="checkbox"
+                                class="btn-check"
+                                id="login_modal_hide_uid_input"
+                                autocomplete="off"
+                                checked
+                            />
+                            <label
+                                role="button"
+                                class="d-flex align-items-center px-2 border border-start-0 rounded-end animate-timing-elastic"
+                                for="login_modal_hide_uid_input"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                            </label>
+                        </div>
                         <div class="invalid-feedback px-2 mt-3"></div>
                         <div class="mt-3">
                             <small>
@@ -68,5 +85,20 @@
         </div>
     </div>
 </div>
+
+<style>
+    input[name="uid"][autocomplete="off"]:not(:placeholder-shown) {
+        color: transparent;
+        caret-color: var(--bs-body-color);
+        text-decoration: line-through wavy var(--bs-body-color);
+    }
+    #login_modal_hide_uid_input + label {
+        transition-property: font-size;
+        transition-duration: 400ms;
+    }
+    #login_modal_hide_uid_input:checked + label {
+        font-size: larger;
+    }
+</style>
 
 <script defer src="/assets/js/auth/login_modal.js"></script>
