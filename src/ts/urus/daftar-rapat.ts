@@ -48,7 +48,7 @@
     const set_jam_rapat_options = (_taken_hours?: string[]) => {
         select_jam_rapat.innerHTML = '<option disabled selected value>-- Pilih jam --</option>'
         for (const jam of JamRapat) {
-            if (jam === '19.00') continue
+            if (RESCHEDULE_HOURS.includes(jam)) continue
             const option = dom.c('option')
             option.textContent = option.value = jam
             if (jam.includes('--') || (_taken_hours && _taken_hours.includes(jam))) {

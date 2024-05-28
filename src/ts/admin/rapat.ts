@@ -205,7 +205,7 @@
             for (let i = 0; i < jadwal_days_amount; i++) {
                 const td = dom.c('td')
                 if (globals.rapat.show_more_info) {
-                    if (jam === '19.00') {
+                    if (RESCHEDULE_HOURS.includes(jam)) {
                         td.innerHTML = '<span class="badge text-bg-danger">-</span>'
                     }
                 }

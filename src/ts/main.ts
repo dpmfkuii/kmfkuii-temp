@@ -183,19 +183,18 @@ enum StatusRapat {
 }
 
 const JamRapat = [
-    '15.30',
     '16.00',
     '16.30',
-    '-- Bukan bulan puasa --',
     '17.00',
     '18.30',
     '19.00',
     '19.30',
     '20.00',
-    '-- Bulan puasa --',
+    '20.30',
     '21.00',
-    '21.30',
 ]
+
+const RESCHEDULE_HOURS = ['16.00', '16.30', '17.00', '19.00', '21.00']
 
 interface AntreanRapat {
     [rapat_dengan: string]: RapatList
