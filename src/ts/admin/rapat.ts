@@ -1,6 +1,7 @@
 (() => {
     let rapat_dengan: RapatDengan = RapatDengan.LEM
 
+    //#region setup
     const jadwal_days_amount = 5
     const jadwal_days: string[] = []
     let jadwal_pagination_index = 0
@@ -126,9 +127,10 @@
             jadwal_table_thead_tr.innerHTML += `<td style="width: ${90 / jadwal_days_amount}%">${date_text.replace(', ', '<br />')}</td>`
         }
     }
+    //#endregion
 
     let _jadwal_current_request_id = 0
-    const update_jadwal_table_tbody = async () => {
+    const update_jadwal_table_tbody = async (data_opsi_jam_rapat: string[], data_jam_reschedule?: string[]) => {
         const current_pagination_item = jadwal_pagination_items[jadwal_pagination_index]
         const request_id = common.timestamp()
         _jadwal_current_request_id = request_id
@@ -147,7 +149,7 @@
         const list_jadwal_rapat_by_jam: { [jam_rapat: string]: (Rapat & { timestamp: string })[] } = {}
         const list_antrean_rapat_by_jam: { [jam_rapat: string]: Rapat[] } = {}
 
-        for (const jam of JamRapat) {
+        for (const jam of data_opsi_jam_rapat) {
             if (jam.includes('--')) continue
             list_jadwal_rapat_by_jam[jam] = []
             list_antrean_rapat_by_jam[jam] = []
@@ -195,7 +197,7 @@
 
         jadwal_table_tbody.innerHTML = ''
 
-        for (const jam of JamRapat) {
+        for (const jam of data_opsi_jam_rapat) {
             if (jam.includes('--')) continue
 
             const tr = dom.c('tr', {
@@ -205,8 +207,10 @@
             for (let i = 0; i < jadwal_days_amount; i++) {
                 const td = dom.c('td')
                 if (globals.rapat.show_more_info) {
-                    if (RESCHEDULE_HOURS.includes(jam)) {
-                        td.innerHTML = '<span class="badge text-bg-danger">-</span>'
+                    if (data_jam_reschedule) {
+                        if (data_jam_reschedule.includes(jam)) {
+                            td.innerHTML = '<span class="badge text-bg-danger">-</span>'
+                        }
                     }
                 }
                 const rapat_terjadwal = list_jadwal_rapat_by_jam[jam][i]
@@ -232,7 +236,7 @@
                         const log_color = defines.log_colors.jadwal_dipindah
 
                         let jam_options_html = ''
-                        for (const jam of JamRapat) {
+                        for (const jam of data_opsi_jam_rapat) {
                             const option = dom.c('option')
                             option.textContent = option.value = jam
                             if (jam.includes('--')) {
@@ -514,8 +518,21 @@
         update_jadwal_pagination_elements()
         update_jadwal_info_row()
         update_jadwal_table_thead()
-        update_jadwal_table_tbody()
         update_jadwal_more_info_row()
+
+        try {
+            db.get_sistem_data_verifikasi_jam_rapat().then(snap => {
+                if (!snap.exists()) return
+
+                const val = snap.val()
+                const data_opsi_jam_rapat = val.opsi
+                const data_jam_reschedule = rapat_dengan === RapatDengan.LEM ? val.jam_reschedule_lem : val.jam_reschedule_dpm
+                update_jadwal_table_tbody(data_opsi_jam_rapat || [], data_jam_reschedule || [])
+            })
+        }
+        catch (err) {
+            main.show_unexpected_error_message(err)
+        }
     }
 
     const create_antrean_list_group_item = (rapat: Rapat) => {

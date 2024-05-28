@@ -108,8 +108,15 @@ namespace SistemData {
     }
 
     export interface Verifikasi {
-        link_berkas_lem: string
-        link_berkas_dpm: string
+        link_berkas: {
+            lem: string
+            dpm: string
+        }
+        jam_rapat: {
+            opsi: string[]
+            jam_reschedule_lem: string[]
+            jam_reschedule_dpm: string[]
+        }
     }
 
     export interface Organisasi {

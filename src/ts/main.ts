@@ -182,20 +182,6 @@ enum StatusRapat {
     DONE_TIMESTAMP = 2, // the value should be timestamp
 }
 
-const JamRapat = [
-    '16.00',
-    '16.30',
-    '17.00',
-    '18.30',
-    '19.00',
-    '19.30',
-    '20.00',
-    '20.30',
-    '21.00',
-]
-
-const RESCHEDULE_HOURS = ['16.00', '16.30', '17.00', '19.00', '21.00']
-
 interface AntreanRapat {
     [rapat_dengan: string]: RapatList
 }
@@ -680,6 +666,14 @@ const db = {
     },
     get_sistem_data_organisasi<T = SistemData.Snapshot['organisasi']>(): Promise<FirebaseSnapshot<T>> {
         return main_db.ref(`sistem/data/organisasi`)
+            .once<T>('value')
+    },
+    get_sistem_data_verifikasi<T = SistemData.Snapshot['verifikasi']>(): Promise<FirebaseSnapshot<T>> {
+        return main_db.ref(`sistem/data/verifikasi`)
+            .once<T>('value')
+    },
+    get_sistem_data_verifikasi_jam_rapat<T = SistemData.Snapshot['verifikasi']['jam_rapat']>(): Promise<FirebaseSnapshot<T>> {
+        return main_db.ref(`sistem/data/verifikasi/jam_rapat`)
             .once<T>('value')
     },
 }

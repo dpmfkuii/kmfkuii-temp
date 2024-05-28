@@ -45,13 +45,13 @@
     input_rapat_dengan.value = (defines.rapat_dengan_text as any)[dengan]
 
     // fill in options
-    const set_jam_rapat_options = (_taken_hours?: string[]) => {
+    const set_jam_rapat_options = (data_opsi_jam_rapat: string[], data_jam_reschedule: string[], taken_hours: string[] = []) => {
         select_jam_rapat.innerHTML = '<option disabled selected value>-- Pilih jam --</option>'
-        for (const jam of JamRapat) {
-            if (RESCHEDULE_HOURS.includes(jam)) continue
+        for (const jam of data_opsi_jam_rapat) {
+            if (data_jam_reschedule.includes(jam)) continue
             const option = dom.c('option')
             option.textContent = option.value = jam
-            if (jam.includes('--') || (_taken_hours && _taken_hours.includes(jam))) {
+            if (jam.includes('--') || taken_hours.includes(jam)) {
                 option.value = ''
                 option.disabled = true
             }
@@ -59,7 +59,7 @@
         }
     }
 
-    set_jam_rapat_options()
+    set_jam_rapat_options([], [])
 
     const min_tanggal_rapat = main.get_min_tanggal_rapat()
 
@@ -121,37 +121,51 @@
         if (input_tanggal_rapat.classList.contains('is-invalid')) {
             select_jam_rapat_invalid_feedback.innerHTML = 'Pilih tanggal yang sesuai!'
             select_jam_rapat.classList.add('is-invalid')
-            set_jam_rapat_options(JamRapat)
+            set_jam_rapat_options([], [])
 
             return
         }
 
         // cek jam berapa yg avail di tanggal segitu
         // ambil dari antrean dan terkonfirmasi
+        let data_opsi_jam_rapat: string[] = []
+        let data_jam_reschedule: string[] = []
         const taken_hours: string[] = []
         const rapat_dengan: RapatDengan = input_rapat_dengan.value.toLowerCase() as RapatDengan
 
-        await db.get_jadwal_rapat_dengan_tanggal(rapat_dengan, input_tanggal_rapat.value.replaceAll('-', '/'))
-            .then(snap => {
-                if (!snap.exists()) return
-                const val = snap.val()
-                for (const key in val) {
-                    taken_hours.push(val[key].jam_rapat)
-                }
-            })
+        const taken_hours_from_jadwal: string[] = []
+        const taken_hours_from_antrean: string[] = []
 
-        await db.get_antrean_rapat_dengan(rapat_dengan)
-            .then(snap => {
+        await Promise.all([
+            db.get_sistem_data_verifikasi_jam_rapat().then(snap => {
                 if (!snap.exists()) return
                 const val = snap.val()
-                for (const key in val) {
-                    if (val[key].tanggal_rapat === input_tanggal_rapat.value) {
-                        taken_hours.push(val[key].jam_rapat)
+                data_opsi_jam_rapat = val.opsi || []
+                data_jam_reschedule = (rapat_dengan === RapatDengan.LEM ? val.jam_reschedule_lem : val.jam_reschedule_dpm) || []
+            }),
+            db.get_jadwal_rapat_dengan_tanggal(rapat_dengan, input_tanggal_rapat.value.replaceAll('-', '/'))
+                .then(snap => {
+                    if (!snap.exists()) return
+                    const val = snap.val()
+                    for (const key in val) {
+                        taken_hours_from_jadwal.push(val[key].jam_rapat)
                     }
-                }
-            })
+                }),
+            db.get_antrean_rapat_dengan(rapat_dengan)
+                .then(snap => {
+                    if (!snap.exists()) return
+                    const val = snap.val()
+                    for (const key in val) {
+                        if (val[key].tanggal_rapat === input_tanggal_rapat.value) {
+                            taken_hours_from_antrean.push(val[key].jam_rapat)
+                        }
+                    }
+                }),
+        ])
 
-        set_jam_rapat_options(taken_hours)
+        taken_hours.push(...taken_hours_from_jadwal, ...taken_hours_from_antrean)
+
+        set_jam_rapat_options(data_opsi_jam_rapat, data_jam_reschedule, taken_hours)
     }
 
     input_tanggal_rapat.addEventListener('change', () => validate_date_and_time())

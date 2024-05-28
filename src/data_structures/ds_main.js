@@ -265,8 +265,15 @@ var _ = {
         "data": {
             // db.ref(`sistem/data/verifikasi`) => SistemData.Verifikasi
             "verifikasi": {
-                "link_berkas_lem": "drivelink",
-                "link_berkas_dpm": "drivelink",
+                "link_berkas": {
+                    "lem": "drivelink",
+                    "dpm": "drivelink",
+                },
+                "jam_rapat": {
+                    "opsi": ["16.00", "", ""],
+                    "jam_reschedule_lem": ["16.00", ""],
+                    "jam_reschedule_dpm": ["16.00", ""],
+                },
             },
             // db.ref(`sistem/data/organisasi`) => SistemData.Organisasi[]
             "organisasi": [
