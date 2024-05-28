@@ -1,24 +1,10 @@
-<div class="container" id="main_container">
-    <div class="row">
-        <div class="col-12 col-lg-3 mb-3">
-            <insert-template-admin-nav />
-            <script defer>
-                document.addEventListener("DOMContentLoaded", () => {
-                    admin_nav_select_label("admin_nav", "Sistem");
-                });
-            </script>
-        </div>
-        <div class="col-12 col-lg-9 animate animate-rise-on-enter">
-            <div class="card">
-                <div class="card-header">
-                    <span class="fs-4">Sistem</span>
-                </div>
-                <div class="card-body">
-                    todo: edit link gdrive, list hari libur, batas awal periode,
-                    hapus data, ig lem, email lem dpm, oa line
-                </div>
-            </div>
-        </div>
+<div class="card-header">
+    <span class="fs-4">Sistem</span>
+</div>
+<div class="card-body p-0">
+    <div class="accordion animate animate-rise-on-enter">
+        <insert-component-admin/sistem/panel-data />
+        <insert-component-admin/sistem/panel-panduan />
     </div>
 </div>
 
@@ -33,3 +19,5 @@
         }
     }
 </style>
+
+<script defer src="/assets/js/admin/sistem.js"></script>

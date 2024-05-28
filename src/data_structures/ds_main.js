@@ -261,7 +261,7 @@ var _ = {
 
     // db.ref(`sistem`)
     "sistem": {
-        // db.ref(`sistem/data`)
+        // db.ref(`sistem/data`) --> dynamic (interact with user)
         "data": {
             // db.ref(`sistem/data/verifikasi`) => SistemData.Verifikasi
             "verifikasi": {
@@ -271,14 +271,20 @@ var _ = {
             // db.ref(`sistem/data/organisasi`) => SistemData.Organisasi[]
             "organisasi": [
                 {
-                    nama: 'DPM',
-                    color: `text-bg-light`,
-                    title: `[ DPM FK UII ]<br /><small>Dewan Perwakilan Mahasiswa FK UII</small>`,
-                    profil: `Profil DPM belum diisi.`,
-                    keunggulan: `Keunggulan DPM belum diisi.`,
-                    link: `https://www.instagram.com/dpmfkuii/`
-                }
+                    "nama": "DPM",
+                    "color": "text-bg-light",
+                    "title": "[ DPM FK UII ]<br /><small>Dewan Perwakilan Mahasiswa FK UII</small>",
+                    "profil": "Profil DPM belum diisi.",
+                    "keunggulan": "Keunggulan DPM belum diisi.",
+                    "link": "https://www.instagram.com/dpmfkuii",
+                },
             ],
+        },
+        // db.ref(`sistem/panduan`) --> static (no interaction)
+        "panduan": {
+            "alur": {
+                "informasi_terbaru": "html",
+            },
         },
     },
 }

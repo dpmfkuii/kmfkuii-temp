@@ -6,7 +6,23 @@
     </head>
     <body>
         <insert-template-nav />
-        <insert-content-admin/sistem />
+        <div class="container" id="main_container">
+            <div class="row">
+                <div class="col-12 col-lg-3 mb-3">
+                    <insert-template-admin-nav />
+                    <script defer>
+                        document.addEventListener("DOMContentLoaded", () => {
+                            admin_nav_select_label("admin_nav", "Sistem");
+                        });
+                    </script>
+                </div>
+                <div class="col-12 col-lg-9 animate animate-rise-on-enter">
+                    <div class="card">
+                        <insert-content-admin/sistem />
+                    </div>
+                </div>
+            </div>
+        </div>
         <insert-template-footer />
         <insert-template-entrypoint />
     </body>
