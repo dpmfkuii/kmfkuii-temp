@@ -694,7 +694,7 @@ Jangan lupa untuk mengirim link Zoom yang telah disiapkan melalui fitur yang sud
     // const panel_keuangan_list_group = dom.qe<'div'>(panel_keuangan, '.list-group')!
 
     // panel_keuangan_list_group.innerHTML = '<i class="text-secondary">Tidak ada data.</i>'
-    panel_keuangan.innerHTML = '<div class="text-secondary m-3">Coming soon</div>'
+    panel_keuangan.innerHTML = '<div class="text-secondary m-3"><i>WIP</i></div>'
 })();
 
 // panel log kegiatan
