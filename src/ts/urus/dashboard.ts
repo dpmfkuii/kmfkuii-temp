@@ -571,15 +571,28 @@ https://zoom.xxx`,
                     [JenisRapat.PROPOSAL]: '',
                     [JenisRapat.LPJ]: '',
                 }
-                await db.get_pengajuan_rapat_kegiatan(uid)
-                    .then(snap => {
-                        if (!snap.exists()) return
-                        const val = snap.val()
-                        const propo = val[JenisRapat.PROPOSAL][RapatDengan.LEM]
-                        const lpj = val[JenisRapat.LPJ][RapatDengan.LEM]
-                        antrean_lem[JenisRapat.PROPOSAL] = common.to_date_string(new Date((propo.diterima || propo.diajukan)))
-                        antrean_lem[JenisRapat.LPJ] = common.to_date_string(new Date((lpj.diterima || lpj.diajukan)))
-                    })
+                try {
+                    await db.get_pengajuan_rapat_kegiatan(uid)
+                        .then(snap => {
+                            if (!snap.exists()) return
+                            const val = snap.val()
+                            if (val[JenisRapat.PROPOSAL]) {
+                                const propo = val[JenisRapat.PROPOSAL][RapatDengan.LEM]
+                                if (propo) {
+                                    antrean_lem[JenisRapat.PROPOSAL] = common.to_date_string(new Date((propo.diterima || propo.diajukan)))
+                                }
+                            }
+                            if (val[JenisRapat.LPJ]) {
+                                const lpj = val[JenisRapat.LPJ][RapatDengan.LEM]
+                                if (lpj) {
+                                    antrean_lem[JenisRapat.LPJ] = common.to_date_string(new Date((lpj.diterima || lpj.diajukan)))
+                                }
+                            }
+                        })
+                }
+                catch (err) {
+                    main.show_unexpected_error_message(err)
+                }
 
                 rapat_list_group.innerHTML = ''
                 rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.PROPOSAL, RapatDengan.LEM, status_verifikasi.proposal.lem))
