@@ -97,19 +97,15 @@
             }
             // cek jarak lem ke dpm
             else if (dengan === RapatDengan.DPM) {
-                // lem udah selesai, lanjut dpm sendiri
-                if (status_lem >= StatusRapat.MARKED_AS_DONE) return
-
-                // lem belum selesai, tapi gaada di antrean, lanjut dpm sendiri
-                if (!antrean_lem) return
-
                 // lem belum selesai dan lem ada di antrean, pastikan jaraknya sesuai
-                const lem_date = new Date(antrean_lem)
-                const selected_date = new Date(common.to_date_string(date_tanggal_rapat))
-                const diff = common.get_difference_in_days(lem_date, selected_date)
-                if (diff < 2) {
-                    input_tanggal_rapat_invalid_feedback.innerHTML = 'Jarak antar rapat LEM ke DPM <strong>minimal 2 hari</strong>!'
-                    input_tanggal_rapat.classList.add('is-invalid')
+                if (status_lem < StatusRapat.MARKED_AS_DONE && antrean_lem) {
+                    const lem_date = new Date(antrean_lem)
+                    const selected_date = new Date(common.to_date_string(date_tanggal_rapat))
+                    const diff = common.get_difference_in_days(lem_date, selected_date)
+                    if (diff < 2) {
+                        input_tanggal_rapat_invalid_feedback.innerHTML = 'Jarak antar rapat LEM ke DPM <strong>minimal 2 hari</strong>!'
+                        input_tanggal_rapat.classList.add('is-invalid')
+                    }
                 }
             }
         }
