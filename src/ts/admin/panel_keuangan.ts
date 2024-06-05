@@ -1,3 +1,7 @@
+interface EventsMap {
+    fintime_form_reset: any
+}
+
 (async () => {
     const IS_ADMIN = auth.get_logged_in_user()?.role === UserRole.ADMIN
     const PARAMS_UID = common.url_params.get('uid') || ''
@@ -13,12 +17,18 @@
         start_loading() {
             this.tbody.innerHTML = `<tr><td><strong class="text-secondary fst-italic">Memuat...</strong></td></tr>`
         },
+        show_nothing() {
+            this.tbody.innerHTML = `<tr><td><i class="text-secondary">Tidak ada data.</i></td></tr>`
+        },
         update(fintime_list: DatabaseKeuangan.FintimeList) {
             this.tbody.innerHTML = ''
 
-            const render_list: DatabaseKeuangan.Fintime[] = []
+            const render_list: (DatabaseKeuangan.Fintime & { last_updated_timestamp: string })[] = []
             for (const last_updated_timestamp in fintime_list) {
-                render_list.push(fintime_list[last_updated_timestamp])
+                render_list.push({
+                    ...fintime_list[last_updated_timestamp],
+                    last_updated_timestamp,
+                })
             }
 
             render_list.sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime())
@@ -41,28 +51,126 @@
                     current_header = item_header
                 }
 
+                const item_dd = common.date_to_dd_text(item_date)
+                const item_tipe = Object.values(DatabaseKeuangan.FintimeTipe)[item.tipe_index]
                 const item_icon = Object.values(DatabaseKeuangan.FintimeIcon)[item.icon_index]
                 const item_color = Object.values(DatabaseKeuangan.FintimeColor)[item.color_index]
                 let item_transaksi_li = ``
-                for (const nama_transaksi in item.transaksi) {
-                    item_transaksi_li += `<li>${nama_transaksi}: ${common.format_rupiah(item.transaksi[nama_transaksi])}</li>`
+                for (const transaksi_string of item.transaksi) {
+                    const { nama, jumlah } = main.keuangan.parse_transaksi_string(transaksi_string)
+                    const post_text = item_tipe === DatabaseKeuangan.FintimeTipe.INFO ? '' : ` <small>(${item_tipe.toLowerCase()})</small>`
+                    item_transaksi_li += `<li>${nama}: ${common.format_rupiah(jumlah)}${post_text}</li>`
                 }
-                this.tbody.appendChild(dom.c('tr', {
-                    children: [
-                        dom.c('td', { html: common.date_to_dd_text(item_date) }),
-                        dom.c('td', {
-                            classes: [`text-bg-${item_color}-subtle`],
+                const item_keterangan = item.keterangan ? `<span class="small">${item.keterangan}</span>` : ''
+
+                const tds = [
+                    dom.c('td', { html: item_dd }),
+                    dom.c('td', {
+                        classes: [`text-bg-${item_color}-subtle`],
+                        html: `
+                            <i class="${item_icon}"></i> ${item.judul}
+                            <ul class="small">${item_transaksi_li}</ul>
+                            ${item_keterangan}
+                        `
+                    }),
+                ]
+
+                if (IS_ADMIN && PARAMS_UID) {
+                    const edit_button_text = '<i class="fa-regular fa-pen-to-square"></i> Edit'
+                    const edit_button_is_editing_text = '<small>Sedang diedit</small>'
+                    const edit_button = dom.c('span', {
+                        attributes: { role: 'button' },
+                        html: edit_button_text,
+                    })
+                    const hapus_button = dom.c('span', {
+                        classes: ['small'],
+                        attributes: { role: 'button' },
+                        html: '<i class="fa-solid fa-trash-can"></i>',
+                    })
+                    tds[tds.length - 1].appendChild(dom.c('div', {
+                        classes: ['d-flex', 'justify-content-end', 'align-items-center', 'fs-6'],
+                        children: [edit_button, dom.c('span', { classes: ['mx-1'], html: '·' }), hapus_button],
+                    }))
+
+                    edit_button.addEventListener('click', () => {
+                        fintime_form_inputs.set_selected_fintime(item.last_updated_timestamp, item)
+                        fintime_form_inputs.set_edit_mode(true)
+                        fintime_form.scrollIntoView({ behavior: 'smooth' })
+                        dom.q('#callout_form_fintime')!.classList.add('show')
+
+                        events.trigger('fintime_form_reset', 0)
+
+                        edit_button.innerHTML = edit_button_is_editing_text
+                        hapus_button.role = ''
+                        hapus_button.style.opacity = '0.5'
+                    })
+
+                    hapus_button.addEventListener('click', () => {
+                        if (fintime_form_inputs._is_editing && fintime_form_inputs._selected.last_updated_timestamp === item.last_updated_timestamp) {
+                            return
+                        }
+                        swal.fire({
+                            icon: 'warning',
+                            title: 'Hapus?',
                             html: `
-                                <i class="${item_icon}"></i> ${item.judul}
-                                <ul class="small">${item_transaksi_li}</ul>
-                            `
-                        }),
-                    ],
+                                <div class="text-start p-2 small">
+                                    <div class="text-bg-${item_color}-subtle p-3 rounded">
+                                        <i class="${item_icon}"></i> ${item.judul} (${item_dd} ${item_header})
+                                        <ul class="small mt-1">${item_transaksi_li}</ul>
+                                    </div>
+                                </div>
+                            `,
+                            showDenyButton: true,
+                            confirmButtonText: 'Hapus Fincard',
+                            denyButtonText: 'Nanti',
+                            customClass: {
+                                confirmButton: 'btn btn-danger',
+                                denyButton: 'btn btn-secondary ms-2',
+                            },
+                            buttonsStyling: false,
+                            showCloseButton: true,
+                        }).then((result: any) => {
+                            if (result.isConfirmed) {
+                                swal.fire({
+                                    title: 'Hapus Fincard',
+                                    html: '<div><i>Memproses...</i></div>',
+                                    showConfirmButton: false,
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    async didOpen() {
+                                        swal.showLoading()
+                                        try {
+                                            await db.keuangan.remove_fintime(PARAMS_UID, item.last_updated_timestamp)
+                                        }
+                                        catch (err) {
+                                            main.show_unexpected_error_message(err)
+                                            return
+                                        }
+
+                                        main.swal_fire_success('Hapus berhasil!')
+                                    },
+                                })
+                            }
+                        })
+                    })
+
+                    events.on('fintime_form_reset', () => {
+                        if (fintime_form_inputs._is_editing && fintime_form_inputs._selected.last_updated_timestamp === item.last_updated_timestamp) {
+                            return
+                        }
+                        edit_button.innerHTML = edit_button_text
+                        hapus_button.role = 'button'
+                        hapus_button.style.opacity = ''
+                    })
+                }
+
+                this.tbody.appendChild(dom.c('tr', {
+                    children: tds,
                 }))
             }
 
             if (this.tbody.innerHTML === '') {
-                this.tbody.innerHTML = `<tr><td><i class="text-secondary">Tidak ada data.</i></td></tr>`
+                this.show_nothing()
             }
         },
     }
@@ -74,10 +182,7 @@
             icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_CASH_REGISTER),
             color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.LIGHT),
             judul: 'Pengajuan dana',
-            transaksi: {
-                'RKAT': 0,
-                'DPM': 0,
-            },
+            transaksi: ['RKAT:0', 'DPM:0'],
             keterangan: '',
         },
         'Perubahan pengajuan dana': {
@@ -85,10 +190,7 @@
             icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_CASH_REGISTER),
             color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.LIGHT),
             judul: 'Perubahan pengajuan dana',
-            transaksi: {
-                'RKAT': 0,
-                'DPM': 0,
-            },
+            transaksi: ['RKAT:0', 'DPM:0'],
             keterangan: '',
         },
         'Pengajuan dana diterima': {
@@ -96,10 +198,7 @@
             icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_CIRCLE_CHECK),
             color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.WARNING),
             judul: 'Pengajuan dana diterima',
-            transaksi: {
-                'RKAT': 0,
-                'DPM': 0,
-            },
+            transaksi: ['RKAT:0', 'DPM:0'],
             keterangan: 'Silakan kirimkan SPD kepada pihak terkait dan tunggu dana cair.',
         },
         'Peminjaman dana': {
@@ -107,9 +206,7 @@
             icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_MONEY_BILL_TRANSFER),
             color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.SUCCESS),
             judul: 'Peminjaman dana',
-            transaksi: {
-                'DPM': 0,
-            },
+            transaksi: ['DPM:0'],
             keterangan: '',
         },
         'Dana telah cair': {
@@ -117,10 +214,7 @@
             icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_COINS),
             color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.WARNING),
             judul: 'Dana telah cair',
-            transaksi: {
-                'RKAT': 0,
-                'DPM': 0,
-            },
+            transaksi: ['RKAT:0', 'DPM:0'],
             keterangan: '',
         },
         'Dana telah dikirim': {
@@ -128,10 +222,7 @@
             icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_MONEY_BILL_TRANSFER),
             color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.SUCCESS),
             judul: 'Dana telah dikirim',
-            transaksi: {
-                'RKAT': 0,
-                'DPM': 0,
-            },
+            transaksi: ['RKAT:0', 'DPM:0'],
             keterangan: '',
         },
         'Penggunaan dana': {
@@ -139,9 +230,7 @@
             icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_MONEY_BILLS),
             color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.DANGER),
             judul: 'Penggunaan dana',
-            transaksi: {
-                'Kegiatan': 0,
-            },
+            transaksi: ['Kegiatan:0'],
             keterangan: '',
         },
         'Pengembalian dana': {
@@ -149,9 +238,7 @@
             icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_MONEY_BILL_TRANSFER),
             color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.INFO),
             judul: 'Pengembalian dana',
-            transaksi: {
-                'Kegiatan': 0,
-            },
+            transaksi: ['Kegiatan:0'],
             keterangan: '',
         },
         'Pengembalian pinjaman': {
@@ -159,9 +246,7 @@
             icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_MONEY_BILL_TRANSFER),
             color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.INFO),
             judul: 'Pengembalian pinjaman',
-            transaksi: {
-                'DPM': 0,
-            },
+            transaksi: ['DPM:0'],
             keterangan: '',
         },
     }
@@ -169,7 +254,7 @@
     const fintime_form_inputs = {
         _is_editing: false,
         _selected: {
-            last_updated_timestamp: 0,
+            last_updated_timestamp: '',
             fintime: {} as Partial<DatabaseKeuangan.Fintime>,
         },
         form_title: dom.qe(fintime_form, '#fintime_form_title')!,
@@ -203,12 +288,12 @@
             return value || 0
         },
         get_transaksi_value() {
-            const transaksi: DatabaseKeuangan.Fintime['transaksi'] = {}
+            const transaksi: DatabaseKeuangan.Fintime['transaksi'] = []
             const nama_transaksi_inputs = this.get_nama_transaksi_inputs()
             const jumlah_transaksi_inputs = this.get_jumlah_transaksi_inputs()
             const transaksi_row_count = Math.min(nama_transaksi_inputs.length, jumlah_transaksi_inputs.length)
             for (let i = 0; i < transaksi_row_count; i++) {
-                transaksi[nama_transaksi_inputs.item(i).value] = jumlah_transaksi_inputs.item(i).valueAsNumber
+                transaksi.push(main.keuangan.stringify_transaksi(nama_transaksi_inputs.item(i).value, jumlah_transaksi_inputs.item(i).valueAsNumber))
             }
             return transaksi
         },
@@ -267,8 +352,9 @@
             this.jumlah_transaksi_input_group.innerHTML = ''
             if (this._is_editing && this._selected.fintime.transaksi) {
                 let transaksi_row_count = 0
-                for (const nama_transaksi in this._selected.fintime.transaksi) {
-                    this.push_transaksi_row(nama_transaksi, this._selected.fintime.transaksi[nama_transaksi], false)
+                for (const transaksi_string of this._selected.fintime.transaksi) {
+                    const { nama, jumlah } = main.keuangan.parse_transaksi_string(transaksi_string)
+                    this.push_transaksi_row(nama, jumlah, false)
                     transaksi_row_count++
                 }
                 this.update_button_transaksi_display(transaksi_row_count)
@@ -354,7 +440,7 @@
 
             this.button_transaksi_pop.addEventListener('click', () => this.pop_transaksi_row())
             this.button_transaksi_push.addEventListener('click', () => this.push_transaksi_row())
-            this.button_reset.addEventListener('click', () => this.reset_transaksi_row())
+            this.button_reset.addEventListener('click', () => this.reset())
 
             this.update_icon_radio_input_group_display()
             this.reset_transaksi_row()
@@ -379,8 +465,9 @@
                 this.nama_transaksi_input_group.innerHTML = ''
                 this.jumlah_transaksi_input_group.innerHTML = ''
                 let transaksi_row_count = 0
-                for (const nama_transaksi in templat.transaksi) {
-                    this.push_transaksi_row(nama_transaksi, templat.transaksi[nama_transaksi], false)
+                for (const transaksi_string of templat.transaksi) {
+                    const { nama, jumlah } = main.keuangan.parse_transaksi_string(transaksi_string)
+                    this.push_transaksi_row(nama, jumlah, false)
                     transaksi_row_count++
                 }
                 this.update_button_transaksi_display(transaksi_row_count)
@@ -394,11 +481,12 @@
         },
         reset() {
             fintime_form.reset()
-            this._is_editing = false
-            this._selected.last_updated_timestamp = 0
+            this.set_edit_mode(false)
+            this._selected.last_updated_timestamp = ''
             this._selected.fintime = {}
             this.update_icon_radio_input_group_display()
             this.reset_transaksi_row()
+            events.trigger('fintime_form_reset', 0)
         },
         get_action_text(shorten = false) {
             return `${fintime_form_inputs._is_editing ? 'Simpan' : `${shorten ? 'Tambah' : 'Tambahkan'}`}`
@@ -406,9 +494,9 @@
         set_edit_mode(is_editing: boolean) {
             this._is_editing = is_editing
             this.button_submit.textContent = this.get_action_text()
-            this.form_title.textContent = `${is_editing ? 'Ubah' : 'Tambah'} Fintime`
+            this.form_title.textContent = `${is_editing ? 'Edit' : 'Tambah'}`
         },
-        set_selected_fintime(last_updated_timestamp: number, fintime: Partial<DatabaseKeuangan.Fintime>) {
+        set_selected_fintime(last_updated_timestamp: string, fintime: Partial<DatabaseKeuangan.Fintime>) {
             this._selected.last_updated_timestamp = last_updated_timestamp
             this._selected.fintime = fintime
             this.set_to_template(fintime)
@@ -467,10 +555,13 @@
         let uid = PARAMS_UID
         if (!IS_ADMIN) uid = auth.get_logged_in_user()!.uid
         if (uid) {
-            db.keuangan.on_fintime_list(uid, snap => {
-                if (!snap.exists()) return
+            await db.keuangan.on_fintime_list(uid, snap => {
+                if (!snap.exists()) fintime_table_controller.show_nothing()
                 fintime_table_controller.update(snap.val())
             })
+        }
+        else {
+            fintime_table_controller.show_nothing()
         }
     }
     catch (err) {

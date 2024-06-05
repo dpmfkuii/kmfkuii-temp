@@ -180,9 +180,7 @@ namespace DatabaseKeuangan {
         icon_index: number
         color_index: number
         judul: string
-        transaksi: {
-            [nama_transaksi: string]: number
-        }
+        transaksi: string[] // [ `${nama_transaksi}:${jumlah_transaksi}`, ... ]
         keterangan: string
     }
 }

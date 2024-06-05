@@ -217,6 +217,7 @@ type LogColor = 'light' | 'info' | 'success' | 'warning' | 'danger'
 //#endregion
 
 const main = {
+    keuangan: {} as MainKeuangan,
     get_opsi_periode_kegiatan(current_year = new Date().getFullYear()) {
         return [
             `${current_year - 2}-${current_year - 1}`,
@@ -474,6 +475,25 @@ const main = {
     },
 }
 
+interface MainKeuangan {
+    stringify_transaksi(nama: string, jumlah: number): string
+    parse_transaksi_string(s: string): { nama: string, jumlah: number }
+}
+
+main.keuangan = {
+    stringify_transaksi(nama, jumlah) {
+        return `${nama}:${jumlah}`
+    },
+    parse_transaksi_string(s) {
+        const t = s.split(':')
+        const jumlah = Number(t.pop()) || 0
+        return {
+            nama: t.join(''),
+            jumlah,
+        }
+    },
+}
+
 const db = {
     get_kegiatan(uid: string): Promise<FirebaseSnapshot<Kegiatan>> {
         return main_db.ref(`verifikasi/kegiatan/${uid}`)
@@ -692,6 +712,10 @@ const db = {
         update_fintime_list(uid: string, fintime_list_updates: DatabaseKeuangan.FintimeList) {
             return main_db.ref(`verifikasi/keuangan/fintime/${uid}`)
                 .update(fintime_list_updates)
+        },
+        remove_fintime(uid: string, last_updated_timestamp: string | number) {
+            return main_db.ref(`verifikasi/keuangan/fintime/${uid}/${last_updated_timestamp}`)
+                .remove()
         },
     },
 }

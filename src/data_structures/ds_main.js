@@ -215,11 +215,10 @@ var _ = {
                         "icon_index": 0,
                         "color_index": 0,
                         "judul": "Perubahan pengajuan dana",
-                        "transaksi": {
-                            "RKAT": 4000000,
-                            "DPM": 500000,
-                            "{nama_transaksi}": 0,
-                        },
+                        "transaksi": [
+                            "RKAT:4000000",
+                            "DPM:500000",
+                        ],
                         "keterangan": "",
                     },
                 },
