@@ -83,6 +83,13 @@ const defines = {
         },
         akun_berhasil_dibuat: 'Akun berhasil dibuat.',
     },
+    nama_warna_bs: {
+        light: 'Putih',
+        info: 'Biru',
+        warning: 'Kuning',
+        success: 'Hijau',
+        danger: 'Merah',
+    },
 }
 
 const globals = {
@@ -101,6 +108,85 @@ const sistem = {
     },
 }
 
+namespace DatabaseKeuangan {
+    export interface Snapshot {
+        fincard: {
+            [periode: string]: {
+                [organisasi_index: string | number]: {
+                    [uid: string]: Fincard
+                }
+            }
+        }
+        fintime: {
+            [uid: string]: FintimeList
+        }
+    }
+
+    export interface FintimeList {
+        [last_updated_timestamp: string]: Fintime
+    }
+
+    /**
+     * !IMPORTANT: make sure every time the main kegiatan changes, `nama_kegiatan` and
+     * `status_lpj` also CHANGE, but the `updated_timestamp` should NOT updated
+     */
+    export interface Fincard {
+        nama_kegiatan: string // !IMPORTANT
+        status_lpj: StatusRapat // !IMPORTANT
+        periode_rkat: string
+        sub_rkat_index: 0
+        rkat_murni: number
+        rkat_alokasi: number
+        dpm: number
+        sisa: number
+        sudah_kembali: boolean
+        disimpan_dpm: number
+        alokasi: { [uid: string]: number }
+        updated_timestamp: number
+    }
+
+    /**
+     * 0 (INFO) - transaksi has no meaning
+     * 
+     * 1 (KREDIT) - transaksi's kredit will be added to rekapitulasi keuangan
+     * 
+     * 2 (DEBIT) - transaksi's debit will be added to rekapitulasi keuangan
+     */
+    export enum FintimeTipe {
+        INFO = 'Info',
+        KREDIT = 'Kredit',
+        DEBIT = 'Debit',
+    }
+
+    export enum FintimeIcon {
+        FA_CASH_REGISTER = 'fa-solid fa-cash-register',
+        FA_CIRCLE_CHECK = 'fa-regular fa-circle-check',
+        FA_MONEY_BILL_TRANSFER = 'fa-solid fa-money-bill-transfer',
+        FA_COINS = 'fa-solid fa-coins',
+        FA_MONEY_BILLS = 'fa-solid fa-money-bills',
+    }
+
+    export enum FintimeColor {
+        LIGHT = 'light',
+        INFO = 'info',
+        WARNING = 'warning',
+        SUCCESS = 'success',
+        DANGER = 'danger',
+    }
+
+    export interface Fintime {
+        datetime: string
+        tipe_index: number
+        icon_index: number
+        color_index: number
+        judul: string
+        transaksi: {
+            [nama_transaksi: string]: number
+        }
+        keterangan: string
+    }
+}
+
 namespace SistemData {
     export interface Snapshot {
         verifikasi: Verifikasi
@@ -116,6 +202,12 @@ namespace SistemData {
             opsi: string[]
             jam_reschedule_lem: string[]
             jam_reschedule_dpm: string[]
+        }
+    }
+
+    export interface Keuangan {
+        sub_rkat: {
+            [periode_rkat: string]: string[]
         }
     }
 

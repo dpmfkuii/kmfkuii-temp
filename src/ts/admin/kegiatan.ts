@@ -217,7 +217,7 @@
             tr.innerHTML = `
                 <td>${starting_number++}</td>
                 <td>${item.uid}</td>
-                <td><span role="button">${item.nama_kegiatan}</span></td>
+                <td><span role="button" class="border-bottom-dotted">${item.nama_kegiatan}</span></td>
                 <td>${main.get_status_rapat_icon(item.status_verifikasi.proposal.lem)}</td>
                 <td>${main.get_status_rapat_icon(item.status_verifikasi.proposal.dpm)}</td>
                 <td>${main.get_status_rapat_icon(item.status_verifikasi.lpj.lem)}</td>
@@ -243,8 +243,6 @@
             aksi_button_danger.addEventListener('click', () => button_action_hapus_kegiatan(item.nama_kegiatan, item.uid))
 
             const span_nama_kegiatan = dom.qe<'span'>(tr, 'td:nth-child(3) > span')!
-            span_nama_kegiatan.style.borderBottom = '1px dotted rgba(0, 0, 0, 0.5)'
-
             span_nama_kegiatan.addEventListener('click', () => main.swal_fire_detail_kegiatan(item.nama_kegiatan, item.uid))
 
             table_logbook_kegiatan_tbody.appendChild(tr)

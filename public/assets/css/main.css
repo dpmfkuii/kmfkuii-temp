@@ -7,6 +7,10 @@ a.disabled {
     opacity: 0.65;
 }
 
+.border-bottom-dotted {
+    border-bottom: 1px dotted rgba(0, 0, 0, 0.5) !important;
+}
+
 /* km-primary modifier classes */
 .text-km-primary {
     color: #042188;
@@ -84,6 +88,41 @@ a.disabled {
 .text-bg-cimsa {
     color: #fff;
     background-color: #c8102e;
+}
+
+.text-bg-light-subtle {
+    color: var(--bs-light-text-emphasis) !important;
+    background-color: var(--bs-light-bg-subtle) !important;
+}
+
+.text-bg-info-subtle {
+    color: var(--bs-info-text-emphasis) !important;
+    background-color: var(--bs-info-bg-subtle) !important;
+}
+
+.text-bg-warning-subtle {
+    color: var(--bs-warning-text-emphasis) !important;
+    background-color: var(--bs-warning-bg-subtle) !important;
+}
+
+.text-bg-success-subtle {
+    color: var(--bs-success-text-emphasis) !important;
+    background-color: var(--bs-success-bg-subtle) !important;
+}
+
+.text-bg-danger-subtle {
+    color: var(--bs-danger-text-emphasis) !important;
+    background-color: var(--bs-danger-bg-subtle) !important;
+}
+
+.form-floating-label {
+    color: rgba(var(--bs-body-color-rgb), 0.65);
+    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+.form-floating-label-center {
+    color: rgba(var(--bs-body-color-rgb), 0.65);
+    transform: scale(0.85);
 }
 
 /* animate system */

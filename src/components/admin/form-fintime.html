@@ -1,0 +1,168 @@
+<h6
+    class="text-center mt-2"
+    type="button"
+    data-bs-toggle="collapse"
+    data-bs-target="#callout_form_fintime"
+    aria-expanded="false"
+    aria-controls="callout_form_fintime"
+>
+    <span id="fintime_form_title">Tambah Fintime</span>
+</h6>
+
+<div class="collapse" id="callout_form_fintime">
+    <div class="form-floating mb-2">
+        <input
+            name="fintime_datetime"
+            type="datetime-local"
+            class="form-control"
+            id="input_fintime_datetime"
+            required
+        />
+        <label for="input_fintime_datetime">Waktu</label>
+    </div>
+
+    <div class="form-floating mb-2">
+        <select
+            name="fintime_templat_index"
+            class="form-select"
+            id="select_fintime_templat_index"
+            required
+        >
+            <option disabled selected value>--</option>
+        </select>
+        <label for="select_fintime_templat_index">Templat</label>
+    </div>
+
+    <div class="form-floating mb-2">
+        <select
+            name="fintime_tipe_index"
+            class="form-select"
+            id="select_fintime_tipe_index"
+            required
+        >
+            <option disabled selected value>--</option>
+        </select>
+        <label for="select_fintime_tipe_index">Tipe</label>
+    </div>
+
+    <div class="mb-2 pt-1 text-center">
+        <label class="form-floating-label-center">Ikon</label>
+        <div
+            id="fintime_icon_radio_input_group"
+            class="px-1 py-2 rounded d-flex flex-wrap text-bg-light-subtle"
+        >
+            --
+        </div>
+    </div>
+
+    <div class="form-floating mb-2">
+        <select
+            name="fintime_color_index"
+            class="form-select"
+            id="select_fintime_color_index"
+            required
+        >
+            <option disabled selected value>--</option>
+        </select>
+        <label for="select_fintime_color_index">Warna</label>
+    </div>
+
+    <div class="form-floating">
+        <input
+            name="fintime_judul"
+            type="text"
+            class="form-control"
+            id="input_fintime_judul"
+            placeholder=""
+            autocomplete="off"
+            required
+        />
+        <label for="input_fintime_judul">Judul</label>
+    </div>
+
+    <hr />
+
+    <div class="row row-cols-3">
+        <div class="col-4 p-0 ps-3">
+            <label class="form-floating-label">Transaksi</label>
+            <div id="fintime_nama_transaksi_input_group">
+                <input
+                    name="fintime_nama_transaksi0"
+                    type="text"
+                    class="form-control form-control-sm"
+                    value=""
+                    autocomplete="off"
+                    required
+                />
+            </div>
+        </div>
+        <div class="col-8 p-0 pe-3 ps-2">
+            <label class="form-floating-label">Jumlah</label>
+            <div id="fintime_jumlah_transaksi_input_group">
+                <input
+                    name="fintime_jumlah_transaksi0"
+                    type="number"
+                    class="form-control form-control-sm"
+                    value="0"
+                    min="0"
+                    required
+                />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-4 p-0 ps-3">
+            <div class="d-grid p-0">
+                <button
+                    type="button"
+                    class="btn btn-secondary btn-sm"
+                    id="button_fintime_transaksi_pop"
+                >
+                    <i class="fa-solid fa-minus"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-8 p-0 pe-3 ps-2">
+            <div class="d-grid p-0">
+                <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    id="button_fintime_transaksi_push"
+                >
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="form-floating mb-3">
+        <input
+            name="fintime_keterangan"
+            type="text"
+            class="form-control"
+            id="input_fintime_keterangan"
+            placeholder=""
+            autocomplete="off"
+        />
+        <label for="input_fintime_keterangan">Keterangan (opsional)</label>
+    </div>
+
+    <div class="row g-2">
+        <div class="col d-grid">
+            <button type="reset" class="btn btn-secondary">Ulang</button>
+        </div>
+        <div class="col d-grid">
+            <button type="submit" class="btn btn-success">Tambahkan</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    #fintime_nama_transaksi_input_group > *,
+    #fintime_jumlah_transaksi_input_group > * {
+        margin-bottom: 0.5rem;
+    }
+</style>

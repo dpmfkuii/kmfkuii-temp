@@ -179,78 +179,46 @@ var _ = {
 
         // db.ref('verifikasi/keuangan')
         "keuangan": {
-            // db.ref('verifikasi/keuangan/rkat')
-            "rkat": {
-                // db.ref(`verifikasi/keuangan/rkat/${periode_rkat}`)
-                "2024": {
-                    // db.ref(`verifikasi/keuangan/rkat/${periode_rkat}/pembiayaan`)
-                    "pembiayaan": {
-                        "{sub_rkat}": 80000000,
-                    },
-                    // db.ref(`verifikasi/keuangan/rkat/${periode_rkat}/kegiatan`)
-                    "kegiatan": {
-                        // db.ref(`verifikasi/keuangan/rkat/${periode_rkat}/kegiatan/${organisasi_index}`)
-                        "{organisasi_index}": {
-                            // db.ref(`verifikasi/keuangan/rkat/${periode_rkat}/kegiatan/${organisasi_index}/${uid}`)
-                            "{uid}": {
-                                "nama_kegiatan": "Konferensi",
-                                "sub_rkat": "Sub Aktivitas Kegiatan Mahasiswa",
-                                "penggunaan": 1390000,
-                            },
-                        },
-                    },
-                },
-            },
-            // db.ref('verifikasi/keuangan/logbook')
-            "logbook": {
-                // db.ref(`verifikasi/keuangan/logbook/${periode}`)
+            // db.ref('verifikasi/keuangan/fincard')
+            "fincard": {
+                // db.ref(`verifikasi/keuangan/fincard/${periode}`)
                 "2023-2024": {
-                    // db.ref(`verifikasi/keuangan/logbook/${periode}/${organisasi_index}`)
+                    // db.ref(`verifikasi/keuangan/fincard/${periode}/${organisasi_index}`)
                     "{organisasi_index}": {
-                        // db.ref(`verifikasi/keuangan/logbook/${periode}/${organisasi_index}/${uid}`)
+                        // db.ref(`verifikasi/keuangan/fincard/${periode}/${organisasi_index}/${uid}`)
                         "{uid}": {
-                            "nama_kegiatan": "Konferensi",
+                            "nama_kegiatan": "Konferensi", // make sure any instances where the main `nama_kegiatan` is changed this gets changed as well
                             "periode_rkat": "2024",
-                            "sub_rkat": "Sub Aktivitas Kegiatan Mahasiswa",
-                            "pencairan": {
-                                "RKAT": 700000,
-                                "DPM": 500000,
-                                "{jenis_transaksi}": 0,
-                            },
-                            "pengiriman": {
-                                "RKAT": 400000,
-                                "DPM": 500000,
-                                "{jenis_transaksi}": 0,
-                            },
-                            "penggunaan": {
-                                "Kegiatan": 19000,
-                                "{jenis_transaksi}": 0,
-                            },
-                            "pengembalian": {
-                                "RKAT": 300000,
-                                "Kegiatan": 19000,
-                                "{jenis_transaksi}": 0,
+                            "sub_rkat_index": 0,
+                            "rkat_murni": 7000000,
+                            "rkat_alokasi": 600000,
+                            "dpm": 500000,
+                            "sisa": 50000,
+                            "sudah_kembali": true,
+                            "disimpan_dpm": 0,
+                            "alokasi": {
+                                "{uid}": 50000,
                             },
                             "updated_timestamp": 1234567890,
-                            "status_lpj": -1, // dont update timestamp
+                            "status_lpj": -1, // updating status should not update timestamp, just update the status
                         },
                     },
                 },
             },
-            // db.ref(`verifikasi/keuangan/linimasa`)
-            "linimasa": {
-                // db.ref(`verifikasi/keuangan/linimasa/${uid}`)
+            // db.ref(`verifikasi/keuangan/fintime`)
+            "fintime": {
+                // db.ref(`verifikasi/keuangan/fintime/${uid}`)
                 "{uid}": {
-                    "{timestamp}": {
-                        "datetime": 1234567890,
+                    "{last_updated_timestamp}": {
+                        "datetime": "YYYY-MM-DDThh:mm",
                         "tipe_index": 0,
                         "icon_index": 0,
                         "color_index": 0,
                         "judul": "Perubahan pengajuan dana",
-                        "detail_transaksi": {
-                            "RKAT": 400000,
-                            "DPM": 190000,
-                            "{jenis_transaksi}": 0,
+                        "transaksi": {
+                            "RKAT": 4000000,
+                            "DPM": 500000,
+                            "{nama_transaksi}": 0,
                         },
                         "keterangan": "",
                     },
@@ -273,6 +241,12 @@ var _ = {
                     "opsi": ["16.00", "", ""],
                     "jam_reschedule_lem": ["16.00", ""],
                     "jam_reschedule_dpm": ["16.00", ""],
+                },
+            },
+            // db.ref(`sistem/data/keuangan`) => SistemData.Keuangan[]
+            "keuangan": {
+                "sub_rkat": {
+                    "2024": ["Sub Aktivitas Kegiatan", "Sub Delegasi"], // if index not found, make it "unclassified" or something
                 },
             },
             // db.ref(`sistem/data/organisasi`) => SistemData.Organisasi[]

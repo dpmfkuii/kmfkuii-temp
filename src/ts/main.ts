@@ -1,3 +1,5 @@
+//#region defines
+
 // firebase
 interface Firebase {
     database(): {
@@ -211,6 +213,8 @@ interface JenisPengajuanRapatKegiatan {
 }
 
 type LogColor = 'light' | 'info' | 'success' | 'warning' | 'danger'
+
+//#endregion
 
 const main = {
     get_opsi_periode_kegiatan(current_year = new Date().getFullYear()) {
@@ -675,6 +679,20 @@ const db = {
     get_sistem_data_verifikasi_jam_rapat<T = SistemData.Snapshot['verifikasi']['jam_rapat']>(): Promise<FirebaseSnapshot<T>> {
         return main_db.ref(`sistem/data/verifikasi/jam_rapat`)
             .once<T>('value')
+    },
+    keuangan: {
+        get_fintime_list<T = DatabaseKeuangan.FintimeList>(uid: string): Promise<FirebaseSnapshot<T>> {
+            return main_db.ref(`verifikasi/keuangan/fintime/${uid}`)
+                .once<T>('value')
+        },
+        on_fintime_list<T = DatabaseKeuangan.FintimeList>(uid: string, callback: (snapshot: FirebaseSnapshot<T>) => void) {
+            return main_db.ref(`verifikasi/keuangan/fintime/${uid}`)
+                .on<T>('value', callback)
+        },
+        update_fintime_list(uid: string, fintime_list_updates: DatabaseKeuangan.FintimeList) {
+            return main_db.ref(`verifikasi/keuangan/fintime/${uid}`)
+                .update(fintime_list_updates)
+        },
     },
 }
 

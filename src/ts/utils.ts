@@ -166,6 +166,21 @@ const common = {
         }
         return n.join('')
     },
+    /**
+     * @returns Mm yyyy
+     */
+    date_to_month_year_text(date: Date) {
+        const m = date.getMonth() + 1
+        const mm = m < 10 ? `0${m}` : m
+        return `${defines.month_names[mm]} ${date.getFullYear()}`
+    },
+    /**
+     * @returns dd
+     */
+    date_to_dd_text(date: Date) {
+        const d = date.getDate()
+        return `${d < 10 ? `0${d}` : d}`
+    },
     date_string_to_date_text(date_string: string) {
         const split = date_string.split('-')
         const yyyy = split[0]
@@ -276,6 +291,16 @@ const common = {
         }
 
         return true
+    },
+    format_rupiah(num: number) {
+        const o = num.toFixed()
+        const p = 3
+        const q = '.'
+        let r = o.split('')
+        for (let i = o.length - p; i > 0; i -= p) {
+            r.splice(i, 0, q)
+        }
+        return `Rp${r.join('')},00`
     },
 }
 
