@@ -11,13 +11,24 @@
     </h6>
     <ul class="small collapse show" id="callout_informasi_terbaru">
         <li>
-            Perubahan jam rapat LEM yang tersedia dari 7 opsi mulai 15.30
-            menjadi 4 opsi mulai 18.30. Jam lain tetap bisa digunakan untuk
-            <i>reschedule</i>.
+            <i>It's Fintime!</i> Cek status pengajuan, pencairan, dan pengiriman
+            dana lewat
+            <span
+                role="button"
+                class="btn-link text-km-primary"
+                id="callout_link_panel_keuangan"
+                >panel keuangan</span
+            >
+            di bawah panel konfirmasi email.
         </li>
-        <li>
-            Lihat jam yang tersedia saat daftar rapat (LEM dan DPM bisa
-            berbeda.)
-        </li>
+        <li>Fintime diperbarui secara berkala oleh Komisi II DPM FK UII.</li>
     </ul>
 </div>
+
+<script defer>
+    document
+        .querySelector("#callout_link_panel_keuangan")
+        .addEventListener("click", () => {
+            document.querySelector("#panel_keuangan").scrollIntoView();
+        });
+</script>

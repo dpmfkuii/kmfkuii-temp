@@ -11,6 +11,7 @@ interface EventsMap {
 
     const fintime_table = dom.q<'table'>('#fintime_table')!
     const fintime_form = dom.q<'form'>('#fintime_form')!
+    const fintime_recap_table = dom.q<'table'>('#fintime_rekapitulasi_keuangan_table')!
 
     const fintime_table_controller = {
         tbody: dom.qe<'tbody'>(fintime_table, 'tbody')!,
@@ -20,20 +21,13 @@ interface EventsMap {
         show_nothing() {
             this.tbody.innerHTML = `<tr><td><i class="text-secondary">Tidak ada data.</i></td></tr>`
         },
-        update(fintime_list: DatabaseKeuangan.FintimeList) {
+        update(render_list: (DatabaseKeuangan.Fintime & { last_updated_timestamp: string })[]) {
             this.tbody.innerHTML = ''
-
-            const render_list: (DatabaseKeuangan.Fintime & { last_updated_timestamp: string })[] = []
-            for (const last_updated_timestamp in fintime_list) {
-                render_list.push({
-                    ...fintime_list[last_updated_timestamp],
-                    last_updated_timestamp,
-                })
-            }
 
             render_list.sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime())
 
             let current_header = ''
+            let current_dd = ''
             for (let i = 0; i < render_list.length; i++) {
                 const item = render_list[i]
 
@@ -49,9 +43,18 @@ interface EventsMap {
                         ],
                     }))
                     current_header = item_header
+                    current_dd = ''
                 }
 
-                const item_dd = common.date_to_dd_text(item_date)
+                let item_dd = common.date_to_dd_text(item_date)
+
+                if (item_dd === current_dd) {
+                    item_dd = '○'
+                }
+                else {
+                    current_dd = item_dd
+                }
+
                 const item_tipe = Object.values(DatabaseKeuangan.FintimeTipe)[item.tipe_index]
                 const item_icon = Object.values(DatabaseKeuangan.FintimeIcon)[item.icon_index]
                 const item_color = Object.values(DatabaseKeuangan.FintimeColor)[item.color_index]
@@ -93,10 +96,11 @@ interface EventsMap {
                     }))
 
                     edit_button.addEventListener('click', () => {
-                        fintime_form_inputs.set_selected_fintime(item.last_updated_timestamp, item)
-                        fintime_form_inputs.set_edit_mode(true)
+                        fintime_form_controller.templat_index_select.value = Object.keys(fintime_form_templates)[0]
+                        fintime_form_controller.set_selected_fintime(item.last_updated_timestamp, item)
+                        fintime_form_controller.set_edit_mode(true)
                         fintime_form.scrollIntoView({ behavior: 'smooth' })
-                        dom.q('#callout_form_fintime')!.classList.add('show')
+                        fintime_form_controller.toggle_collapse(false)
 
                         events.trigger('fintime_form_reset', 0)
 
@@ -106,7 +110,7 @@ interface EventsMap {
                     })
 
                     hapus_button.addEventListener('click', () => {
-                        if (fintime_form_inputs._is_editing && fintime_form_inputs._selected.last_updated_timestamp === item.last_updated_timestamp) {
+                        if (fintime_form_controller._is_editing && fintime_form_controller._selected.last_updated_timestamp === item.last_updated_timestamp) {
                             return
                         }
                         swal.fire({
@@ -121,7 +125,7 @@ interface EventsMap {
                                 </div>
                             `,
                             showDenyButton: true,
-                            confirmButtonText: 'Hapus Fincard',
+                            confirmButtonText: 'Hapus Fintime',
                             denyButtonText: 'Nanti',
                             customClass: {
                                 confirmButton: 'btn btn-danger',
@@ -132,7 +136,7 @@ interface EventsMap {
                         }).then((result: any) => {
                             if (result.isConfirmed) {
                                 swal.fire({
-                                    title: 'Hapus Fincard',
+                                    title: 'Hapus Fintime',
                                     html: '<div><i>Memproses...</i></div>',
                                     showConfirmButton: false,
                                     allowOutsideClick: false,
@@ -155,7 +159,7 @@ interface EventsMap {
                     })
 
                     events.on('fintime_form_reset', () => {
-                        if (fintime_form_inputs._is_editing && fintime_form_inputs._selected.last_updated_timestamp === item.last_updated_timestamp) {
+                        if (fintime_form_controller._is_editing && fintime_form_controller._selected.last_updated_timestamp === item.last_updated_timestamp) {
                             return
                         }
                         edit_button.innerHTML = edit_button_text
@@ -251,13 +255,14 @@ interface EventsMap {
         },
     }
 
-    const fintime_form_inputs = {
+    const fintime_form_controller = {
         _is_editing: false,
         _selected: {
             last_updated_timestamp: '',
             fintime: {} as Partial<DatabaseKeuangan.Fintime>,
         },
         form_title: dom.qe(fintime_form, '#fintime_form_title')!,
+        form_collapse_container: dom.qe(fintime_form, '#callout_form_fintime')!,
         datetime_input: dom.qe<'input'>(fintime_form, 'input[name="fintime_datetime"]')!,
         templat_index_select: dom.qe<'select'>(fintime_form, 'select[name="fintime_templat_index"]')!,
         tipe_index_select: dom.qe<'select'>(fintime_form, 'select[name="fintime_tipe_index"]')!,
@@ -460,7 +465,7 @@ interface EventsMap {
                 this.color_index_select.value = Object.values(DatabaseKeuangan.FintimeColor)[templat.color_index || 0]
                 this.update_icon_radio_input_group_display()
             }
-            this.judul_input.value = templat.judul || ''
+            if (typeof templat.judul === 'string') this.judul_input.value = templat.judul
             if (templat.transaksi) {
                 this.nama_transaksi_input_group.innerHTML = ''
                 this.jumlah_transaksi_input_group.innerHTML = ''
@@ -477,7 +482,7 @@ interface EventsMap {
                 this.jumlah_transaksi_input_group.innerHTML = ''
                 this.push_transaksi_row()
             }
-            this.keterangan_input.value = templat.keterangan || ''
+            if (typeof templat.keterangan === 'string') this.keterangan_input.value = templat.keterangan
         },
         reset() {
             fintime_form.reset()
@@ -487,9 +492,10 @@ interface EventsMap {
             this.update_icon_radio_input_group_display()
             this.reset_transaksi_row()
             events.trigger('fintime_form_reset', 0)
+            this.toggle_collapse(true)
         },
         get_action_text(shorten = false) {
-            return `${fintime_form_inputs._is_editing ? 'Simpan' : `${shorten ? 'Tambah' : 'Tambahkan'}`}`
+            return `${fintime_form_controller._is_editing ? 'Simpan' : `${shorten ? 'Tambah' : 'Tambahkan'}`}`
         },
         set_edit_mode(is_editing: boolean) {
             this._is_editing = is_editing
@@ -501,9 +507,18 @@ interface EventsMap {
             this._selected.fintime = fintime
             this.set_to_template(fintime)
         },
+        toggle_collapse(new_value?: boolean) {
+            if (typeof new_value === 'boolean') {
+                this.form_collapse_container.classList.remove('show')
+                if (new_value) {
+                    this.form_collapse_container.classList.add('show')
+                }
+            }
+            this.form_title.click()
+        },
     }
 
-    fintime_form_inputs.init()
+    fintime_form_controller.init()
 
     fintime_form.addEventListener('submit', async ev => {
         ev.preventDefault()
@@ -511,17 +526,17 @@ interface EventsMap {
         if (!IS_ADMIN) return
 
         const new_fintime: DatabaseKeuangan.Fintime = {
-            datetime: fintime_form_inputs.datetime_input.value,
-            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(fintime_form_inputs.tipe_index_select.value as DatabaseKeuangan.FintimeTipe),
-            icon_index: fintime_form_inputs.get_icon_index_value(),
-            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(fintime_form_inputs.color_index_select.value as DatabaseKeuangan.FintimeColor),
-            judul: fintime_form_inputs.judul_input.value,
-            transaksi: fintime_form_inputs.get_transaksi_value(),
-            keterangan: fintime_form_inputs.keterangan_input.value,
+            datetime: fintime_form_controller.datetime_input.value,
+            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(fintime_form_controller.tipe_index_select.value as DatabaseKeuangan.FintimeTipe),
+            icon_index: fintime_form_controller.get_icon_index_value(),
+            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(fintime_form_controller.color_index_select.value as DatabaseKeuangan.FintimeColor),
+            judul: fintime_form_controller.judul_input.value,
+            transaksi: fintime_form_controller.get_transaksi_value(),
+            keterangan: fintime_form_controller.keterangan_input.value,
         }
 
         if (PARAMS_UID) {
-            const action_text = fintime_form_inputs.get_action_text(true)
+            const action_text = fintime_form_controller.get_action_text(true)
             await swal.fire({
                 title: `${action_text} Fintime`,
                 html: '<div><i>Memproses...</i></div>',
@@ -533,8 +548,8 @@ interface EventsMap {
                     try {
                         await db.keuangan.update_fintime_list(PARAMS_UID, {
                             [common.timestamp()]: new_fintime,
-                            ...((fintime_form_inputs._is_editing && fintime_form_inputs._selected.last_updated_timestamp) ? {
-                                [fintime_form_inputs._selected.last_updated_timestamp]: null as any
+                            ...((fintime_form_controller._is_editing && fintime_form_controller._selected.last_updated_timestamp) ? {
+                                [fintime_form_controller._selected.last_updated_timestamp]: null as any
                             } : {})
                         })
                     }
@@ -543,25 +558,126 @@ interface EventsMap {
                         return
                     }
                     main.swal_fire_success(`${action_text} berhasil!`)
-                    fintime_form_inputs.reset()
+                    fintime_form_controller.reset()
                 },
             })
         }
     })
 
+    const fintime_recap_table_controller = {
+        tbody: dom.qe<'tbody'>(fintime_recap_table, 'tbody')!,
+        tfoot: dom.qe<'tfoot'>(fintime_recap_table, 'tfoot')!,
+        start_loading() {
+            this.tbody.innerHTML = `<tr><td colspan="5"><strong class="text-secondary fst-italic">Memuat...</strong></td></tr>`
+            this.tfoot.innerHTML = ''
+        },
+        show_nothing() {
+            this.tbody.innerHTML = `<tr><td colspan="5"><i class="text-secondary">Tidak ada data.</i></td></tr>`
+            this.tfoot.innerHTML = ''
+        },
+        update(render_list: (DatabaseKeuangan.Fintime & { last_updated_timestamp: string })[]) {
+            this.tbody.innerHTML = ''
+            this.tfoot.innerHTML = ''
+
+            render_list.sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime())
+
+            let no = 1,
+                kredit = 0,
+                debit = 0,
+                saldo = 0
+            for (let i = 0; i < render_list.length; i++) {
+                const item = render_list[i]
+                const item_tipe = Object.values(DatabaseKeuangan.FintimeTipe)[item.tipe_index]
+                if (item_tipe === DatabaseKeuangan.FintimeTipe.INFO) continue
+                if (item_tipe === DatabaseKeuangan.FintimeTipe.KREDIT) {
+                    for (const transaksi_string of item.transaksi) {
+                        const { nama, jumlah } = main.keuangan.parse_transaksi_string(transaksi_string)
+
+                        kredit += jumlah
+                        saldo += jumlah
+
+                        const tds = [
+                            dom.c('td', { html: `${no++}` }),
+                            dom.c('td', { html: nama }),
+                            dom.c('td', { html: common.format_rupiah(jumlah) }),
+                            dom.c('td', { html: '-' }),
+                            dom.c('td', { html: `${common.format_rupiah(saldo)}` }),
+                        ]
+
+                        this.tbody.appendChild(dom.c('tr', {
+                            children: tds,
+                        }))
+                    }
+                }
+                else if (item_tipe === DatabaseKeuangan.FintimeTipe.DEBIT) {
+                    for (const transaksi_string of item.transaksi) {
+                        const { nama, jumlah } = main.keuangan.parse_transaksi_string(transaksi_string)
+
+                        debit += jumlah
+                        saldo -= jumlah
+
+                        const tds = [
+                            dom.c('td', { html: `${no++}` }),
+                            dom.c('td', { html: nama }),
+                            dom.c('td', { html: '-' }),
+                            dom.c('td', { html: common.format_rupiah(jumlah) }),
+                            dom.c('td', { html: `${common.format_rupiah(saldo)}` }),
+                        ]
+
+                        this.tbody.appendChild(dom.c('tr', {
+                            children: tds,
+                        }))
+                    }
+                }
+            }
+
+            if (this.tbody.innerHTML !== '') {
+                const tds = [
+                    dom.c('td', { attributes: { colspan: '2' }, html: 'Total' }),
+                    dom.c('td', { html: common.format_rupiah(kredit) }),
+                    dom.c('td', { html: common.format_rupiah(debit) }),
+                    dom.c('td', { html: `${common.format_rupiah(saldo)}` }),
+                ]
+
+                this.tfoot.appendChild(dom.c('tr', {
+                    children: tds,
+                }))
+            }
+
+            if (this.tbody.innerHTML === '') {
+                this.show_nothing()
+            }
+        },
+    }
+
     fintime_table_controller.start_loading()
+    fintime_recap_table_controller.start_loading()
 
     try {
         let uid = PARAMS_UID
-        if (!IS_ADMIN) uid = auth.get_logged_in_user()!.uid
+        if (!IS_ADMIN) uid = auth.get_logged_in_user()?.uid || ''
         if (uid) {
             await db.keuangan.on_fintime_list(uid, snap => {
-                if (!snap.exists()) fintime_table_controller.show_nothing()
-                fintime_table_controller.update(snap.val())
+                if (!snap.exists()) {
+                    fintime_table_controller.show_nothing()
+                    fintime_recap_table_controller.show_nothing()
+                    return
+                }
+                const fintime_list = snap.val()
+                const render_list: (DatabaseKeuangan.Fintime & { last_updated_timestamp: string })[] = []
+                for (const last_updated_timestamp in fintime_list) {
+                    render_list.push({
+                        ...fintime_list[last_updated_timestamp],
+                        last_updated_timestamp,
+                    })
+                }
+                fintime_table_controller.update(render_list)
+                fintime_recap_table_controller.update(render_list)
             })
         }
         else {
             fintime_table_controller.show_nothing()
+            fintime_recap_table_controller.show_nothing()
         }
     }
     catch (err) {

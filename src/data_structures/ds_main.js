@@ -188,6 +188,7 @@ var _ = {
                         // db.ref(`verifikasi/keuangan/fincard/${periode}/${organisasi_index}/${uid}`)
                         "{uid}": {
                             "nama_kegiatan": "Konferensi", // make sure any instances where the main `nama_kegiatan` is changed this gets changed as well
+                            "status_lpj": -1, // updating status should not update timestamp, just update the status
                             "periode_rkat": "2024",
                             "sub_rkat_index": 0,
                             "rkat_murni": 7000000,
@@ -200,7 +201,6 @@ var _ = {
                                 "{uid}": 50000,
                             },
                             "updated_timestamp": 1234567890,
-                            "status_lpj": -1, // updating status should not update timestamp, just update the status
                         },
                     },
                 },

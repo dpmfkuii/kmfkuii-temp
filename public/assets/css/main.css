@@ -195,3 +195,47 @@ a.disabled {
         1 100%
     );
 }
+
+#fintime_table tbody tr > td:first-child {
+    position: relative;
+
+    text-align: center;
+    width: 0%;
+
+    color: var(--bs-light-text-emphasis) !important;
+    background-color: var(--bs-light-bg-subtle) !important;
+}
+#fintime_table tbody tr > td:first-child::before,
+#fintime_table tbody tr > td:first-child::after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 50%;
+    width: 2px;
+    background-color: var(--bs-dark-bg-subtle);
+}
+#fintime_table tbody tr > td:first-child::before {
+    top: 0;
+    height: 0.5rem;
+}
+#fintime_table tbody tr > td:first-child::after {
+    bottom: 0;
+    height: calc(100% - 2rem);
+}
+#fintime_table tbody td ul {
+    list-style-type: circle;
+    margin-bottom: 0;
+}
+#fintime_rekapitulasi_keuangan_table tbody tr > td:nth-child(2) {
+    text-align: start;
+}
+#fintime_rekapitulasi_keuangan_table tbody tr > td:nth-child(3),
+#fintime_rekapitulasi_keuangan_table tfoot tr > td:nth-child(2) {
+    --bs-text-opacity: 1;
+    color: rgba(var(--bs-success-rgb), var(--bs-text-opacity)) !important;
+}
+#fintime_rekapitulasi_keuangan_table tbody tr > td:nth-child(4),
+#fintime_rekapitulasi_keuangan_table tfoot tr > td:nth-child(3) {
+    --bs-text-opacity: 1;
+    color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important;
+}

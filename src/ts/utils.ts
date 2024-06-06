@@ -293,14 +293,14 @@ const common = {
         return true
     },
     format_rupiah(num: number) {
-        const o = num.toFixed()
+        const o = Math.abs(num).toFixed()
         const p = 3
         const q = '.'
         let r = o.split('')
         for (let i = o.length - p; i > 0; i -= p) {
             r.splice(i, 0, q)
         }
-        return `Rp${r.join('')},00`
+        return num < 0 ? `-Rp${r.join('')},00` : `Rp${r.join('')},00`
     },
 }
 

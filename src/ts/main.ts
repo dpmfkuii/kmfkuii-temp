@@ -664,6 +664,7 @@ const db = {
             db.get_kegiatan(uid).then(snap => db.remove_logbook(snap.val()!)),
             db.remove_kegiatan_logs(uid),
             db.remove_pengajuan(uid),
+            db.keuangan.remove_fintime_list(uid),
         ])
         await db.remove_kegiatan(uid)
         await main_db.ref(`users/${uid}`).remove()
@@ -715,6 +716,10 @@ const db = {
         },
         remove_fintime(uid: string, last_updated_timestamp: string | number) {
             return main_db.ref(`verifikasi/keuangan/fintime/${uid}/${last_updated_timestamp}`)
+                .remove()
+        },
+        remove_fintime_list(uid: string) {
+            return main_db.ref(`verifikasi/keuangan/fintime/${uid}`)
                 .remove()
         },
     },

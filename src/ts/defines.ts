@@ -141,7 +141,9 @@ namespace DatabaseKeuangan {
         sisa: number
         sudah_kembali: boolean
         disimpan_dpm: number
-        alokasi: { [uid: string]: number }
+        alokasi: {
+            [uid: string]: number
+        }
         updated_timestamp: number
     }
 

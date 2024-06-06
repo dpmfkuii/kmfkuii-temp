@@ -15,7 +15,7 @@
         <div class="accordion-body">
             <h5>
                 <i class="fa-regular fa-credit-card"></i> Fincard
-                <i class="text-secondary fs-6">(WIP)</i>
+                <i class="text-secondary fs-6">(COMING SOON)</i>
             </h5>
             <hr />
             <h5><i class="fa-regular fa-rectangle-list"></i> Fintime</h5>
@@ -36,9 +36,10 @@
                     </div>
                 </form>
             </div>
-            <!-- <div class="table-responsive rounded small border">
+            <div class="table-responsive rounded small border">
                 <table
                     class="table table-striped align-middle text-center mb-1"
+                    id="fintime_rekapitulasi_keuangan_table"
                 >
                     <thead class="table-light align-middle">
                         <tr>
@@ -54,74 +55,12 @@
                             <th>Saldo</th>
                         </tr>
                     </thead>
-                    <tbody class="small">
-                        <tr>
-                            <td>1</td>
-                            <td class="text-start">RKAT</td>
-                            <td class="text-success">Rp4.000.000,00</td>
-                            <td class="text-danger">-</td>
-                            <td>Rp4.000.000,00</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td class="text-start">DPM</td>
-                            <td class="text-success">Rp600.000,00</td>
-                            <td class="text-danger">-</td>
-                            <td>Rp4.600.000,00</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td class="text-start">Penggunaan</td>
-                            <td class="text-success">-</td>
-                            <td class="text-danger">Rp300.000,00</td>
-                            <td>Rp340.000,00</td>
-                        </tr>
-                    </tbody>
-                    <tfoot class="small fw-bold">
-                        <tr>
-                            <td colspan="2">Total</td>
-                            <td class="text-success">Rp640.000,00</td>
-                            <td class="text-danger">Rp300.000,00</td>
-                            <td class="text-info">Rp0,00</td>
-                        </tr>
-                    </tfoot>
+                    <tbody class="small"></tbody>
+                    <tfoot class="small fw-bold"></tfoot>
                 </table>
-            </div> -->
+            </div>
         </div>
     </div>
 </div>
-
-<style>
-    #fintime_table tbody tr > td:first-child {
-        position: relative;
-
-        text-align: center;
-        width: 0%;
-
-        color: var(--bs-light-text-emphasis) !important;
-        background-color: var(--bs-light-bg-subtle) !important;
-    }
-    #fintime_table tbody tr > td:first-child::before,
-    #fintime_table tbody tr > td:first-child::after {
-        content: "";
-        display: block;
-        position: absolute;
-        left: 50%;
-        width: 2px;
-        background-color: var(--bs-dark-bg-subtle);
-    }
-    #fintime_table tbody tr > td:first-child::before {
-        top: 0;
-        height: 0.5rem;
-    }
-    #fintime_table tbody tr > td:first-child::after {
-        bottom: 0;
-        height: calc(100% - 2rem);
-    }
-    #fintime_table tbody td ul {
-        list-style-type: circle;
-        margin-bottom: 0;
-    }
-</style>
 
 <script defer src="/assets/js/admin/panel_keuangan.js"></script>
