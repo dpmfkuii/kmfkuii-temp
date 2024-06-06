@@ -149,27 +149,27 @@ interface EventsMap {
 
     const fintime_form_templates: { [name: string]: Partial<DatabaseKeuangan.Fintime> } = {
         'Menyesuaikan': {} as any,
-        'Pengajuan dana': {
+        'Pengajuan proposal': {
             tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
             icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_CASH_REGISTER),
             color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.LIGHT),
-            judul: 'Pengajuan dana',
+            judul: 'Pengajuan proposal',
             transaksi: ['RKAT:0', 'DPM:0'],
             keterangan: '',
         },
-        'Perubahan pengajuan dana': {
+        'Perubahan proposal': {
             tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
             icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_CASH_REGISTER),
             color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.LIGHT),
-            judul: 'Perubahan pengajuan dana',
+            judul: 'Perubahan proposal',
             transaksi: ['RKAT:0', 'DPM:0'],
             keterangan: '',
         },
-        'Pengajuan dana diterima': {
+        'Proposal diterima': {
             tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
             icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_CIRCLE_CHECK),
             color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.WARNING),
-            judul: 'Pengajuan dana diterima',
+            judul: 'Proposal diterima',
             transaksi: ['RKAT:0', 'DPM:0'],
             keterangan: 'Silakan kirimkan SPD kepada pihak terkait dan tunggu dana cair.',
         },
@@ -204,6 +204,30 @@ interface EventsMap {
             judul: 'Penggunaan dana',
             transaksi: ['Kegiatan:0'],
             keterangan: '',
+        },
+        'Pengajuan LPJ': {
+            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
+            icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_CASH_REGISTER),
+            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.LIGHT),
+            judul: 'Pengajuan LPJ',
+            transaksi: ['RKAT:0', 'DPM:0', 'Kegiatan:0', 'Sisa:0'],
+            keterangan: '',
+        },
+        'Perubahan LPJ': {
+            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
+            icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_CASH_REGISTER),
+            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.LIGHT),
+            judul: 'Perubahan LPJ',
+            transaksi: ['RKAT:0', 'DPM:0', 'Kegiatan:0', 'Sisa:0'],
+            keterangan: '',
+        },
+        'LPJ diterima': {
+            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
+            icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_CIRCLE_CHECK),
+            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.WARNING),
+            judul: 'LPJ diterima',
+            transaksi: ['RKAT:0', 'DPM:0', 'Kegiatan:0', 'Sisa:0'],
+            keterangan: 'Terima kasih!',
         },
         'Pengembalian dana': {
             tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
