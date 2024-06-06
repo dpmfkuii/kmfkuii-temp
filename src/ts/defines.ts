@@ -185,6 +185,10 @@ namespace DatabaseKeuangan {
         transaksi: string[] // [ `${nama_transaksi}:${jumlah_transaksi}`, ... ]
         keterangan: string
     }
+
+    export interface FintimeExt extends Fintime {
+        last_updated_timestamp: string
+    }
 }
 
 namespace SistemData {

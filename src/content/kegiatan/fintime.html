@@ -19,6 +19,124 @@
     <div class="mb-3 animate animate-fade-on-enter animate-speed-50">
         <a role="button" href="/kegiatan/" class="btn btn-secondary">Kembali</a>
     </div>
+    <div class="card mb-3 animate animate-rise-on-enter" id="jadwal_container">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-lg-3 mb-3">
+                    <div class="card">
+                        <div class="card-header">Cari berdasarkan</div>
+                        <div class="card-body p-1">
+                            <ul class="list-group">
+                                <li
+                                    class="list-group-item list-group-item-warning d-flex align-items-center"
+                                    aria-label="UID"
+                                >
+                                    <div class="flex-grow-1">
+                                        <strong>UID</strong>
+                                        <br />
+                                        <small class="text-secondary">
+                                            <small>Semua periode</small>
+                                        </small>
+                                    </div>
+                                    <span>
+                                        <i
+                                            class="fa-solid fa-magnifying-glass"
+                                        ></i>
+                                    </span>
+                                </li>
+                                <!-- <li
+                                    class="list-group-item list-group-item-secondary d-flex align-items-center"
+                                    role="button"
+                                    aria-label="Nama Kegiatan"
+                                >
+                                    <div class="flex-grow-1">
+                                        <strong>Nama Kegiatan</strong>
+                                        <br />
+                                        <small class="text-secondary">
+                                            <small
+                                                >Periode logbook
+                                                (2023—2025)</small
+                                            >
+                                        </small>
+                                    </div>
+                                </li> -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-9">
+                    <div class="card text-center">
+                        <div class="card-header text-bg-warning-subtle">
+                            <span id="fintime_search_title">Masukkan UID</span>
+                        </div>
+                        <div class="card-body">
+                            <form id="fintime_search_form" class="mb-3">
+                                <input
+                                    type="text"
+                                    class="form-control form-control-lg form-control-line text-center"
+                                    id="fintime_search_input"
+                                    placeholder="UID"
+                                    autocomplete="off"
+                                    required
+                                />
+                                <button
+                                    type="submit"
+                                    class="btn btn-lg border-0"
+                                >
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </button>
+                            </form>
+                            <div id="fintime_search_result"></div>
+                            <div id="fintime_table_container">
+                                <div
+                                    class="bg-light-subtle table-responsive border rounded mb-2"
+                                >
+                                    <table
+                                        class="table table-borderless mb-0 text-start"
+                                        style="min-width: min-content"
+                                        id="fintime_table"
+                                    >
+                                        <tbody class="small"></tbody>
+                                    </table>
+                                </div>
+                                <insert-component-keu/fintime-recap />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    @media (min-width: 992px) {
+        #jadwal_container .row > *:nth-child(1) {
+            padding-right: calc(var(--bs-gutter-x) * 0.25);
+        }
+
+        #jadwal_container .row > *:nth-child(2) {
+            padding-left: calc(var(--bs-gutter-x) * 0.25);
+        }
+    }
+    #fintime_search_form {
+        position: relative;
+    }
+    #fintime_search_input:disabled {
+        opacity: 0.75;
+        border-radius: var(--bs-border-radius) !important;
+    }
+    #fintime_search_input + button[type="submit"] {
+        position: absolute;
+        top: 0;
+        right: 0;
+        transition: transform 200ms;
+        transform: rotate(90deg);
+    }
+    #fintime_search_input:focus + button[type="submit"] {
+        transform: rotate(0);
+        animation: placeholder-glow 2s ease-in-out infinite;
+    }
+</style>
 
 <script defer src="/assets/js/kegiatan/fintime.js"></script>

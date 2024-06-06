@@ -21,62 +21,30 @@ interface EventsMap {
         show_nothing() {
             this.tbody.innerHTML = `<tr><td><i class="text-secondary">Tidak ada data.</i></td></tr>`
         },
-        update(render_list: (DatabaseKeuangan.Fintime & { last_updated_timestamp: string })[]) {
+        update(render_list: DatabaseKeuangan.FintimeExt[]) {
             this.tbody.innerHTML = ''
-
-            render_list.sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime())
 
             let current_header = ''
             let current_dd = ''
             for (let i = 0; i < render_list.length; i++) {
                 const item = render_list[i]
 
-                const item_date = new Date(item.datetime)
-                const item_header = `${common.date_to_month_year_text(item_date)}`
+                const {
+                    new_current_header,
+                    new_current_dd,
+                    item_date,
+                    item_header,
+                    item_dd,
+                    item_tipe,
+                    item_icon,
+                    item_color,
+                    item_transaksi_li,
+                    item_keterangan,
+                    tds,
+                } = main.keuangan.fintime.generate_tds(item, current_header, current_dd, this.tbody)
 
-                if (item_header !== current_header) {
-                    this.tbody.appendChild(dom.c('tr', {
-                        classes: ['fs-6'],
-                        children: [
-                            dom.c('td', { html: '<i class="fa-regular fa-calendar"></i>' }),
-                            dom.c('td', { classes: ['text-bg-light-subtle', 'fw-bold'], html: item_header }),
-                        ],
-                    }))
-                    current_header = item_header
-                    current_dd = ''
-                }
-
-                let item_dd = common.date_to_dd_text(item_date)
-
-                if (item_dd === current_dd) {
-                    item_dd = '○'
-                }
-                else {
-                    current_dd = item_dd
-                }
-
-                const item_tipe = Object.values(DatabaseKeuangan.FintimeTipe)[item.tipe_index]
-                const item_icon = Object.values(DatabaseKeuangan.FintimeIcon)[item.icon_index]
-                const item_color = Object.values(DatabaseKeuangan.FintimeColor)[item.color_index]
-                let item_transaksi_li = ``
-                for (const transaksi_string of item.transaksi) {
-                    const { nama, jumlah } = main.keuangan.parse_transaksi_string(transaksi_string)
-                    const post_text = item_tipe === DatabaseKeuangan.FintimeTipe.INFO ? '' : ` <small>(${item_tipe.toLowerCase()})</small>`
-                    item_transaksi_li += `<li>${nama}: ${common.format_rupiah(jumlah)}${post_text}</li>`
-                }
-                const item_keterangan = item.keterangan ? `<span class="small">${item.keterangan}</span>` : ''
-
-                const tds = [
-                    dom.c('td', { html: item_dd }),
-                    dom.c('td', {
-                        classes: [`text-bg-${item_color}-subtle`],
-                        html: `
-                            <i class="${item_icon}"></i> ${item.judul}
-                            <ul class="small">${item_transaksi_li}</ul>
-                            ${item_keterangan}
-                        `
-                    }),
-                ]
+                current_header = new_current_header
+                current_dd = new_current_dd
 
                 if (IS_ADMIN && PARAMS_UID) {
                     const edit_button_text = '<i class="fa-regular fa-pen-to-square"></i> Edit'
@@ -575,11 +543,9 @@ interface EventsMap {
             this.tbody.innerHTML = `<tr><td colspan="5"><i class="text-secondary">Tidak ada data.</i></td></tr>`
             this.tfoot.innerHTML = ''
         },
-        update(render_list: (DatabaseKeuangan.Fintime & { last_updated_timestamp: string })[]) {
+        update(render_list: DatabaseKeuangan.FintimeExt[]) {
             this.tbody.innerHTML = ''
             this.tfoot.innerHTML = ''
-
-            render_list.sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime())
 
             let no = 1,
                 kredit = 0,
@@ -587,61 +553,20 @@ interface EventsMap {
                 saldo = 0
             for (let i = 0; i < render_list.length; i++) {
                 const item = render_list[i]
-                const item_tipe = Object.values(DatabaseKeuangan.FintimeTipe)[item.tipe_index]
-                if (item_tipe === DatabaseKeuangan.FintimeTipe.INFO) continue
-                if (item_tipe === DatabaseKeuangan.FintimeTipe.KREDIT) {
-                    for (const transaksi_string of item.transaksi) {
-                        const { nama, jumlah } = main.keuangan.parse_transaksi_string(transaksi_string)
-
-                        kredit += jumlah
-                        saldo += jumlah
-
-                        const tds = [
-                            dom.c('td', { html: `${no++}` }),
-                            dom.c('td', { html: nama }),
-                            dom.c('td', { html: common.format_rupiah(jumlah) }),
-                            dom.c('td', { html: '-' }),
-                            dom.c('td', { html: `${common.format_rupiah(saldo)}` }),
-                        ]
-
-                        this.tbody.appendChild(dom.c('tr', {
-                            children: tds,
-                        }))
-                    }
-                }
-                else if (item_tipe === DatabaseKeuangan.FintimeTipe.DEBIT) {
-                    for (const transaksi_string of item.transaksi) {
-                        const { nama, jumlah } = main.keuangan.parse_transaksi_string(transaksi_string)
-
-                        debit += jumlah
-                        saldo -= jumlah
-
-                        const tds = [
-                            dom.c('td', { html: `${no++}` }),
-                            dom.c('td', { html: nama }),
-                            dom.c('td', { html: '-' }),
-                            dom.c('td', { html: common.format_rupiah(jumlah) }),
-                            dom.c('td', { html: `${common.format_rupiah(saldo)}` }),
-                        ]
-
-                        this.tbody.appendChild(dom.c('tr', {
-                            children: tds,
-                        }))
-                    }
-                }
+                const {
+                    new_no,
+                    new_kredit,
+                    new_debit,
+                    new_saldo,
+                } = main.keuangan.fintime.generate_recap_tds(item, no, kredit, debit, saldo, this.tbody)
+                no = new_no
+                kredit = new_kredit
+                debit = new_debit
+                saldo = new_saldo
             }
 
             if (this.tbody.innerHTML !== '') {
-                const tds = [
-                    dom.c('td', { attributes: { colspan: '2' }, html: 'Total' }),
-                    dom.c('td', { html: common.format_rupiah(kredit) }),
-                    dom.c('td', { html: common.format_rupiah(debit) }),
-                    dom.c('td', { html: `${common.format_rupiah(saldo)}` }),
-                ]
-
-                this.tfoot.appendChild(dom.c('tr', {
-                    children: tds,
-                }))
+                main.keuangan.fintime.generate_recap_tfoot(kredit, debit, saldo, this.tfoot)
             }
 
             if (this.tbody.innerHTML === '') {
@@ -663,14 +588,7 @@ interface EventsMap {
                     fintime_recap_table_controller.show_nothing()
                     return
                 }
-                const fintime_list = snap.val()
-                const render_list: (DatabaseKeuangan.Fintime & { last_updated_timestamp: string })[] = []
-                for (const last_updated_timestamp in fintime_list) {
-                    render_list.push({
-                        ...fintime_list[last_updated_timestamp],
-                        last_updated_timestamp,
-                    })
-                }
+                const render_list = main.keuangan.fintime.fintime_list_to_render_list(snap.val())
                 fintime_table_controller.update(render_list)
                 fintime_recap_table_controller.update(render_list)
             })

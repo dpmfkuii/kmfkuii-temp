@@ -478,6 +478,30 @@ const main = {
 interface MainKeuangan {
     stringify_transaksi(nama: string, jumlah: number): string
     parse_transaksi_string(s: string): { nama: string, jumlah: number }
+    fintime: {
+        fintime_list_to_render_list(fintime_list: DatabaseKeuangan.FintimeList): DatabaseKeuangan.FintimeExt[]
+        generate_tds(item: DatabaseKeuangan.FintimeExt, current_header: string, current_dd: string, tbody: HTMLTableSectionElement): {
+            new_current_header: string,
+            new_current_dd: string,
+            item_date: Date
+            item_header: string
+            item_dd: string
+            item_tipe: DatabaseKeuangan.FintimeTipe
+            item_icon: DatabaseKeuangan.FintimeIcon
+            item_color: DatabaseKeuangan.FintimeColor
+            item_transaksi_li: string
+            item_keterangan: string
+            tds: HTMLTableCellElement[]
+        }
+        generate_recap_tds(item: DatabaseKeuangan.FintimeExt, no: number, kredit: number, debit: number, saldo: number, tbody: HTMLTableSectionElement): {
+            new_no: number
+            new_kredit: number
+            new_debit: number
+            new_saldo: number
+        }
+        generate_recap_tfoot(kredit: number, debit: number, saldo: number, tfoot: HTMLTableSectionElement): void
+
+    }
 }
 
 main.keuangan = {
@@ -492,6 +516,142 @@ main.keuangan = {
             jumlah,
         }
     },
+    fintime: {
+        fintime_list_to_render_list(fintime_list) {
+            const render_list: DatabaseKeuangan.FintimeExt[] = []
+            for (const last_updated_timestamp in fintime_list) {
+                render_list.push({
+                    ...fintime_list[last_updated_timestamp],
+                    last_updated_timestamp,
+                })
+            }
+            render_list.sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime())
+            return render_list
+        },
+        generate_tds(item, current_header, current_dd, tbody) {
+            const item_date = new Date(item.datetime)
+            const item_header = `${common.date_to_month_year_text(item_date)}`
+            let item_dd = common.date_to_dd_text(item_date)
+            const item_tipe = Object.values(DatabaseKeuangan.FintimeTipe)[item.tipe_index]
+            const item_icon = Object.values(DatabaseKeuangan.FintimeIcon)[item.icon_index]
+            const item_color = Object.values(DatabaseKeuangan.FintimeColor)[item.color_index]
+            let item_transaksi_li = ``
+            const item_keterangan = item.keterangan ? `<span class="small">${item.keterangan}</span>` : ''
+
+            if (item_header !== current_header) {
+                tbody.appendChild(dom.c('tr', {
+                    classes: ['fs-6'],
+                    children: [
+                        dom.c('td', { html: '<i class="fa-regular fa-calendar"></i>' }),
+                        dom.c('td', { classes: ['text-bg-light-subtle', 'fw-bold'], html: item_header }),
+                    ],
+                }))
+                current_header = item_header
+                current_dd = ''
+            }
+
+            if (item_dd === current_dd) {
+                item_dd = '<span style="margin-left: 1px">○</span>'
+            }
+            else {
+                current_dd = item_dd
+            }
+
+            for (const transaksi_string of item.transaksi) {
+                const { nama, jumlah } = main.keuangan.parse_transaksi_string(transaksi_string)
+                const post_text = item_tipe === DatabaseKeuangan.FintimeTipe.INFO ? '' : ` <small>(${item_tipe.toLowerCase()})</small>`
+                item_transaksi_li += `<li>${nama}: ${common.format_rupiah(jumlah)}${post_text}</li>`
+            }
+
+            const tds = [
+                dom.c('td', { html: item_dd }),
+                dom.c('td', {
+                    classes: [`text-bg-${item_color}-subtle`],
+                    html: `
+                        <i class="${item_icon}"></i> ${item.judul}
+                        <ul class="small">${item_transaksi_li}</ul>
+                        ${item_keterangan}
+                    `
+                }),
+            ]
+
+            return {
+                new_current_header: current_header,
+                new_current_dd: current_dd,
+                item_date,
+                item_header,
+                item_dd,
+                item_tipe,
+                item_icon,
+                item_color,
+                item_transaksi_li,
+                item_keterangan,
+                tds,
+            }
+        },
+        generate_recap_tds(item, no, kredit, debit, saldo, tbody) {
+            const item_tipe = Object.values(DatabaseKeuangan.FintimeTipe)[item.tipe_index]
+            if (item_tipe === DatabaseKeuangan.FintimeTipe.KREDIT) {
+                for (const transaksi_string of item.transaksi) {
+                    const { nama, jumlah } = main.keuangan.parse_transaksi_string(transaksi_string)
+
+                    kredit += jumlah
+                    saldo += jumlah
+
+                    const tds = [
+                        dom.c('td', { html: `${no++}` }),
+                        dom.c('td', { html: nama }),
+                        dom.c('td', { html: common.format_rupiah(jumlah) }),
+                        dom.c('td', { html: '-' }),
+                        dom.c('td', { html: `${common.format_rupiah(saldo)}` }),
+                    ]
+
+                    tbody.appendChild(dom.c('tr', {
+                        children: tds,
+                    }))
+                }
+            }
+            else if (item_tipe === DatabaseKeuangan.FintimeTipe.DEBIT) {
+                for (const transaksi_string of item.transaksi) {
+                    const { nama, jumlah } = main.keuangan.parse_transaksi_string(transaksi_string)
+
+                    debit += jumlah
+                    saldo -= jumlah
+
+                    const tds = [
+                        dom.c('td', { html: `${no++}` }),
+                        dom.c('td', { html: nama }),
+                        dom.c('td', { html: '-' }),
+                        dom.c('td', { html: common.format_rupiah(jumlah) }),
+                        dom.c('td', { html: `${common.format_rupiah(saldo)}` }),
+                    ]
+
+                    tbody.appendChild(dom.c('tr', {
+                        children: tds,
+                    }))
+                }
+            }
+
+            return {
+                new_no: no,
+                new_kredit: kredit,
+                new_debit: debit,
+                new_saldo: saldo,
+            }
+        },
+        generate_recap_tfoot(kredit, debit, saldo, tfoot) {
+            const tds = [
+                dom.c('td', { attributes: { colspan: '2' }, html: 'Total' }),
+                dom.c('td', { html: common.format_rupiah(kredit) }),
+                dom.c('td', { html: common.format_rupiah(debit) }),
+                dom.c('td', { html: `${common.format_rupiah(saldo)}` }),
+            ]
+
+            tfoot.appendChild(dom.c('tr', {
+                children: tds,
+            }))
+        },
+    }
 }
 
 const db = {
@@ -724,27 +884,3 @@ const db = {
         },
     },
 }
-
-main.invoke_animation();
-
-(() => {
-    const el = dom.q('#hbdhbdhbd')
-    if (el) {
-        el.role = 'button'
-        el.addEventListener('click', () => {
-            swal.fire({
-                title: 'Web KM FK UII',
-                html: `<i class="small">${'dami yb 3< htiw edam'.split('').reverse().join('')}</i>`,
-                confirmButtonText: 'take care',
-                customClass: {
-                    popup: 'w-auto small',
-                    title: 'fs-6 p-3',
-                    htmlContainer: 'border-bottom border-top m-0 p-3',
-                    confirmButton: 'btn btn-sm btn-km-primary',
-                },
-                buttonsStyling: false,
-                allowEnterKey: false,
-            })
-        })
-    }
-})()

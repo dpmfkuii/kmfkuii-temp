@@ -115,6 +115,20 @@ a.disabled {
     background-color: var(--bs-danger-bg-subtle) !important;
 }
 
+.form-control-line {
+    background: transparent;
+    border-width: 0;
+    border-bottom-width: 2px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.form-control-line:focus {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
 .form-floating-label {
     color: rgba(var(--bs-body-color-rgb), 0.65);
     transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
@@ -194,6 +208,21 @@ a.disabled {
         1 86.7%,
         1 100%
     );
+}
+
+.start-animation-rise {
+    animation: 125ms ease animation-rise;
+}
+
+@keyframes animation-rise {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: none;
+    }
 }
 
 #fintime_table tbody tr > td:first-child {
