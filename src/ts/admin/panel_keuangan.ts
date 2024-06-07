@@ -9,6 +9,10 @@ interface EventsMap {
     const panel_keuangan = dom.q<'div'>('#panel_keuangan')
     if (!panel_keuangan) return
 
+    const _fintipe = Object.values(DatabaseKeuangan.FintimeTipe)
+    const _finicon = Object.values(DatabaseKeuangan.FintimeIcon)
+    const _fincolor = Object.values(DatabaseKeuangan.FintimeColor)
+
     const fintime_table = dom.q<'table'>('#fintime_table')!
     const fintime_form = dom.q<'form'>('#fintime_form')!
     const fintime_recap_table = dom.q<'table'>('#fintime_rekapitulasi_keuangan_table')!
@@ -150,97 +154,105 @@ interface EventsMap {
     const fintime_form_templates: { [name: string]: Partial<DatabaseKeuangan.Fintime> } = {
         'Menyesuaikan': {} as any,
         'Pengajuan proposal': {
-            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
-            icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_CASH_REGISTER),
-            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.LIGHT),
+            tipe_index: _fintipe.indexOf(DatabaseKeuangan.FintimeTipe.INFO),
+            icon_index: _finicon.indexOf(DatabaseKeuangan.FintimeIcon.FA_CASH_REGISTER),
+            color_index: _fincolor.indexOf(DatabaseKeuangan.FintimeColor.LIGHT),
             judul: 'Pengajuan proposal',
             transaksi: ['RKAT:0', 'DPM:0'],
             keterangan: '',
         },
         'Perubahan proposal': {
-            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
-            icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_CASH_REGISTER),
-            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.LIGHT),
+            tipe_index: _fintipe.indexOf(DatabaseKeuangan.FintimeTipe.INFO),
+            icon_index: _finicon.indexOf(DatabaseKeuangan.FintimeIcon.FA_CASH_REGISTER),
+            color_index: _fincolor.indexOf(DatabaseKeuangan.FintimeColor.LIGHT),
             judul: 'Perubahan proposal',
             transaksi: ['RKAT:0', 'DPM:0'],
             keterangan: '',
         },
         'Proposal diterima': {
-            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
-            icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_CIRCLE_CHECK),
-            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.WARNING),
+            tipe_index: _fintipe.indexOf(DatabaseKeuangan.FintimeTipe.INFO),
+            icon_index: _finicon.indexOf(DatabaseKeuangan.FintimeIcon.FA_CIRCLE_CHECK),
+            color_index: _fincolor.indexOf(DatabaseKeuangan.FintimeColor.WARNING),
             judul: 'Proposal diterima',
             transaksi: ['RKAT:0', 'DPM:0'],
             keterangan: 'Silakan kirimkan SPD kepada pihak terkait dan tunggu dana cair.',
         },
+        'Proposal ditolak': {
+            tipe_index: _fintipe.indexOf(DatabaseKeuangan.FintimeTipe.INFO),
+            icon_index: _finicon.indexOf(DatabaseKeuangan.FintimeIcon.FA_CASH_REGISTER),
+            color_index: _fincolor.indexOf(DatabaseKeuangan.FintimeColor.DANGER),
+            judul: 'Proposal ditolak',
+            transaksi: ['-:0'],
+            keterangan: '',
+        },
         'Peminjaman dana': {
-            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
-            icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_MONEY_BILL_TRANSFER),
-            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.SUCCESS),
+            tipe_index: _fintipe.indexOf(DatabaseKeuangan.FintimeTipe.INFO),
+            icon_index: _finicon.indexOf(DatabaseKeuangan.FintimeIcon.FA_MONEY_BILL_TRANSFER),
+            color_index: _fincolor.indexOf(DatabaseKeuangan.FintimeColor.SUCCESS),
             judul: 'Peminjaman dana',
             transaksi: ['DPM:0'],
             keterangan: '',
         },
         'Dana telah cair': {
-            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
-            icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_COINS),
-            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.WARNING),
+            tipe_index: _fintipe.indexOf(DatabaseKeuangan.FintimeTipe.INFO),
+            icon_index: _finicon.indexOf(DatabaseKeuangan.FintimeIcon.FA_COINS),
+            color_index: _fincolor.indexOf(DatabaseKeuangan.FintimeColor.WARNING),
             judul: 'Dana telah cair',
             transaksi: ['RKAT:0', 'DPM:0'],
             keterangan: '',
         },
         'Dana telah dikirim': {
-            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.KREDIT),
-            icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_MONEY_BILL_TRANSFER),
-            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.SUCCESS),
+            tipe_index: _fintipe.indexOf(DatabaseKeuangan.FintimeTipe.KREDIT),
+            icon_index: _finicon.indexOf(DatabaseKeuangan.FintimeIcon.FA_MONEY_BILL_TRANSFER),
+            color_index: _fincolor.indexOf(DatabaseKeuangan.FintimeColor.SUCCESS),
             judul: 'Dana telah dikirim',
             transaksi: ['RKAT:0', 'DPM:0'],
             keterangan: '',
         },
         'Penggunaan dana': {
-            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.DEBIT),
-            icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_MONEY_BILLS),
-            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.DANGER),
+            tipe_index: _fintipe.indexOf(DatabaseKeuangan.FintimeTipe.DEBIT),
+            icon_index: _finicon.indexOf(DatabaseKeuangan.FintimeIcon.FA_MONEY_BILLS),
+            color_index: _fincolor.indexOf(DatabaseKeuangan.FintimeColor.DANGER),
             judul: 'Penggunaan dana',
             transaksi: ['Kegiatan:0'],
             keterangan: '',
         },
         'Pengajuan LPJ': {
-            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
-            icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_CASH_REGISTER),
-            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.LIGHT),
+            tipe_index: _fintipe.indexOf(DatabaseKeuangan.FintimeTipe.INFO),
+            icon_index: _finicon.indexOf(DatabaseKeuangan.FintimeIcon.FA_CASH_REGISTER),
+            color_index: _fincolor.indexOf(DatabaseKeuangan.FintimeColor.LIGHT),
             judul: 'Pengajuan LPJ',
-            transaksi: ['RKAT:0', 'DPM:0', 'Kegiatan:0', 'Sisa:0'],
+            transaksi: ['Kegiatan:0', 'Sisa:0'],
             keterangan: '',
         },
         'Perubahan LPJ': {
-            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
-            icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_CASH_REGISTER),
-            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.LIGHT),
+            tipe_index: _fintipe.indexOf(DatabaseKeuangan.FintimeTipe.INFO),
+            icon_index: _finicon.indexOf(DatabaseKeuangan.FintimeIcon.FA_CASH_REGISTER),
+            color_index: _fincolor.indexOf(DatabaseKeuangan.FintimeColor.LIGHT),
             judul: 'Perubahan LPJ',
-            transaksi: ['RKAT:0', 'DPM:0', 'Kegiatan:0', 'Sisa:0'],
+            transaksi: ['Kegiatan:0', 'Sisa:0'],
             keterangan: '',
         },
         'LPJ diterima': {
-            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
-            icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_CIRCLE_CHECK),
-            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.WARNING),
+            tipe_index: _fintipe.indexOf(DatabaseKeuangan.FintimeTipe.INFO),
+            icon_index: _finicon.indexOf(DatabaseKeuangan.FintimeIcon.FA_CIRCLE_CHECK),
+            color_index: _fincolor.indexOf(DatabaseKeuangan.FintimeColor.WARNING),
             judul: 'LPJ diterima',
-            transaksi: ['RKAT:0', 'DPM:0', 'Kegiatan:0', 'Sisa:0'],
+            transaksi: ['Kegiatan:0', 'Sisa:0'],
             keterangan: 'Terima kasih!',
         },
         'Pengembalian dana': {
-            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
-            icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_MONEY_BILL_TRANSFER),
-            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.INFO),
+            tipe_index: _fintipe.indexOf(DatabaseKeuangan.FintimeTipe.INFO),
+            icon_index: _finicon.indexOf(DatabaseKeuangan.FintimeIcon.FA_MONEY_BILL_TRANSFER),
+            color_index: _fincolor.indexOf(DatabaseKeuangan.FintimeColor.INFO),
             judul: 'Pengembalian dana',
             transaksi: ['Kegiatan:0'],
             keterangan: '',
         },
         'Pengembalian pinjaman': {
-            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(DatabaseKeuangan.FintimeTipe.INFO),
-            icon_index: Object.values(DatabaseKeuangan.FintimeIcon).indexOf(DatabaseKeuangan.FintimeIcon.FA_MONEY_BILL_TRANSFER),
-            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(DatabaseKeuangan.FintimeColor.INFO),
+            tipe_index: _fintipe.indexOf(DatabaseKeuangan.FintimeTipe.INFO),
+            icon_index: _finicon.indexOf(DatabaseKeuangan.FintimeIcon.FA_MONEY_BILL_TRANSFER),
+            color_index: _fincolor.indexOf(DatabaseKeuangan.FintimeColor.INFO),
             judul: 'Pengembalian pinjaman',
             transaksi: ['DPM:0'],
             keterangan: '',
@@ -389,7 +401,7 @@ interface EventsMap {
             }
 
             this.tipe_index_select.innerHTML = ''
-            for (const n of Object.values(DatabaseKeuangan.FintimeTipe)) {
+            for (const n of _fintipe) {
                 const option = dom.c('option')
                 option.textContent = option.value = n
                 this.tipe_index_select.options.add(option)
@@ -397,7 +409,7 @@ interface EventsMap {
 
             this.icon_radio_input_group.innerHTML = ''
             let _i = 0
-            for (const n of Object.values(DatabaseKeuangan.FintimeIcon)) {
+            for (const n of _finicon) {
                 const id = `radio_fintime_icon_index${_i}`
                 this.icon_radio_input_group.appendChild(dom.c('input', {
                     classes: ['btn-check'],
@@ -405,7 +417,7 @@ interface EventsMap {
                         id,
                         type: 'radio',
                         name: 'fintime_icon_index',
-                        value: `${Object.values(DatabaseKeuangan.FintimeIcon).indexOf(n)}`,
+                        value: `${_finicon.indexOf(n)}`,
                         autocomplete: 'off',
                         ...(_i === 0 ? { 'checked': '' } : {}),
                     }
@@ -419,7 +431,7 @@ interface EventsMap {
             }
 
             this.color_index_select.innerHTML = ''
-            for (const n of Object.values(DatabaseKeuangan.FintimeColor)) {
+            for (const n of _fincolor) {
                 const option = dom.c('option')
                 option.value = n
                 option.textContent = defines.nama_warna_bs[n]
@@ -444,7 +456,7 @@ interface EventsMap {
         },
         set_to_template(templat: Partial<DatabaseKeuangan.Fintime>) {
             if (templat.datetime) this.datetime_input.value = templat.datetime
-            if (typeof templat.tipe_index === 'number') this.tipe_index_select.value = Object.values(DatabaseKeuangan.FintimeTipe)[templat.tipe_index || 0]
+            if (typeof templat.tipe_index === 'number') this.tipe_index_select.value = _fintipe[templat.tipe_index || 0]
             if (typeof templat.icon_index === 'number') {
                 this.get_icon_radio_inputs().forEach(n => {
                     n.checked = false
@@ -454,7 +466,7 @@ interface EventsMap {
                 })
             }
             if (typeof templat.color_index === 'number') {
-                this.color_index_select.value = Object.values(DatabaseKeuangan.FintimeColor)[templat.color_index || 0]
+                this.color_index_select.value = _fincolor[templat.color_index || 0]
                 this.update_icon_radio_input_group_display()
             }
             if (typeof templat.judul === 'string') this.judul_input.value = templat.judul
@@ -519,9 +531,9 @@ interface EventsMap {
 
         const new_fintime: DatabaseKeuangan.Fintime = {
             datetime: fintime_form_controller.datetime_input.value,
-            tipe_index: Object.values(DatabaseKeuangan.FintimeTipe).indexOf(fintime_form_controller.tipe_index_select.value as DatabaseKeuangan.FintimeTipe),
+            tipe_index: _fintipe.indexOf(fintime_form_controller.tipe_index_select.value as DatabaseKeuangan.FintimeTipe),
             icon_index: fintime_form_controller.get_icon_index_value(),
-            color_index: Object.values(DatabaseKeuangan.FintimeColor).indexOf(fintime_form_controller.color_index_select.value as DatabaseKeuangan.FintimeColor),
+            color_index: _fincolor.indexOf(fintime_form_controller.color_index_select.value as DatabaseKeuangan.FintimeColor),
             judul: fintime_form_controller.judul_input.value,
             transaksi: fintime_form_controller.get_transaksi_value(),
             keterangan: fintime_form_controller.keterangan_input.value,
