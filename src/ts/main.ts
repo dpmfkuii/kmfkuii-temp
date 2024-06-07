@@ -218,6 +218,9 @@ type LogColor = 'light' | 'info' | 'success' | 'warning' | 'danger'
 
 const main = {
     keuangan: {} as MainKeuangan,
+    get_logbook_periode_text(current_fullyear: number = new Date().getFullYear()) {
+        return `${current_fullyear - 1}—${current_fullyear + 1}`
+    },
     get_opsi_periode_kegiatan(current_year = new Date().getFullYear()) {
         return [
             `${current_year - 2}-${current_year - 1}`,

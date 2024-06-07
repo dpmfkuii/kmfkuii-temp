@@ -16,11 +16,10 @@
 
     const current_year = new Date().getFullYear()
     let select_periode_previous_value = select_periode.value = `${current_year}`
-    const get_periode_option = (year: number) => `${year - 1}—${year + 1}`
     select_periode.innerHTML = `
-        <option value="${current_year}" selected>${get_periode_option(current_year)}</option>
-        <option value="${current_year - 1}">${get_periode_option(current_year - 1)}</option>
-        <option value="${current_year - 2}">${get_periode_option(current_year - 2)}</option>
+        <option value="${current_year}" selected>${main.get_logbook_periode_text(current_year)}</option>
+        <option value="${current_year - 1}">${main.get_logbook_periode_text(current_year - 1)}</option>
+        <option value="${current_year - 2}">${main.get_logbook_periode_text(current_year - 2)}</option>
         <option value="">Semua</option>
     `
 
@@ -29,9 +28,9 @@
             title: 'Kegiatan',
             html: `
                 <div class="text-start small">
-                    <div><strong>${get_periode_option(current_year)}:</strong><br />Sesuai periode di logbook.</div><br />
-                    <div><strong>${get_periode_option(current_year - 1)}:</strong><br />Sesuai periode di logbook 1 tahun yang lalu.</div><br />
-                    <div><strong>${get_periode_option(current_year - 2)}:</strong><br />Sesuai periode di logbook 2 tahun yang lalu.</div><br />
+                    <div><strong>${main.get_logbook_periode_text(current_year)}:</strong><br />Sesuai periode di logbook.</div><br />
+                    <div><strong>${main.get_logbook_periode_text(current_year - 1)}:</strong><br />Sesuai periode di logbook 1 tahun yang lalu.</div><br />
+                    <div><strong>${main.get_logbook_periode_text(current_year - 2)}:</strong><br />Sesuai periode di logbook 2 tahun yang lalu.</div><br />
                     <div><strong>Semua:</strong><br />Seluruh periode (lebih banyak data.)</div>
                 </div>
             `,
