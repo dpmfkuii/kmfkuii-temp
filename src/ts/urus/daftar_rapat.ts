@@ -29,6 +29,7 @@
     const dengan: string = params.dengan || ''
     const status_lem: StatusRapat = params.status_lem || ''
     const antrean_lem: string = params.antrean_lem || ''
+    const penyelenggara_kegiatan: PenyelenggaraKegiatan = params.penyelenggara_kegiatan || PenyelenggaraKegiatan.INTERNAL_KM
     const tanggal_pertama_kegiatan: Date = new Date(params.tanggal_pertama_kegiatan) || new Date()
 
     if (!jenis || !dengan) {
@@ -91,9 +92,13 @@
                 input_tanggal_rapat.classList.add('is-invalid')
             }
             // cek kalau proposal H-7
-            else if (jenis === JenisRapat.PROPOSAL && common.get_difference_in_days(date_tanggal_rapat, tanggal_pertama_kegiatan) < 7) {
-                input_tanggal_rapat_invalid_feedback.innerHTML = 'Rapat proposal minimal <strong>H-7</strong> kegiatan!'
-                input_tanggal_rapat.classList.add('is-invalid')
+            else if (jenis === JenisRapat.PROPOSAL) {
+                const day_to = penyelenggara_kegiatan === PenyelenggaraKegiatan.INTERNAL_KM ? 30 : 7
+                const day_diff = common.get_difference_in_days(date_tanggal_rapat, tanggal_pertama_kegiatan)
+                if (day_diff < day_to) {
+                    input_tanggal_rapat_invalid_feedback.innerHTML = `Rapat proposal ${penyelenggara_kegiatan === PenyelenggaraKegiatan.INTERNAL_KM ? 'internal KM' : 'eksternal KM'} minimal <strong>H-${day_to}</strong> kegiatan!`
+                    input_tanggal_rapat.classList.add('is-invalid')
+                }
             }
             // cek jarak lem ke dpm
             else if (dengan === RapatDengan.DPM) {

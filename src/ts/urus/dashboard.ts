@@ -298,8 +298,9 @@
                     html: 'Daftar',
                 })
                 daftar_button.addEventListener('click', () => {
+                    const penyelenggara_kegiatan = Object.values(PenyelenggaraKegiatan)[_kegiatan.penyelenggara_kegiatan_index]
                     const tanggal_pertama_kegiatan = common.to_date_string(new Date(_kegiatan.tanggal_kegiatan[0]))
-                    const params = { jenis, dengan, status_lem, antrean_lem, tanggal_pertama_kegiatan }
+                    const params = { jenis, dengan, status_lem, antrean_lem, penyelenggara_kegiatan, tanggal_pertama_kegiatan }
                     store.set_item(defines.store_key.daftar_rapat, JSON.stringify(params))
                     location.href = `/urus/daftar-rapat/`
                 })

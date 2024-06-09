@@ -117,8 +117,8 @@ enum OrganisasiKegiatan {
 }
 
 enum PenyelenggaraKegiatan {
-    INTERNAL_UII = 'Internal UII',
-    EKSTERNAL_UII = 'Eksternal UII',
+    INTERNAL_KM = 'Internal KM',
+    EKSTERNAL_KM = 'Eksternal KM',
 }
 
 enum LingkupKegiatan {
