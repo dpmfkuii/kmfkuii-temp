@@ -154,6 +154,13 @@ interface LogbookOrganisasi {
  */
 type LogbookLog = string
 
+interface LogbookData {
+    uid: string
+    organisasi_index: number
+    nama_kegiatan: string
+    status_verifikasi: Kegiatan['status']['verifikasi']
+}
+
 interface Rapat {
     /**
      * created timestamp, for antrean
@@ -274,6 +281,27 @@ const main = {
         if (kegiatan.status.verifikasi.lpj.dpm >= 0) status += '@lpj_dpm'
         if (kegiatan.status.verifikasi.lpj.dpm === 0) status += ':p'
         return `${kegiatan.nama_kegiatan}${status}`
+    },
+    logbook_kegiatan_to_logbook_data(logbook_kegiatan: LogbookKegiatan) {
+        const logbook_data: LogbookData[] = []
+        for (const periode in logbook_kegiatan) {
+            const logbook_periode = logbook_kegiatan[periode]
+            for (const organisasi_index in logbook_periode) {
+                const logbook_organisasi = logbook_periode[organisasi_index]
+                for (const uid in logbook_organisasi) {
+                    const logbook_text = logbook_organisasi[uid]
+                    const { nama_kegiatan, status } = main.extract_logbook_text(uid, logbook_text)
+                    logbook_data.push({
+                        uid,
+                        organisasi_index: Number(organisasi_index),
+                        nama_kegiatan,
+                        status_verifikasi: status.verifikasi,
+                    })
+                }
+            }
+        }
+        logbook_data.sort((a, b) => a.nama_kegiatan < b.nama_kegiatan ? -1 : a.nama_kegiatan > b.nama_kegiatan ? 1 : 0)
+        return logbook_data
     },
     show_unexpected_error_message(error: any) {
         return swal.fire({

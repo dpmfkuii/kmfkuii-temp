@@ -1,6 +1,6 @@
 (async () => {
     let _logbook_snapshot: LogbookKegiatan | null = null
-    let _recent_fuse_list: TableLogbookData[] = []
+    let _recent_fuse_list: LogbookData[] = []
 
     const table_logbook_kegiatan = dom.q<'table'>('#table_logbook_kegiatan')!
     const table_logbook_kegiatan_tbody = dom.qe<'tbody'>(table_logbook_kegiatan, 'tbody')!
@@ -44,7 +44,7 @@
     })
 
     const pagination_display_amount_options = [10, 25, 50, 100]
-    let _paginated_list: TableLogbookData[] = []
+    let _paginated_list: LogbookData[] = []
     let pagination_current_page = 0
     let pagination_display_amount = pagination_display_amount_options[0]
     const get_pagination_index = () => pagination_current_page * pagination_display_amount
@@ -139,7 +139,7 @@
         return true
     }
 
-    const run_filter = (list: TableLogbookData[]) => {
+    const run_filter = (list: LogbookData[]) => {
         return list.filter(n => {
             const s = n.status_verifikasi
             const filter_propo_lem = filter_status[0]
@@ -191,16 +191,10 @@
     setup_filter_button_th_status(filter_button_th_status_lpj_lem, 2)
     setup_filter_button_th_status(filter_button_th_status_lpj_dpm, 3)
 
-    type TableLogbookData = {
-        uid: string
-        nama_kegiatan: string
-        status_verifikasi: Kegiatan['status']['verifikasi']
-    }
-
-    const table_logbook_list: TableLogbookData[] = []
+    let table_logbook_list: LogbookData[] = []
     let fuse: any = null
 
-    const update_table_logbook = (list: TableLogbookData[], starting_number = 1) => {
+    const update_table_logbook = (list: LogbookData[], starting_number = 1) => {
         if (list.length === 0) {
             table_logbook_kegiatan_tbody.innerHTML = `
                 <tr>
@@ -248,7 +242,7 @@
         }
     }
 
-    const update_pagination = (list: TableLogbookData[]) => {
+    const update_pagination = (list: LogbookData[]) => {
         _paginated_list = list
         pagination_current_page = 0
         pagination_span_jumlah_data.innerText = `dari ${list.length} data`
@@ -276,7 +270,7 @@
         update_pagination_buttons()
     }
 
-    const generate_table_logbook = (list: TableLogbookData[]) => {
+    const generate_table_logbook = (list: LogbookData[]) => {
         update_pagination(run_filter(list))
         update_table_logbook_paginated()
     }
@@ -331,7 +325,7 @@
         })
     }
 
-    const update_fuse = (list: TableLogbookData[]) => {
+    const update_fuse = (list: LogbookData[]) => {
         fuse = new Fuse(list, {
             // isCaseSensitive: false,
             // includeScore: false,
@@ -342,7 +336,7 @@
             // location: 0,
             // threshold: 0.6,
             // distance: 100,
-            // useExtendedSearch: false,
+            useExtendedSearch: true,
             // ignoreLocation: false,
             // ignoreFieldNorm: false,
             // fieldNormWeight: 1,
@@ -357,23 +351,7 @@
         if (!_logbook_snapshot) return
 
         table_logbook_list.length = 0
-        for (const periode in _logbook_snapshot) {
-            const logbook_periode = _logbook_snapshot[periode]
-            for (const organisasi_index in logbook_periode) {
-                const logbook_organisasi = logbook_periode[organisasi_index]
-                for (const uid in logbook_organisasi) {
-                    const logbook_text = logbook_organisasi[uid]
-                    const { nama_kegiatan, status } = main.extract_logbook_text(uid, logbook_text)
-                    table_logbook_list.push({
-                        uid,
-                        nama_kegiatan,
-                        status_verifikasi: status.verifikasi,
-                    })
-                }
-            }
-        }
-
-        table_logbook_list.sort((a, b) => a.nama_kegiatan < b.nama_kegiatan ? -1 : a.nama_kegiatan > b.nama_kegiatan ? 1 : 0)
+        table_logbook_list = main.logbook_kegiatan_to_logbook_data(_logbook_snapshot)
 
         update_fuse(table_logbook_list)
 

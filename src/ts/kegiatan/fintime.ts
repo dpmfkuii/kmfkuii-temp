@@ -1,7 +1,10 @@
 (() => {
+    let G_FUSE: any = null
+    let G_RECENT_SEARCH_LIST: LogbookData[] = []
+
     enum FINTIME_SEARCH_MODE {
-        UID = 'UID',
         NAMA_KEGIATAN = 'Nama Kegiatan',
+        UID = 'UID',
     }
 
     const fintime_table_controller = {
@@ -58,7 +61,7 @@
     fintime_table_controller.init()
 
     const fintime_search_controller = {
-        mode: FINTIME_SEARCH_MODE.UID,
+        mode: FINTIME_SEARCH_MODE.NAMA_KEGIATAN,
         search_mode_group: dom.q<'ul'>('#fintime_search_mode_group')!,
         get_search_mode_item() {
             const items = {} as { [mode in FINTIME_SEARCH_MODE]: HTMLLIElement }
@@ -106,7 +109,10 @@
             console.log(mode)
 
         },
-        start_loading() {
+        start_loading(search_value?: string) {
+            if (!search_value || typeof search_value !== 'string') {
+                search_value = this.search_input.value
+            }
             fintime_table_controller.hide()
 
             dom.disable(
@@ -120,7 +126,7 @@
                 classes: ['text-break', 'animate', 'animate-rise-on-enter', 'animate-speed-25'],
                 html: `
                     <div class="spinner-border mb-3" aria-hidden="true"></div>
-                    <p role="status" class="text-secondary fst-italic">Mencari Fintime <span class="text-warning-emphasis">${this.search_input.value}</span>.</p>
+                    <p role="status" class="text-secondary fst-italic">Mencari Fintime <span class="text-warning-emphasis">${search_value}</span>.</p>
                 `
             }))
 
@@ -133,13 +139,16 @@
                 this.search_submit,
             )
         },
-        show_nothing() {
+        show_nothing(search_value?: string) {
+            if (!search_value || typeof search_value !== 'string') {
+                search_value = this.search_input.value
+            }
             const mode_text = this.mode === FINTIME_SEARCH_MODE.UID ? this.mode : this.mode.toLowerCase()
             this.search_result.innerHTML = ''
             this.search_result.appendChild(dom.c('div', {
                 classes: ['animate', 'animate-rise-on-enter', 'animate-speed-25'],
                 html: `
-                    <span class="text-secondary fst-italic">Fintime berdasarkan ${mode_text} <span class="text-warning-emphasis">${this.search_input.value}</span> tidak ditemukan.</span>
+                    <span class="text-secondary fst-italic">Tidak ada data Fintime berdasarkan ${mode_text} <span class="text-warning-emphasis">${search_value}</span>.</span>
                 `
             }))
             main.invoke_animation()
@@ -148,6 +157,59 @@
             this.search_result.innerHTML = ''
             fintime_table_controller.update(title, render_list)
             fintime_table_controller.show()
+        },
+        update_by_nama_kegiatan() {
+            this.search_result.innerHTML = ''
+            for (let i = 0; i < G_RECENT_SEARCH_LIST.length; i++) {
+                const item = G_RECENT_SEARCH_LIST[i]
+                const uid_text = `#${item.uid.substring(0, 4)}`
+                const item_div = dom.c('div', {
+                    classes: [
+                        'd-flex', 'align-items-center', 'p-3',
+                        'border', 'rounded', ...(i < G_RECENT_SEARCH_LIST.length - 1 ? ['mb-2'] : [])
+                    ],
+                    attributes: {
+                        role: 'button',
+                    },
+                    children: [
+                        dom.c('div', {
+                            classes: ['flex-grow-1', 'pe-2', 'text-start'],
+                            html: `
+                                <h5 class="mb-0">${item.nama_kegiatan} <small class="text-secondary">${uid_text}</small></h5>
+                                <span class="text-warning-emphasis">${Object.values(OrganisasiKegiatan)[item.organisasi_index]}</span>
+                            `
+                        }),
+                        dom.c('span', {
+                            classes: ['text-warning-emphasis', 'fs-3'],
+                            html: '<i class="fa-solid fa-circle-chevron-right"></i>',
+                        })
+                    ],
+                })
+
+                item_div.addEventListener('click', async () => {
+                    const title = `${item.nama_kegiatan} #${item.uid.substring(0, 4)}`
+                    this.start_loading(title)
+                    try {
+                        db.keuangan.get_fintime_list(item.uid)
+                            .then(snap => {
+                                if (!snap.exists()) {
+                                    this.show_nothing(title)
+                                    this.stop_loading()
+                                    return
+                                }
+                                this.update_by_uid(title, main.keuangan.fintime.fintime_list_to_render_list(snap.val()))
+                                this.stop_loading()
+                            })
+                    }
+                    catch (err) {
+                        main.show_unexpected_error_message(err)
+                        this.show_nothing(title)
+                        this.stop_loading()
+                    }
+                })
+
+                this.search_result.appendChild(item_div)
+            }
         },
         async on_submit(ev: SubmitEvent) {
             ev.preventDefault()
@@ -175,10 +237,33 @@
                         })
                 }
                 else if (this.mode === FINTIME_SEARCH_MODE.NAMA_KEGIATAN) {
-                    // this.update_by_nama_kegiatan(listtt)
-                    this.show_nothing()
+                    if (!G_FUSE) {
+                        await db.get_logbook_in_periode_range(new Date().getFullYear())
+                            .then(value => {
+                                G_FUSE = new Fuse(main.logbook_kegiatan_to_logbook_data(value), {
+                                    useExtendedSearch: true,
+                                    keys: ['nama_kegiatan'],
+                                })
+                            })
+                    }
+
+                    G_RECENT_SEARCH_LIST.length = 0
+                    if (G_FUSE && G_FUSE.search) {
+                        const nama_kegiatan = this.search_input.value
+                        const search_result = G_FUSE.search(`'${nama_kegiatan}`)
+                        if (search_result.length > 0) {
+                            for (const item of search_result) {
+                                G_RECENT_SEARCH_LIST.push(item.item)
+                            }
+                            this.update_by_nama_kegiatan()
+                        }
+                    }
+
+                    if (G_RECENT_SEARCH_LIST.length === 0) {
+                        this.show_nothing()
+                    }
+
                     this.stop_loading()
-                    return
                 }
             }
             catch (err) {
