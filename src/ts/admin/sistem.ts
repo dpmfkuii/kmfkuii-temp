@@ -96,15 +96,26 @@
                 },
             },
             async save() {
+                this.inputs.link_berkas.lem.value = common.remove_whitespaces(this.inputs.link_berkas.lem.value)
+                this.inputs.link_berkas.dpm.value = common.remove_whitespaces(this.inputs.link_berkas.dpm.value)
+                this.inputs.jam_rapat.tersedia.value = common.remove_whitespaces(this.inputs.jam_rapat.tersedia.value).split(',').join(', ')
+                this.inputs.jam_rapat.resched_lem.value = common.remove_whitespaces(this.inputs.jam_rapat.resched_lem.value).split(',').join(', ')
+                this.inputs.jam_rapat.resched_dpm.value = common.remove_whitespaces(this.inputs.jam_rapat.resched_dpm.value).split(',').join(', ')
+                this.inputs.komunikasi.ig_lem.value = common.remove_whitespaces(this.inputs.komunikasi.ig_lem.value)
+                this.inputs.komunikasi.ig_dpm.value = common.remove_whitespaces(this.inputs.komunikasi.ig_dpm.value)
+                this.inputs.komunikasi.line_lem.value = common.remove_whitespaces(this.inputs.komunikasi.line_lem.value)
+                this.inputs.komunikasi.email_lem.value = common.remove_whitespaces(this.inputs.komunikasi.email_lem.value)
+                this.inputs.komunikasi.email_dpm.value = common.remove_whitespaces(this.inputs.komunikasi.email_dpm.value)
+                this.inputs.komunikasi.email_kemahasiswaan.value = common.remove_whitespaces(this.inputs.komunikasi.email_kemahasiswaan.value)
                 const new_snapshot = {
                     link_berkas: {
                         lem: this.inputs.link_berkas.lem.value,
                         dpm: this.inputs.link_berkas.dpm.value,
                     },
                     jam_rapat: {
-                        opsi: common.remove_whitespaces(this.inputs.jam_rapat.tersedia.value).split(','),
-                        jam_reschedule_lem: common.remove_whitespaces(this.inputs.jam_rapat.resched_lem.value).split(','),
-                        jam_reschedule_dpm: common.remove_whitespaces(this.inputs.jam_rapat.resched_dpm.value).split(','),
+                        opsi: this.inputs.jam_rapat.tersedia.value.split(', '),
+                        jam_reschedule_lem: this.inputs.jam_rapat.resched_lem.value.split(', '),
+                        jam_reschedule_dpm: this.inputs.jam_rapat.resched_dpm.value.split(', '),
                     },
                     komunikasi: {
                         ig_lem: this.inputs.komunikasi.ig_lem.value,
