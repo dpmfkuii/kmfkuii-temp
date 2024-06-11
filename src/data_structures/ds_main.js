@@ -241,9 +241,13 @@ var _ = {
                     "jam_reschedule_lem": ["16.00", ""],
                     "jam_reschedule_dpm": ["16.00", ""],
                 },
-                "email": {
-                    "lem": "lem@gmail.com",
-                    "dpm": "dpm@gmail.com",
+                "komunikasi": {
+                    "ig_lem": "lem",
+                    "ig_dpm": "dpm",
+                    "line_lem": "lineid",
+                    "email_lem": "lem@gmail.com",
+                    "email_dpm": "dpm@gmail.com",
+                    "email_kemahasiswaan": "kemahasiswaan@gmail.com",
                 },
             },
             // db.ref(`sistem/data/keuangan`) => SistemData.Keuangan[]

@@ -1,8 +1,8 @@
 (() => {
     enum ATUR_MENU {
         VERIFIKASI = 'Verifikasi',
+        KEUANGAN = 'Keuangan',
         // ORGANISASI = 'Organisasi',
-        FOOTER = 'Footer',
         DATA_USANG = 'Data Usang',
         PANDUAN = 'Panduan',
     }
@@ -11,6 +11,21 @@
         menu: ATUR_MENU.VERIFIKASI,
         list_group: dom.q('#atur_menu_list_group')!,
         change_nav(new_menu: ATUR_MENU) {
+            if (new_menu !== this.menu && !atur_card_controller.simpan_button.classList.contains('disabled')) {
+                swal.fire({
+                    icon: 'info',
+                    title: 'Simpan Perubahan',
+                    html: 'Simpan perubahan atau <i>reload</i> untuk membatalkan perubahan.',
+                    confirmButtonText: 'Tutup',
+                    customClass: {
+                        confirmButton: 'btn btn-secondary',
+                    },
+                    buttonsStyling: false,
+                    showCloseButton: true,
+                })
+                return
+            }
+
             this.menu = new_menu
 
             dom.qea(this.list_group, 'li').forEach(li => {
@@ -71,9 +86,13 @@
                     resched_lem: dom.q<'input'>('#atur_card_verifikasi input[aria-label="Verifikasi Jam Resched LEM"]')!,
                     resched_dpm: dom.q<'input'>('#atur_card_verifikasi input[aria-label="Verifikasi Jam Resched DPM"]')!,
                 },
-                email: {
-                    lem: dom.q<'input'>('#atur_card_verifikasi input[aria-label="Verifikasi Email LEM"]')!,
-                    dpm: dom.q<'input'>('#atur_card_verifikasi input[aria-label="Verifikasi Email DPM"]')!,
+                komunikasi: {
+                    ig_lem: dom.q<'input'>('#atur_card_verifikasi input[aria-label="Verifikasi Instagram LEM"]')!,
+                    ig_dpm: dom.q<'input'>('#atur_card_verifikasi input[aria-label="Verifikasi Instagram DPM"]')!,
+                    line_lem: dom.q<'input'>('#atur_card_verifikasi input[aria-label="Verifikasi Line OA LEM"]')!,
+                    email_lem: dom.q<'input'>('#atur_card_verifikasi input[aria-label="Verifikasi Email LEM"]')!,
+                    email_dpm: dom.q<'input'>('#atur_card_verifikasi input[aria-label="Verifikasi Email DPM"]')!,
+                    email_kemahasiswaan: dom.q<'input'>('#atur_card_verifikasi input[aria-label="Verifikasi Email Kemahasiswaan"]')!,
                 },
             },
             async save() {
@@ -87,9 +106,13 @@
                         jam_reschedule_lem: common.remove_whitespaces(this.inputs.jam_rapat.resched_lem.value).split(','),
                         jam_reschedule_dpm: common.remove_whitespaces(this.inputs.jam_rapat.resched_dpm.value).split(','),
                     },
-                    email: {
-                        lem: this.inputs.email.lem.value,
-                        dpm: this.inputs.email.dpm.value,
+                    komunikasi: {
+                        ig_lem: this.inputs.komunikasi.ig_lem.value,
+                        ig_dpm: this.inputs.komunikasi.ig_dpm.value,
+                        line_lem: this.inputs.komunikasi.line_lem.value,
+                        email_lem: this.inputs.komunikasi.email_lem.value,
+                        email_dpm: this.inputs.komunikasi.email_dpm.value,
+                        email_kemahasiswaan: this.inputs.komunikasi.email_kemahasiswaan.value,
                     },
                 } as SistemData.Snapshot['verifikasi']
 
@@ -116,8 +139,12 @@
                             this.inputs.jam_rapat.tersedia.value = this.snapshot.jam_rapat.opsi.join(', ')
                             this.inputs.jam_rapat.resched_lem.value = this.snapshot.jam_rapat.jam_reschedule_lem.join(', ')
                             this.inputs.jam_rapat.resched_dpm.value = this.snapshot.jam_rapat.jam_reschedule_dpm.join(', ')
-                            this.inputs.email.lem.value = this.snapshot.email.lem
-                            this.inputs.email.dpm.value = this.snapshot.email.dpm
+                            this.inputs.komunikasi.ig_lem.value = this.snapshot.komunikasi.ig_lem
+                            this.inputs.komunikasi.ig_dpm.value = this.snapshot.komunikasi.ig_dpm
+                            this.inputs.komunikasi.line_lem.value = this.snapshot.komunikasi.line_lem
+                            this.inputs.komunikasi.email_lem.value = this.snapshot.komunikasi.email_lem
+                            this.inputs.komunikasi.email_dpm.value = this.snapshot.komunikasi.email_dpm
+                            this.inputs.komunikasi.email_kemahasiswaan.value = this.snapshot.komunikasi.email_kemahasiswaan
                             dom.enable(...flattened_inputs)
                         }
                         catch { }
@@ -133,8 +160,8 @@
         //     async save() { },
         //     init() { },
         // },
-        [ATUR_MENU.FOOTER]: {
-            container: dom.q<'div'>('#atur_card_footer')!,
+        [ATUR_MENU.KEUANGAN]: {
+            container: dom.q<'div'>('#atur_card_keuangan')!,
             async save() { },
             init() { },
         },

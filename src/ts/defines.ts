@@ -208,9 +208,13 @@ namespace SistemData {
             jam_reschedule_lem: string[]
             jam_reschedule_dpm: string[]
         }
-        email: {
-            lem: string
-            dpm: string
+        komunikasi: {
+            ig_lem: string
+            ig_dpm: string
+            line_lem: string
+            email_lem: string
+            email_dpm: string
+            email_kemahasiswaan: string
         }
     }
 
