@@ -228,7 +228,7 @@ var _ = {
 
     // db.ref(`sistem`)
     "sistem": {
-        // db.ref(`sistem/data`) --> dynamic (interact with user)
+        // db.ref(`sistem/data`)
         "data": {
             // db.ref(`sistem/data/verifikasi`) => SistemData.Verifikasi
             "verifikasi": {
@@ -240,6 +240,10 @@ var _ = {
                     "opsi": ["16.00", "", ""],
                     "jam_reschedule_lem": ["16.00", ""],
                     "jam_reschedule_dpm": ["16.00", ""],
+                },
+                "email": {
+                    "lem": "lem@gmail.com",
+                    "dpm": "dpm@gmail.com",
                 },
             },
             // db.ref(`sistem/data/keuangan`) => SistemData.Keuangan[]
@@ -259,12 +263,16 @@ var _ = {
                     "link": "https://www.instagram.com/dpmfkuii",
                 },
             ],
-        },
-        // db.ref(`sistem/panduan`) --> static (no interaction)
-        "panduan": {
-            "alur": {
-                "informasi_terbaru": "html",
+            // db.ref(`sistem/data/panduan`)
+            "panduan": {
+                "alur": {
+                    "informasi_terbaru": "html",
+                },
             },
         },
+        // db.ref(`sistem/plugin`)
+        "plugin in the future???": {},
+        // db.ref(`sistem/resources`)
+        "resource manager in the future???": {},
     },
 }

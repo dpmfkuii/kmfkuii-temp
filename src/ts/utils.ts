@@ -266,6 +266,9 @@ const common = {
     remove_extra_spaces(text: string) {
         return text.replace(/\s+/g, ' ').trim()
     },
+    remove_whitespaces(text: string) {
+        return text.replace(/\s+/g, '').trim()
+    },
     replace_all_char(s: string, replace_value: string, except?: string[]) {
         let t = ''
         for (let i = 0; i < s.length; i++) {
@@ -301,6 +304,29 @@ const common = {
             r.splice(i, 0, q)
         }
         return num < 0 ? `-Rp${r.join('')},00` : `Rp${r.join('')},00`
+    },
+    flat_object(obj: Object) {
+        const traverse_and_flatten = (current_node: any, target: any, flattened_key?: any) => {
+            for (const key in current_node) {
+                if (current_node.hasOwnProperty(key)) {
+                    let new_key = key
+                    if (flattened_key !== undefined) {
+                        new_key = flattened_key + '.' + key
+                    }
+                    const value = current_node[key]
+                    if (typeof value === 'object' && value instanceof HTMLElement === false) {
+                        traverse_and_flatten(value, target, new_key)
+                    }
+                    else {
+                        target[new_key] = value
+                    }
+                }
+            }
+        }
+
+        const flattened_object = {}
+        traverse_and_flatten(obj, flattened_object)
+        return flattened_object
     },
 }
 

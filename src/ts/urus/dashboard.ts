@@ -135,10 +135,10 @@
             button_ubah.classList.remove('btn-km-primary')
             button_ubah.setAttribute('is-editing', '')
 
-            _form_edit_prev_kegiatan.email_pendaftar = input_email_pendaftar.value
-            _form_edit_prev_kegiatan.nama_pendaftar = input_nama_pendaftar.value
+            _form_edit_prev_kegiatan.email_pendaftar = common.remove_extra_spaces(input_email_pendaftar.value)
+            _form_edit_prev_kegiatan.nama_pendaftar = common.remove_extra_spaces(input_nama_pendaftar.value)
             _form_edit_prev_kegiatan.organisasi_index = Object.values(OrganisasiKegiatan).indexOf(select_organisasi.value as OrganisasiKegiatan)
-            _form_edit_prev_kegiatan.nama_kegiatan = input_nama_kegiatan.value
+            _form_edit_prev_kegiatan.nama_kegiatan = common.remove_extra_spaces(input_nama_kegiatan.value)
             _form_edit_prev_kegiatan.tanggal_kegiatan = [input_tanggal_pertama_kegiatan.value]
             _form_edit_prev_kegiatan.periode_kegiatan = select_periode_kegiatan.value
             _form_edit_prev_kegiatan.penyelenggara_kegiatan_index = Object.values(PenyelenggaraKegiatan).indexOf(select_penyelenggara_kegiatan.value as PenyelenggaraKegiatan)
@@ -385,30 +385,26 @@
         }
     }
 
-    const create_berkas_list_group_item = (dengan: RapatDengan, link_berkas: string) => {
+    const create_berkas_list_group_item = (dengan: RapatDengan, link_berkas?: string) => {
         const li = dom.c('li', {
             classes: ['list-group-item', 'd-flex', 'align-items-center'],
-            html: `<div class="flex-grow-1 pe-2">Unggah Berkas ${defines.rapat_dengan_text[dengan]}</div>`
+            html: `<div class="flex-grow-1 pe-2">Akses Berkas ${defines.rapat_dengan_text[dengan]}</div>`
         })
 
         li.appendChild(dom.c('a', {
-            classes: ['btn', 'btn-km-primary'],
+            classes: ['btn', 'btn-km-primary', ...(typeof link_berkas !== 'string' ? ['disabled'] : [])],
             attributes: {
                 role: 'button',
                 target: '_blank',
                 style: 'width: max-content',
-                href: link_berkas,
+                href: link_berkas || '',
             },
-            html: `BERKAS VERIFIKASI (${defines.rapat_dengan_text[dengan]}) <i class="fa-solid fa-arrow-up-right-from-square"></i>`,
+            html: typeof link_berkas === 'string'
+                ? `BERKAS VERIFIKASI (${defines.rapat_dengan_text[dengan]}) <i class="fa-solid fa-arrow-up-right-from-square"></i>`
+                : '<div class="spinner-border ms-auto" aria-hidden="true"></div>',
         }))
 
         return li
-    }
-
-    const update_berkas_list_group = () => {
-        berkas_list_group.innerHTML = ''
-        berkas_list_group.appendChild(create_berkas_list_group_item(RapatDengan.LEM, sistem.data.link_berkas_lem))
-        berkas_list_group.appendChild(create_berkas_list_group_item(RapatDengan.DPM, sistem.data.link_berkas_dpm))
     }
 
     berkas_list_group.innerHTML = `
@@ -549,8 +545,27 @@ https://zoom.xxx`,
     })
     //#endregion
 
-    db.get_kegiatan(uid)
-        .then(snap => {
+    try {
+        berkas_list_group.innerHTML = ''
+        berkas_list_group.appendChild(create_berkas_list_group_item(RapatDengan.LEM))
+        berkas_list_group.appendChild(create_berkas_list_group_item(RapatDengan.DPM))
+        const link_berkas = {
+            lem: sistem.data.link_berkas_lem,
+            dpm: sistem.data.link_berkas_dpm,
+        }
+        db.sistem.get_data_verifikasi_link_berkas()
+            .then(snap => {
+                if (snap.exists()) {
+                    const val = snap.val()
+                    if (val.lem) link_berkas.lem = val.lem
+                    if (val.dpm) link_berkas.dpm = val.dpm
+                }
+                berkas_list_group.innerHTML = ''
+                berkas_list_group.appendChild(create_berkas_list_group_item(RapatDengan.LEM, link_berkas.lem))
+                berkas_list_group.appendChild(create_berkas_list_group_item(RapatDengan.DPM, link_berkas.dpm))
+            })
+
+        db.get_kegiatan(uid).then(snap => {
             if (!snap.exists()) return
             is_loading = false
 
@@ -572,28 +587,23 @@ https://zoom.xxx`,
                     [JenisRapat.PROPOSAL]: '',
                     [JenisRapat.LPJ]: '',
                 }
-                try {
-                    await db.get_pengajuan_rapat_kegiatan(uid)
-                        .then(snap => {
-                            if (!snap.exists()) return
-                            const val = snap.val()
-                            if (val[JenisRapat.PROPOSAL]) {
-                                const propo = val[JenisRapat.PROPOSAL][RapatDengan.LEM]
-                                if (propo) {
-                                    antrean_lem[JenisRapat.PROPOSAL] = common.to_date_string(new Date((propo.diterima || propo.diajukan)))
-                                }
+                await db.get_pengajuan_rapat_kegiatan(uid)
+                    .then(snap => {
+                        if (!snap.exists()) return
+                        const val = snap.val()
+                        if (val[JenisRapat.PROPOSAL]) {
+                            const propo = val[JenisRapat.PROPOSAL][RapatDengan.LEM]
+                            if (propo) {
+                                antrean_lem[JenisRapat.PROPOSAL] = common.to_date_string(new Date((propo.diterima || propo.diajukan)))
                             }
-                            if (val[JenisRapat.LPJ]) {
-                                const lpj = val[JenisRapat.LPJ][RapatDengan.LEM]
-                                if (lpj) {
-                                    antrean_lem[JenisRapat.LPJ] = common.to_date_string(new Date((lpj.diterima || lpj.diajukan)))
-                                }
+                        }
+                        if (val[JenisRapat.LPJ]) {
+                            const lpj = val[JenisRapat.LPJ][RapatDengan.LEM]
+                            if (lpj) {
+                                antrean_lem[JenisRapat.LPJ] = common.to_date_string(new Date((lpj.diterima || lpj.diajukan)))
                             }
-                        })
-                }
-                catch (err) {
-                    main.show_unexpected_error_message(err)
-                }
+                        }
+                    })
 
                 rapat_list_group.innerHTML = ''
                 rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.PROPOSAL, RapatDengan.LEM, status_verifikasi.proposal.lem))
@@ -605,8 +615,6 @@ https://zoom.xxx`,
             // berkas update
             // update ketentuan
             update_berkas_ketentuan_table(organisasi, kegiatan.nama_kegiatan)
-            // ga butuh db sebenarnya, tapi nunggu update ketentuan selesai
-            update_berkas_list_group()
 
             update_templat_email(kegiatan, TemplatEmail.BERKAS_ZOOM, select_tujuan_email.value as RapatDengan)
 
@@ -614,6 +622,10 @@ https://zoom.xxx`,
             _form_edit_prev_kegiatan = kegiatan
             dom.enable(button_ubah)
         })
+    }
+    catch (err) {
+        main.show_unexpected_error_message(err)
+    }
 })();
 
 // panel log kegiatan

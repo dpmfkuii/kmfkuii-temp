@@ -138,7 +138,7 @@
         const taken_hours_from_antrean: string[] = []
 
         await Promise.all([
-            db.get_sistem_data_verifikasi_jam_rapat().then(snap => {
+            db.sistem.get_data_verifikasi_jam_rapat().then(snap => {
                 if (!snap.exists()) return
                 const val = snap.val()
                 data_opsi_jam_rapat = val.opsi || []

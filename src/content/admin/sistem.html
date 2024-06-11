@@ -1,10 +1,51 @@
 <div class="card-header">
     <span class="fs-4">Sistem</span>
 </div>
-<div class="card-body p-0">
-    <div class="accordion animate animate-rise-on-enter">
-        <insert-component-admin/sistem/panel-data />
-        <insert-component-admin/sistem/panel-panduan />
+<div class="card-body">
+    <div class="row">
+        <div class="col-12 col-lg-3 mb-3">
+            <div class="card">
+                <div class="card-header">Atur</div>
+                <div class="card-body p-1">
+                    <ul class="list-group" id="atur_menu_list_group"></ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-9">
+            <div
+                class="card animate animate-rise-on-enter animate-delay-100"
+                id="atur_card"
+            >
+                <div
+                    class="card-header d-flex align-items-center text-bg-km-primary sticky-top"
+                >
+                    <div class="title flex-grow-1">Verifikasi</div>
+                    <button
+                        class="btn btn-sm btn-km-primary disabled"
+                        id="simpan_button"
+                    >
+                        Tersimpan <i class="fa-solid fa-check"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="atur_card_verifikasi">
+                        <insert-component-admin/sistem/atur-card-verifikasi />
+                    </div>
+                    <div id="atur_card_organisasi">
+                        <!-- <insert-component-admin/sistem/atur-card-organisasi /> -->
+                    </div>
+                    <div id="atur_card_footer">
+                        <insert-component-admin/sistem/atur-card-footer />
+                    </div>
+                    <div id="atur_card_data_usang">
+                        <insert-component-admin/sistem/atur-card-data-usang />
+                    </div>
+                    <div id="atur_card_panduan">
+                        <insert-component-admin/sistem/atur-card-panduan />
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -17,6 +58,28 @@
         #main_container .row > *:nth-child(2) {
             padding-left: calc(var(--bs-gutter-x) * 0.25);
         }
+    }
+    #atur_card .card-body h6 {
+        color: #042188;
+        margin-bottom: 0;
+    }
+    #atur_card .input-group-text {
+        font-size: smaller;
+        padding-right: 0.5rem !important;
+        padding-left: 0.5rem !important;
+        padding-top: 0.25rem !important;
+        padding-bottom: 0.25rem !important;
+    }
+    #atur_card .card-body .atur-card-section {
+        transition: all 250ms;
+        margin-bottom: 1rem !important;
+    }
+    #atur_card .card-body .atur-card-section.changed {
+        border-left: 2px solid #042188;
+        padding-left: 0.75rem;
+    }
+    #atur_card .card-body .atur-card-section:last-child {
+        margin-bottom: 0 !important;
     }
 </style>
 

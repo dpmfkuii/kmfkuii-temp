@@ -876,21 +876,35 @@ const db = {
         return main_db.ref(`verifikasi/rapat/pengajuan/${uid}`)
             .remove()
     },
-    get_sistem_data<T = SistemData.Snapshot>(): Promise<FirebaseSnapshot<T>> {
-        return main_db.ref(`sistem/data`)
-            .once<T>('value')
-    },
-    get_sistem_data_organisasi<T = SistemData.Snapshot['organisasi']>(): Promise<FirebaseSnapshot<T>> {
-        return main_db.ref(`sistem/data/organisasi`)
-            .once<T>('value')
-    },
-    get_sistem_data_verifikasi<T = SistemData.Snapshot['verifikasi']>(): Promise<FirebaseSnapshot<T>> {
-        return main_db.ref(`sistem/data/verifikasi`)
-            .once<T>('value')
-    },
-    get_sistem_data_verifikasi_jam_rapat<T = SistemData.Snapshot['verifikasi']['jam_rapat']>(): Promise<FirebaseSnapshot<T>> {
-        return main_db.ref(`sistem/data/verifikasi/jam_rapat`)
-            .once<T>('value')
+    sistem: {
+        get_data<T = SistemData.Snapshot>(): Promise<FirebaseSnapshot<T>> {
+            return main_db.ref(`sistem/data`)
+                .once<T>('value')
+        },
+        get_data_verifikasi<T = SistemData.Snapshot['verifikasi']>(): Promise<FirebaseSnapshot<T>> {
+            return main_db.ref(`sistem/data/verifikasi`)
+                .once<T>('value')
+        },
+        update_data_verifikasi(value: Partial<SistemData.Snapshot['verifikasi']>) {
+            return main_db.ref(`sistem/data/verifikasi`)
+                .update(value)
+        },
+        get_data_verifikasi_link_berkas<T = SistemData.Snapshot['verifikasi']['link_berkas']>(): Promise<FirebaseSnapshot<T>> {
+            return main_db.ref(`sistem/data/verifikasi/link_berkas`)
+                .once<T>('value')
+        },
+        get_data_verifikasi_jam_rapat<T = SistemData.Snapshot['verifikasi']['jam_rapat']>(): Promise<FirebaseSnapshot<T>> {
+            return main_db.ref(`sistem/data/verifikasi/jam_rapat`)
+                .once<T>('value')
+        },
+        get_data_keuangan<T = SistemData.Snapshot['keuangan']>(): Promise<FirebaseSnapshot<T>> {
+            return main_db.ref(`sistem/data/keuangan`)
+                .once<T>('value')
+        },
+        get_data_organisasi<T = SistemData.Snapshot['organisasi']>(): Promise<FirebaseSnapshot<T>> {
+            return main_db.ref(`sistem/data/organisasi`)
+                .once<T>('value')
+        },
     },
     keuangan: {
         get_fintime_list<T = DatabaseKeuangan.FintimeList>(uid: string): Promise<FirebaseSnapshot<T>> {

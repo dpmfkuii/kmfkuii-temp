@@ -194,6 +194,7 @@ namespace DatabaseKeuangan {
 namespace SistemData {
     export interface Snapshot {
         verifikasi: Verifikasi
+        keuangan: Keuangan
         organisasi: Organisasi[]
     }
 
@@ -206,6 +207,10 @@ namespace SistemData {
             opsi: string[]
             jam_reschedule_lem: string[]
             jam_reschedule_dpm: string[]
+        }
+        email: {
+            lem: string
+            dpm: string
         }
     }
 

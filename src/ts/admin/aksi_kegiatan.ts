@@ -107,10 +107,10 @@
             detail_button_ubah.classList.remove('btn-km-primary')
             detail_button_ubah.setAttribute('is-editing', '')
 
-            _detail_form_kegiatan_prev.email_pendaftar = detail_input_email_pendaftar.value
-            _detail_form_kegiatan_prev.nama_pendaftar = detail_input_nama_pendaftar.value
+            _detail_form_kegiatan_prev.email_pendaftar = common.remove_extra_spaces(detail_input_email_pendaftar.value)
+            _detail_form_kegiatan_prev.nama_pendaftar = common.remove_extra_spaces(detail_input_nama_pendaftar.value)
             _detail_form_kegiatan_prev.organisasi_index = Object.values(OrganisasiKegiatan).indexOf(detail_select_organisasi.value as OrganisasiKegiatan)
-            _detail_form_kegiatan_prev.nama_kegiatan = detail_input_nama_kegiatan.value
+            _detail_form_kegiatan_prev.nama_kegiatan = common.remove_extra_spaces(detail_input_nama_kegiatan.value)
             _detail_form_kegiatan_prev.tanggal_kegiatan = [detail_input_tanggal_pertama_kegiatan.value]
             _detail_form_kegiatan_prev.periode_kegiatan = detail_select_periode_kegiatan.value
             _detail_form_kegiatan_prev.penyelenggara_kegiatan_index = Object.values(PenyelenggaraKegiatan).indexOf(detail_select_penyelenggara_kegiatan.value as PenyelenggaraKegiatan)
@@ -453,29 +453,31 @@
     //#endregion
 
     //#region berkas panel logic
-    const create_berkas_list_group_item = (dengan: RapatDengan, link_berkas: string) => {
+    const create_berkas_list_group_item = (dengan: RapatDengan, link_berkas?: string) => {
         const li = dom.c('li', {
             classes: ['list-group-item', 'd-flex', 'align-items-center'],
             html: `<div class="flex-grow-1 pe-2">Akses Berkas ${defines.rapat_dengan_text[dengan]}</div>`
         })
 
         li.appendChild(dom.c('a', {
-            classes: ['btn', 'btn-km-primary'],
+            classes: ['btn', 'btn-km-primary', ...(typeof link_berkas !== 'string' ? ['disabled'] : [])],
             attributes: {
                 role: 'button',
                 target: '_blank',
                 style: 'width: max-content',
-                href: link_berkas,
+                href: link_berkas || '',
             },
-            html: `BERKAS VERIFIKASI (${defines.rapat_dengan_text[dengan]}) <i class="fa-solid fa-arrow-up-right-from-square"></i>`,
+            html: typeof link_berkas === 'string'
+                ? `BERKAS VERIFIKASI (${defines.rapat_dengan_text[dengan]}) <i class="fa-solid fa-arrow-up-right-from-square"></i>`
+                : '<div class="spinner-border ms-auto" aria-hidden="true"></div>',
         }))
 
         return li
     }
 
     berkas_list_group.innerHTML = ''
-    berkas_list_group.appendChild(create_berkas_list_group_item(RapatDengan.LEM, sistem.data.link_berkas_lem))
-    berkas_list_group.appendChild(create_berkas_list_group_item(RapatDengan.DPM, sistem.data.link_berkas_dpm))
+    berkas_list_group.appendChild(create_berkas_list_group_item(RapatDengan.LEM))
+    berkas_list_group.appendChild(create_berkas_list_group_item(RapatDengan.DPM))
     //#endregion
 
     //#region komunikasi panel
@@ -667,7 +669,18 @@ Jangan lupa untuk mengirim link Zoom yang telah disiapkan melalui fitur yang sud
     //#endregion
 
     //#region query db
+    const link_berkas = {
+        lem: sistem.data.link_berkas_lem,
+        dpm: sistem.data.link_berkas_dpm,
+    }
     try {
+        await db.sistem.get_data_verifikasi_link_berkas()
+            .then(snap => {
+                if (!snap.exists()) return
+                const val = snap.val()
+                if (val.lem) link_berkas.lem = val.lem
+                if (val.dpm) link_berkas.dpm = val.dpm
+            })
         await db.get_pengajuan_rapat_kegiatan(uid)
             .then(snap => _pengajuan_rapat_kegiatan = snap.val()!)
         await db.on_kegiatan(uid, snap => {
@@ -684,6 +697,11 @@ Jangan lupa untuk mengirim link Zoom yang telah disiapkan melalui fitur yang sud
     catch (err) {
         main.show_unexpected_error_message(err)
     }
+
+    berkas_list_group.innerHTML = ''
+    berkas_list_group.appendChild(create_berkas_list_group_item(RapatDengan.LEM, link_berkas.lem))
+    berkas_list_group.appendChild(create_berkas_list_group_item(RapatDengan.DPM, link_berkas.dpm))
+
     //#endregion
 })();
 

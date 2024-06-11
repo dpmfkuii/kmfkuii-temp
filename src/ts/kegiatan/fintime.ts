@@ -105,9 +105,6 @@
             this.search_title.textContent = `Masukkan ${mode}`
             this.search_input.placeholder = mode
             this.search_form.reset()
-
-            console.log(mode)
-
         },
         start_loading(search_value?: string) {
             if (!search_value || typeof search_value !== 'string') {
