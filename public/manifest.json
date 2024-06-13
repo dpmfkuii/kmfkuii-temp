@@ -1,0 +1,21 @@
+{
+    "name": "Web KM FK UII",
+    "short_name": "Web KM",
+    "description": "Web Keluarga Mahasiswa Fakultas Kedokteran Universitas Islam Indonesia.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff",
+    "icons": [
+        {
+            "src": "/assets/images/favicon.png",
+            "type": "image/png",
+            "sizes": "256x256"
+        },
+        {
+            "src": "/assets/images/favicon512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ]
+}

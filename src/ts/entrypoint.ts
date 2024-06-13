@@ -19,10 +19,11 @@ if (events.get_callbacks('sistem_data_organisasi_loaded').length > 0) {
 (() => {
     const el = dom.q('#hbdhbdhbd')
     if (el) {
+        const ver = `<small class="text-secondary">${dom.q('meta[name="static-version"]')?.getAttribute('content') || 'v0'}</small>`
         el.role = 'button'
         el.addEventListener('click', () => {
             swal.fire({
-                title: 'Web KM FK UII',
+                title: `Web KM FK UII ${ver}`,
                 html: `<i class="small">${'dami yb 3< htiw edam'.split('').reverse().join('')}</i>`,
                 confirmButtonText: 'take care',
                 customClass: {
@@ -35,7 +36,14 @@ if (events.get_callbacks('sistem_data_organisasi_loaded').length > 0) {
                 allowEnterKey: false,
             })
         })
+        el.appendChild(dom.c('span', { html: ver }))
     }
 })()
 
 main.invoke_animation()
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service_worker.js')
+    })
+}
