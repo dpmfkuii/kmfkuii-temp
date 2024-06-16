@@ -125,28 +125,18 @@
                                 main.swal_fire_detail_kegiatan(nama_kegiatan, uid)
                             })
 
-                            const create_badge = (text: string, state: StatusRapatVerifikasiKegiatan) => {
-                                const color = state === 0 ? 'primary' : state > 0 ? 'success' : 'secondary'
-                                const badge = dom.c('span', {
-                                    classes: ['badge', `text-bg-${color}`, 'rounded-pill'],
-                                    attributes: { role: 'button' },
-                                    html: `${text}${state === 0 ? ' <i class="fa-solid fa-spinner"></i>' : state > 0 ? ' <i class="fa-solid fa-check"></i>' : ''}`,
-                                })
-                                badge.addEventListener('click', () => list_item_kegiatan_title.click())
-                                return badge
-                            }
-
+                            const badge_onclick = () => list_item_kegiatan_title.click()
                             const list_item_kegiatan = dom.c('li', {
                                 classes: ['list-group-item'],
                                 children: [
                                     dom.c('div', { classes: ['fw-bold'], children: [list_item_kegiatan_title] }),
-                                    create_badge('Proposal LEM', status.verifikasi.proposal.lem),
+                                    main.create_status_verifikasi_badge('Proposal LEM', status.verifikasi.proposal.lem, badge_onclick),
                                     dom.c('span', { html: ' ' }),
-                                    create_badge('Proposal DPM', status.verifikasi.proposal.dpm),
+                                    main.create_status_verifikasi_badge('Proposal DPM', status.verifikasi.proposal.dpm, badge_onclick),
                                     dom.c('span', { html: ' ' }),
-                                    create_badge('LPJ LEM', status.verifikasi.lpj.lem),
+                                    main.create_status_verifikasi_badge('LPJ LEM', status.verifikasi.lpj.lem, badge_onclick),
                                     dom.c('span', { html: ' ' }),
-                                    create_badge('LPJ DPM', status.verifikasi.lpj.dpm),
+                                    main.create_status_verifikasi_badge('LPJ DPM', status.verifikasi.lpj.dpm, badge_onclick),
                                 ],
                             })
 

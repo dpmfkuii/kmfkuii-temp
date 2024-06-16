@@ -270,6 +270,18 @@ const main = {
             && status_verifikasi.lpj.lem > 0
             && status_verifikasi.lpj.dpm > 0
     },
+    create_status_verifikasi_badge(text: string, state: StatusRapatVerifikasiKegiatan, onclick?: (this: HTMLSpanElement, ev: MouseEvent) => any) {
+        const color = state === 0 ? 'primary' : state > 0 ? 'success' : 'secondary'
+        const badge = dom.c('span', {
+            classes: ['badge', `text-bg-${color}`, 'rounded-pill'],
+            html: `${text}${state === 0 ? ' <i class="fa-solid fa-spinner"></i>' : state > 0 ? ' <i class="fa-solid fa-check"></i>' : ''}`,
+        })
+        if (onclick) {
+            badge.role = 'button'
+            badge.addEventListener('click', onclick)
+        }
+        return badge
+    },
     kegiatan_to_logbook_text(kegiatan: Kegiatan) {
         let status = ''
         if (kegiatan.status.verifikasi.proposal.lem >= 0) status += '@proposal_lem'

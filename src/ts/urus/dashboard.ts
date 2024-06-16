@@ -1,6 +1,82 @@
-// panel detail kegiatan
+// dashboard status and panel detail kegiatan
 (() => {
     let is_loading = true
+
+    const dashboard_status_controller = {
+        container: dom.q<'div'>('#dashboard_status_container')!,
+        title: dom.q<'h5'>('#dashboard_status_container > h5')!,
+        alert: dom.q<'div'>('#dashboard_status_container > .alert')!,
+        alert_last_color: 'secondary',
+        alert_change_color(new_color: BSColor) {
+            this.alert.classList.remove(`alert-${this.alert_last_color}`)
+            this.alert.classList.add(`alert-${new_color}`)
+            this.alert_last_color = new_color
+        },
+        update(kegiatan: Kegiatan) {
+            this.title.textContent = kegiatan.nama_kegiatan
+            this.alert.innerHTML = ''
+
+            const sv = kegiatan.status.verifikasi
+            this.alert.appendChild(main.create_status_verifikasi_badge('Proposal LEM', sv.proposal.lem))
+            this.alert.appendChild(dom.c('span', { html: ' ' }))
+            this.alert.appendChild(main.create_status_verifikasi_badge('Proposal DPM', sv.proposal.dpm))
+            this.alert.appendChild(dom.c('span', { html: ' ' }))
+            this.alert.appendChild(main.create_status_verifikasi_badge('LPJ LEM', sv.lpj.lem))
+            this.alert.appendChild(dom.c('span', { html: ' ' }))
+            this.alert.appendChild(main.create_status_verifikasi_badge('LPJ DPM', sv.lpj.dpm))
+
+            let alert_text = 'Selamat datang!'
+            let alert_icon: 'info' | 'check' = 'info'
+            let alert_color: BSColor = 'primary'
+            if (sv.lpj.dpm > StatusRapat.IN_PROGRESS) {
+                alert_text = `Verifikasi LPJ selesai, sampai bertemu lagi!`
+                alert_icon = 'check'
+                alert_color = 'success'
+            }
+            else if (sv.lpj.dpm === StatusRapat.IN_PROGRESS) {
+                alert_text = `Verifikasi LPJ DPM sedang berlangsung.`
+                if (sv.lpj.lem === StatusRapat.IN_PROGRESS) {
+                    alert_text = `Verifikasi LPJ LEM dan DPM sedang berlangsung.`
+                }
+            }
+            else if (sv.lpj.lem > StatusRapat.IN_PROGRESS) {
+                alert_text = `Verifikasi LPJ LEM selesai, jangan lupa verifikasi LPJ ke DPM!`
+                alert_icon = 'check'
+                alert_color = 'success'
+            }
+            else if (sv.lpj.lem === StatusRapat.IN_PROGRESS) {
+                alert_text = `Verifikasi LPJ LEM sedang berlangsung.`
+            }
+            else if (sv.proposal.dpm > StatusRapat.IN_PROGRESS) {
+                alert_text = `Verifikasi proposal selesai, selamat beraktivitas dan jangan lupa LPJ!`
+                alert_icon = 'check'
+                alert_color = 'success'
+            }
+            else if (sv.proposal.dpm === StatusRapat.IN_PROGRESS) {
+                alert_text = `Verifikasi proposal DPM sedang berlangsung.`
+                if (sv.proposal.lem === StatusRapat.IN_PROGRESS) {
+                    alert_text = `Verifikasi proposal LEM dan DPM sedang berlangsung.`
+                }
+            }
+            else if (sv.proposal.lem > StatusRapat.IN_PROGRESS) {
+                alert_text = `Verifikasi proposal LEM selesai, jangan lupa verifikasi proposal ke DPM!`
+                alert_icon = 'check'
+                alert_color = 'success'
+            }
+            else if (sv.proposal.lem === StatusRapat.IN_PROGRESS) {
+                alert_text = `Verifikasi proposal LEM sedang berlangsung.`
+            }
+            else {
+                alert_text = `Daftar rapat untuk memulai proses verifikasi.`
+                alert_color = 'secondary'
+            }
+            this.alert.appendChild(dom.c('div', {
+                classes: ['small', 'mt-2', 'px-1'],
+                children: [dom.c('small', { html: `<i class="fa-solid fa-circle-${alert_icon}"></i> ${alert_text}` })],
+            }))
+            this.alert_change_color(alert_color)
+        },
+    }
 
     //#region panel detail
     const panel_detail = dom.q<'div'>('#panel_urus_detail_kegiatan')!
@@ -261,6 +337,10 @@
                         db.add_kegiatan_log(uid, defines.log_colors.pembaruan_data_kegiatan, log_text),
                         db.set_kegiatan_updated_timestamp(uid),
                     ])
+
+                    update_berkas_ketentuan_table(Object.values(OrganisasiKegiatan)[_kegiatan.organisasi_index], _kegiatan.nama_kegiatan)
+                    update_templat_email(_kegiatan, select_templat_email.value as TemplatEmail, select_tujuan_email.value as RapatDengan)
+                    dashboard_status_controller.update(_kegiatan)
                     main.swal_fire_success('Berhasil tersimpan!')
                 }
                 catch (err) {
@@ -612,14 +692,13 @@ https://zoom.xxx`,
                 rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.LPJ, RapatDengan.DPM, status_verifikasi.lpj.dpm, status_verifikasi.lpj.lem, antrean_lem[JenisRapat.LPJ]))
             })
 
-            // berkas update
-            // update ketentuan
             update_berkas_ketentuan_table(organisasi, kegiatan.nama_kegiatan)
-
             update_templat_email(kegiatan, TemplatEmail.BERKAS_ZOOM, select_tujuan_email.value as RapatDengan)
+            dashboard_status_controller.update(kegiatan)
 
             _kegiatan = kegiatan
             _form_edit_prev_kegiatan = kegiatan
+
             dom.enable(button_ubah)
         })
     }

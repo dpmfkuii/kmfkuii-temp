@@ -1,8 +1,19 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-9 col-lg-7 col-xl-5">
-            <h1 class="display-3">Dashboard</h1>
-            <div class="accordion animate animate-rise-on-enter">
+            <h1 class="display-4">Dashboard</h1>
+            <div
+                class="accordion animate animate-rise-on-enter px-2"
+                id="dashboard_status_container"
+            >
+                <h5></h5>
+                <div class="alert alert-secondary px-2 py-1 mt-2">
+                    <small><small>Memuat...</small></small>
+                </div>
+            </div>
+            <div
+                class="accordion animate animate-rise-on-enter animate-delay-100"
+            >
                 <insert-component-urus/dashboard/panel-detail-kegiatan />
                 <insert-component-urus/dashboard/panel-rapat-verifikasi />
                 <insert-component-urus/dashboard/panel-berkas />

@@ -2,6 +2,8 @@ interface ObjectOf<T> {
     [key: string]: T
 }
 
+type BSColor = 'primary' | 'secondary' | 'info' | 'success' | 'warning' | 'danger' | 'dark' | 'light'
+
 // defines
 const defines = {
     day_names: [
