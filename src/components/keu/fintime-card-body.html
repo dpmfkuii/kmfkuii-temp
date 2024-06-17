@@ -1,0 +1,59 @@
+<div class="card-body">
+    <div class="row">
+        <div class="col-12 col-lg-3 mb-3">
+            <div class="card">
+                <div class="card-header">Cari berdasarkan</div>
+                <div class="card-body p-1">
+                    <ul class="list-group" id="fintime_search_mode_group"></ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-9">
+            <div class="card text-center">
+                <div class="card-header text-bg-success-subtle">
+                    <span id="fintime_search_title">Masukkan UID</span>
+                </div>
+                <div class="card-body">
+                    <form id="fintime_search_form" class="mb-3">
+                        <input
+                            type="text"
+                            class="form-control form-control-lg form-control-line text-center"
+                            id="fintime_search_input"
+                            placeholder="UID"
+                            autocomplete="off"
+                            required
+                        />
+                        <button type="submit" class="btn btn-lg border-0">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </form>
+                    <div id="fintime_search_result"></div>
+                    <div id="fintime_table_container">
+                        <h4
+                            id="fintime_table_container_title"
+                            class="text-start"
+                        >
+                            Hasil
+                        </h4>
+                        <h5 class="text-start">
+                            <i class="fa-regular fa-rectangle-list"></i>
+                            Fintime
+                        </h5>
+                        <div
+                            class="bg-light-subtle table-responsive border rounded mb-2"
+                        >
+                            <table
+                                class="table table-borderless mb-0 text-start"
+                                style="min-width: min-content"
+                                id="fintime_table"
+                            >
+                                <tbody class="small"></tbody>
+                            </table>
+                        </div>
+                        <insert-component-keu/fintime-recap />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -90,13 +90,13 @@
                 const item_button = dom.qe<'span'>(li, '.item-button')!
                 if (li.ariaLabel === mode) {
                     li.role = ''
-                    li.classList.add('list-group-item-warning')
+                    li.classList.add('list-group-item-success')
                     li.classList.remove('list-group-item-secondary')
                     item_button.classList.remove('visually-hidden')
                 }
                 else {
                     li.role = 'button'
-                    li.classList.remove('list-group-item-warning')
+                    li.classList.remove('list-group-item-success')
                     li.classList.add('list-group-item-secondary')
                     item_button.classList.add('visually-hidden')
                 }
@@ -123,7 +123,7 @@
                 classes: ['text-break', 'animate', 'animate-rise-on-enter', 'animate-speed-25'],
                 html: `
                     <div class="spinner-border mb-3" aria-hidden="true"></div>
-                    <p role="status" class="text-secondary fst-italic">Mencari Fintime <span class="text-warning-emphasis">${search_value}</span>.</p>
+                    <p role="status" class="text-secondary fst-italic">Mencari Fintime <span class="text-success-emphasis">${search_value}</span>.</p>
                 `
             }))
 
@@ -136,16 +136,19 @@
                 this.search_submit,
             )
         },
-        show_nothing(search_value?: string, mode: FINTIME_SEARCH_MODE = fintime_search_controller.mode) {
+        show_nothing(search_value?: string, mode?: FINTIME_SEARCH_MODE) {
             if (!search_value || typeof search_value !== 'string') {
                 search_value = this.search_input.value
+            }
+            if (!mode || typeof mode !== 'string') {
+                mode = fintime_search_controller.mode
             }
             const mode_text = mode === FINTIME_SEARCH_MODE.UID ? mode : mode.toLowerCase()
             this.search_result.innerHTML = ''
             this.search_result.appendChild(dom.c('div', {
                 classes: ['animate', 'animate-rise-on-enter', 'animate-speed-25'],
                 html: `
-                    <span class="text-secondary fst-italic">Tidak ada data Fintime berdasarkan ${mode_text} <span class="text-warning-emphasis">${search_value}</span>.</span>
+                    <span class="text-secondary fst-italic">Tidak ada data Fintime berdasarkan ${mode_text} <span class="text-success-emphasis">${search_value}</span>.</span>
                 `
             }))
             main.invoke_animation()
@@ -173,11 +176,11 @@
                             classes: ['flex-grow-1', 'pe-2', 'text-start'],
                             html: `
                                 <h5 class="mb-0">${item.nama_kegiatan} <small class="text-secondary">${uid_text}</small></h5>
-                                <span class="text-warning-emphasis">${Object.values(OrganisasiKegiatan)[item.organisasi_index]}</span>
+                                <span class="text-success-emphasis">${Object.values(OrganisasiKegiatan)[item.organisasi_index]}</span>
                             `
                         }),
                         dom.c('span', {
-                            classes: ['text-warning-emphasis', 'fs-3'],
+                            classes: ['text-success-emphasis', 'fs-3'],
                             html: '<i class="fa-solid fa-circle-chevron-right"></i>',
                         })
                     ],
