@@ -174,7 +174,17 @@
         [ATUR_MENU.KEUANGAN]: {
             container: dom.q<'div'>('#atur_card_keuangan')!,
             async save() { },
-            init() { },
+            init() {
+                try {
+                    db.sistem.get_data_keuangan().then(snap => {
+                        try {
+                            this.container.querySelector('.temp')!.innerHTML = JSON.stringify(snap.val())
+                        }
+                        catch { }
+                    })
+                }
+                catch { }
+            },
         },
         [ATUR_MENU.DATA_USANG]: {
             container: dom.q<'div'>('#atur_card_data_usang')!,

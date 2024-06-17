@@ -1,3 +1,5 @@
+declare const bootstrap: any
+
 interface ObjectOf<T> {
     [key: string]: T
 }
@@ -112,16 +114,22 @@ const sistem = {
 
 namespace DatabaseKeuangan {
     export interface Snapshot {
-        fincard: {
-            [periode: string]: {
-                [organisasi_index: string | number]: {
-                    [uid: string]: Fincard
-                }
-            }
-        }
+        fincard: FincardKegiatan
         fintime: {
             [uid: string]: FintimeList
         }
+    }
+
+    export interface FincardKegiatan {
+        [periode: string]: FincardPeriode
+    }
+
+    export interface FincardPeriode {
+        [organisasi_index: string | number]: FincardOrganisasi
+    }
+
+    export interface FincardOrganisasi {
+        [uid: string]: Fincard
     }
 
     export interface FintimeList {
@@ -135,8 +143,8 @@ namespace DatabaseKeuangan {
     export interface Fincard {
         nama_kegiatan: string // !IMPORTANT
         status_lpj: StatusRapat // !IMPORTANT
-        periode_rkat: string
-        sub_rkat_index: 0
+        tahun_rkat: number
+        sub_aktivitas_rkat_index: number
         rkat_murni: number
         rkat_alokasi: number
         dpm: number
@@ -221,9 +229,14 @@ namespace SistemData {
     }
 
     export interface Keuangan {
-        sub_rkat: {
-            [periode_rkat: string]: string[]
+        sub_aktivitas_rkat: {
+            [tahun_rkat: string]: SubAktivitasRKAT[]
         }
+    }
+
+    export interface SubAktivitasRKAT {
+        nama: string
+        anggaran: number
     }
 
     export interface Organisasi {

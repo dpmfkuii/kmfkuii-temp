@@ -90,29 +90,7 @@
                             kegiatan_periode_count++
 
                             const log = logbook_periode[organisasi_index][uid]
-                            const nama_kegiatan = log.split('@')[0]
-
-                            const get_state = (param: string): StatusRapatVerifikasiKegiatan => {
-                                return log.indexOf(param) >= 0
-                                    ? log.indexOf(`${param}:p`) >= 0
-                                        ? 0
-                                        : 1
-                                    : -1
-                            }
-
-                            const status: Kegiatan['status'] = {
-                                diajukan: 0,
-                                verifikasi: {
-                                    proposal: {
-                                        lem: get_state('@proposal_lem'),
-                                        dpm: get_state('@proposal_dpm'),
-                                    },
-                                    lpj: {
-                                        lem: get_state('@lpj_lem'),
-                                        dpm: get_state('@lpj_dpm'),
-                                    },
-                                },
-                            }
+                            const { nama_kegiatan, status } = main.extract_logbook_text(log)
 
                             organisasi_verifikasi_selesai_count += main.is_status_verifikasi_selesai(status.verifikasi) ? 1 : 0
 

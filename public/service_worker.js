@@ -1,6 +1,6 @@
 self.addEventListener('install', ev => {
     ev.waitUntil(
-        caches.open('web-km-fkuii-v0.4').then(cache => {
+        caches.open('web-km-fkuii-v0.5a').then(cache => {
             cache.addAll([
                 '/',
                 '/index.html',

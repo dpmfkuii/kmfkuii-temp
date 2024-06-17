@@ -302,7 +302,7 @@ const main = {
                 const logbook_organisasi = logbook_periode[organisasi_index]
                 for (const uid in logbook_organisasi) {
                     const logbook_text = logbook_organisasi[uid]
-                    const { nama_kegiatan, status } = main.extract_logbook_text(uid, logbook_text)
+                    const { nama_kegiatan, status } = main.extract_logbook_text(logbook_text)
                     logbook_data.push({
                         uid,
                         organisasi_index: Number(organisasi_index),
@@ -353,7 +353,7 @@ const main = {
         }
         return d
     },
-    extract_logbook_text(uid: string, log: string) {
+    extract_logbook_text(log: string): { nama_kegiatan: string, status: Kegiatan['status'] } {
         const nama_kegiatan = log.split('@')[0]
 
         const get_state = (param: string): StatusRapatVerifikasiKegiatan => {

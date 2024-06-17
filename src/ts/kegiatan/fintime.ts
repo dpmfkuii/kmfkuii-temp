@@ -136,11 +136,11 @@
                 this.search_submit,
             )
         },
-        show_nothing(search_value?: string) {
+        show_nothing(search_value?: string, mode: FINTIME_SEARCH_MODE = fintime_search_controller.mode) {
             if (!search_value || typeof search_value !== 'string') {
                 search_value = this.search_input.value
             }
-            const mode_text = this.mode === FINTIME_SEARCH_MODE.UID ? this.mode : this.mode.toLowerCase()
+            const mode_text = mode === FINTIME_SEARCH_MODE.UID ? mode : mode.toLowerCase()
             this.search_result.innerHTML = ''
             this.search_result.appendChild(dom.c('div', {
                 classes: ['animate', 'animate-rise-on-enter', 'animate-speed-25'],
@@ -190,7 +190,7 @@
                         db.keuangan.get_fintime_list(item.uid)
                             .then(snap => {
                                 if (!snap.exists()) {
-                                    this.show_nothing(title)
+                                    this.show_nothing(title, FINTIME_SEARCH_MODE.NAMA_KEGIATAN)
                                     this.stop_loading()
                                     return
                                 }
@@ -200,7 +200,7 @@
                     }
                     catch (err) {
                         main.show_unexpected_error_message(err)
-                        this.show_nothing(title)
+                        this.show_nothing(title, FINTIME_SEARCH_MODE.NAMA_KEGIATAN)
                         this.stop_loading()
                     }
                 })

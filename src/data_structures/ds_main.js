@@ -189,8 +189,8 @@ var _ = {
                         "{uid}": {
                             "nama_kegiatan": "Konferensi", // make sure any instances where the main `nama_kegiatan` is changed this gets changed as well
                             "status_lpj": -1, // updating status should not update timestamp, just update the status
-                            "periode_rkat": "2024",
-                            "sub_rkat_index": 0,
+                            "tahun_rkat": 2024,
+                            "sub_aktivitas_rkat_index": 0,
                             "rkat_murni": 7000000,
                             "rkat_alokasi": 600000,
                             "dpm": 500000,
@@ -250,10 +250,30 @@ var _ = {
                     "email_kemahasiswaan": "kemahasiswaan@gmail.com",
                 },
             },
-            // db.ref(`sistem/data/keuangan`) => SistemData.Keuangan[]
+            // db.ref(`sistem/data/keuangan`) => SistemData.Keuangan
             "keuangan": {
-                "sub_rkat": {
-                    "2024": ["Sub Aktivitas Kegiatan", "Sub Delegasi"], // if index not found, make it "unclassified" or something
+                // db.ref(`sistem/data/keuangan/sub_aktivitas_rkat`) => SistemData.Keuangan['sub_aktivitas_rkat']
+                "sub_aktivitas_rkat": {
+                    // db.ref(`sistem/data/keuangan/sub_aktivitas_rkat/${tahun_rkat}`) => SubAktivitasRKAT[]
+                    "2024": [
+                        // if index not found, make it "unclassified" or something
+                        {
+                            nama: "Kegiatan Lembaga Mahasiswa",
+                            anggaran: 500000000,
+                        },
+                        {
+                            nama: "Delegasi Lomba Non-Akademik",
+                            anggaran: 40000000,
+                        },
+                        {
+                            nama: "Delegasi Lomba Akademik",
+                            anggaran: 220000000,
+                        },
+                        {
+                            nama: "Delegasi Non Lomba Nasional/Internasional",
+                            anggaran: 99000000,
+                        },
+                    ],
                 },
             },
             // db.ref(`sistem/data/organisasi`) => SistemData.Organisasi[]
