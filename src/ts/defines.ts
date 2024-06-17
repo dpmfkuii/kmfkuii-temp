@@ -230,7 +230,9 @@ namespace SistemData {
 
     export interface Keuangan {
         sub_aktivitas_rkat: {
-            [tahun_rkat: string]: SubAktivitasRKAT[]
+            [tahun_rkat: string]: {
+                [kode_rkat: string]: SubAktivitasRKAT
+            }
         }
     }
 

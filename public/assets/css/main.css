@@ -1,6 +1,8 @@
 :root {
     --bs-body-font-family: "Geologica", sans-serif;
     --fincard-max-w: 300px;
+    --fincard-header-min-h: 50px;
+    --fincard-body-min-h: 123px;
 }
 
 a.disabled {
@@ -282,9 +284,15 @@ a.disabled {
         rgba(255, 255, 255, 0)
     );
 }
+.fincard-header {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    min-height: var(--fincard-header-min-h);
+}
 .fincard-body {
-    padding: 1rem;
+    padding-top: 1rem;
     padding-bottom: 0.25rem;
+    min-height: var(--fincard-body-min-h);
     overflow-x: auto;
 }
 .fincard-footer {
@@ -321,25 +329,26 @@ a.disabled {
     color: var(--bs-table-color);
     vertical-align: middle;
     margin-bottom: 0;
+    min-width: max-content;
 }
 .fincard table > :not(caption) > * > * {
     padding: 0;
 }
 .fincard table tr > * {
-    width: 50%;
     padding: 0 1rem;
 }
-.fincard table tr > th {
-    text-align: left;
+.fincard table.back-table tr > * {
+    width: 50%;
 }
-.fincard table tr > td {
+.fincard table.back-table tr > td {
     position: relative;
     text-align: right;
 }
-.fincard table tr > td > i {
+.fincard table.back-table tr > td > i {
     position: absolute;
+    top: 50%;
     left: 0;
-    transform: translate(-50%, 25%);
+    transform: translate(-50%, -50%);
 }
 .fincard-flip-card {
     background-color: transparent;
@@ -356,6 +365,12 @@ a.disabled {
 .fincard-flip-card.flipped .fincard-flip-card-inner {
     transform: rotateY(-180deg);
 }
+.fincard-flip-card.flipped .fincard-flip-card-front > * {
+    pointer-events: none;
+}
+.fincard-flip-card:not(.flipped) .fincard-flip-card-back > * {
+    pointer-events: none;
+}
 .fincard-flip-card-front,
 .fincard-flip-card-back {
     position: absolute;
@@ -371,7 +386,7 @@ a.disabled {
     position: relative;
     overflow: hidden;
 }
-.fincard-shine:after {
+.fincard-shine::after {
     content: "";
     position: absolute;
     top: -8px;
@@ -435,7 +450,7 @@ a.disabled {
         transform: translateX(-100%);
     }
     20% {
-        opacity: 0.33;
+        opacity: 0.18;
     }
     100% {
         opacity: 0;

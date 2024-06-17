@@ -181,6 +181,23 @@ var _ = {
         "keuangan": {
             // db.ref('verifikasi/keuangan/fincard')
             "fincard": {
+                // db.ref('verifikasi/keuangan/fincard/recap')
+                "recap": {
+                    // db.ref(`verifikasi/keuangan/fincard/recap/${periode}`)
+                    "2023-2024": {
+                        "{organisasi_index}": {
+                            "lpj_progress": 0.54,
+                            "tahun_rkat": [2024, 2025],
+                            "rkat_murni": 7000000,
+                            "rkat_alokasi": 600000,
+                            "dpm": 500000,
+                            "sisa": 50000,
+                            "disimpan_dpm": 0,
+                            "alokasi": 50000,
+                            "updated_timestamp": 1234567890,
+                        },
+                    },
+                },
                 // db.ref(`verifikasi/keuangan/fincard/${periode}`)
                 "2023-2024": {
                     // db.ref(`verifikasi/keuangan/fincard/${periode}/${organisasi_index}`)
@@ -254,26 +271,25 @@ var _ = {
             "keuangan": {
                 // db.ref(`sistem/data/keuangan/sub_aktivitas_rkat`) => SistemData.Keuangan['sub_aktivitas_rkat']
                 "sub_aktivitas_rkat": {
-                    // db.ref(`sistem/data/keuangan/sub_aktivitas_rkat/${tahun_rkat}`) => SubAktivitasRKAT[]
-                    "2024": [
-                        // if index not found, make it "unclassified" or something
-                        {
-                            nama: "Kegiatan Lembaga Mahasiswa",
+                    // db.ref(`sistem/data/keuangan/sub_aktivitas_rkat/${tahun_rkat}`) => { [kode_rkat: string]: SubAktivitasRKAT }
+                    "2024": {
+                        "03": {
+                            nama: "Kegiatan Lembaga Mahasiswa (Lembaga dan UKM)",
                             anggaran: 500000000,
                         },
-                        {
+                        "06": {
                             nama: "Delegasi Lomba Non-Akademik",
                             anggaran: 40000000,
                         },
-                        {
+                        "07": {
                             nama: "Delegasi Lomba Akademik",
                             anggaran: 220000000,
                         },
-                        {
+                        "08": {
                             nama: "Delegasi Non Lomba Nasional/Internasional",
                             anggaran: 99000000,
                         },
-                    ],
+                    }
                 },
             },
             // db.ref(`sistem/data/organisasi`) => SistemData.Organisasi[]
