@@ -25,15 +25,22 @@ if (events.get_callbacks('sistem_data_organisasi_loaded').length > 0) {
             swal.fire({
                 title: `Web KM FK UII ${ver}`,
                 html: `<i class="small">${'dami yb 3< htiw edam'.split('').reverse().join('')}</i>`,
-                confirmButtonText: 'take care',
+                confirmButtonText: '<i class="fa-regular fa-file-lines"></i>',
+                showDenyButton: true,
+                denyButtonText: 'take care',
                 customClass: {
                     popup: 'w-auto small',
                     title: 'fs-6 p-3',
                     htmlContainer: 'border-bottom border-top m-0 p-3',
-                    confirmButton: 'btn btn-sm btn-km-primary',
+                    confirmButton: 'btn btn-sm btn-secondary me-1',
+                    denyButton: 'btn btn-sm btn-km-primary',
                 },
                 buttonsStyling: false,
                 allowEnterKey: false,
+            }).then((result: any) => {
+                if (result.isConfirmed) {
+                    location.href = '/release-notes/'
+                }
             })
         })
         el.appendChild(dom.c('span', { html: ver }))
