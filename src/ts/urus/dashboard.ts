@@ -2,6 +2,8 @@
 (() => {
     let is_loading = true
 
+    store.remove_item(defines.store_key.daftar_rapat)
+
     const dashboard_status_controller = {
         container: dom.q<'div'>('#dashboard_status_container')!,
         title: dom.q<'h5'>('#dashboard_status_container > h5')!,
@@ -338,6 +340,7 @@
                         db.set_kegiatan_updated_timestamp(uid),
                     ])
 
+                    update_daftar_button(Object.values(OrganisasiKegiatan)[_kegiatan.organisasi_index], _kegiatan.status.verifikasi)
                     update_berkas_ketentuan_table(Object.values(OrganisasiKegiatan)[_kegiatan.organisasi_index], _kegiatan.nama_kegiatan)
                     update_templat_email(_kegiatan, select_templat_email.value as TemplatEmail, select_tujuan_email.value as RapatDengan)
                     dashboard_status_controller.update(_kegiatan)
@@ -362,11 +365,14 @@
      * @param antrean_lem tanggal lem buat dicari diff nya dg dpm
      * @returns 
      */
-    const create_rapat_list_group_item = (jenis: JenisRapat, dengan: RapatDengan, status: StatusRapat, status_lem?: StatusRapat, antrean_lem: string = '') => {
+    const create_rapat_list_group_item = (organisasi: OrganisasiKegiatan, jenis: JenisRapat, dengan: RapatDengan, status: StatusRapat, status_lem?: StatusRapat, antrean_lem: string = '') => {
         const children: Node[] = []
 
         if (status === StatusRapat.NOT_STARTED) {
-            if (dengan === RapatDengan.DPM && status === StatusRapat.NOT_STARTED && status_lem === StatusRapat.NOT_STARTED) {
+            if (organisasi === OrganisasiKegiatan.LPM_CARDIOS && dengan === RapatDengan.LEM) {
+                children.push(dom.c('span', { classes: ['text-secondary'], html: 'LPM tidak perlu' }))
+            }
+            else if (organisasi !== OrganisasiKegiatan.LPM_CARDIOS && dengan === RapatDengan.DPM && status_lem === StatusRapat.NOT_STARTED) {
                 children.push(dom.c('span', { classes: ['text-secondary'], html: 'belum daftar LEM' }))
             }
             else {
@@ -377,10 +383,11 @@
                     },
                     html: 'Daftar',
                 })
+                const organisasi_index = Object.values(OrganisasiKegiatan).indexOf(organisasi)
                 daftar_button.addEventListener('click', () => {
                     const penyelenggara_kegiatan = Object.values(PenyelenggaraKegiatan)[_kegiatan.penyelenggara_kegiatan_index]
                     const tanggal_pertama_kegiatan = common.to_date_string(new Date(_kegiatan.tanggal_kegiatan[0]))
-                    const params = { jenis, dengan, status_lem, antrean_lem, penyelenggara_kegiatan, tanggal_pertama_kegiatan }
+                    const params = { jenis, dengan, status_lem, antrean_lem, organisasi_index, penyelenggara_kegiatan, tanggal_pertama_kegiatan }
                     store.set_item(defines.store_key.daftar_rapat, JSON.stringify(params))
                     location.href = `/urus/daftar-rapat/`
                 })
@@ -396,6 +403,38 @@
             html: `<div class="flex-grow-1 pe-2">${defines.jenis_rapat_text[jenis]} ${defines.rapat_dengan_text[dengan]}</div>`,
             children,
         })
+    }
+
+    const update_daftar_button = async (organisasi: OrganisasiKegiatan, status_verifikasi: Kegiatan['status']['verifikasi']) => {
+        const antrean_lem = {
+            [JenisRapat.PROPOSAL]: '',
+            [JenisRapat.LPJ]: '',
+        }
+        await db.get_pengajuan_rapat_kegiatan(uid)
+            .then(snap => {
+                if (!snap.exists()) return
+                const val = snap.val()
+                if (val[JenisRapat.PROPOSAL]) {
+                    const propo = val[JenisRapat.PROPOSAL][RapatDengan.LEM]
+                    if (propo) {
+                        antrean_lem[JenisRapat.PROPOSAL] = common.to_date_string(new Date((propo.diterima || propo.diajukan)))
+                    }
+                }
+                if (val[JenisRapat.LPJ]) {
+                    const lpj = val[JenisRapat.LPJ][RapatDengan.LEM]
+                    if (lpj) {
+                        antrean_lem[JenisRapat.LPJ] = common.to_date_string(new Date((lpj.diterima || lpj.diajukan)))
+                    }
+                }
+            })
+
+        rapat_list_group.innerHTML = ''
+        rapat_list_group.appendChild(create_rapat_list_group_item(organisasi, JenisRapat.PROPOSAL, RapatDengan.LEM, status_verifikasi.proposal.lem))
+        rapat_list_group.appendChild(create_rapat_list_group_item(organisasi, JenisRapat.PROPOSAL, RapatDengan.DPM,
+            status_verifikasi.proposal.dpm, status_verifikasi.proposal.lem, antrean_lem[JenisRapat.PROPOSAL]))
+        rapat_list_group.appendChild(create_rapat_list_group_item(organisasi, JenisRapat.LPJ, RapatDengan.LEM, status_verifikasi.lpj.lem))
+        rapat_list_group.appendChild(create_rapat_list_group_item(organisasi, JenisRapat.LPJ, RapatDengan.DPM,
+            status_verifikasi.lpj.dpm, status_verifikasi.lpj.lem, antrean_lem[JenisRapat.LPJ]))
     }
 
     const update_daftar_ketentuan = (kegiatan: Kegiatan) => {
@@ -651,53 +690,22 @@ https://zoom.xxx`,
 
             const kegiatan = snap.val()
             const organisasi = Object.values(OrganisasiKegiatan)[kegiatan.organisasi_index]
-
-            // detail update
             update_detail_kegiatan(kegiatan)
-
-            // rapat update
-            // update ketentuan
             update_daftar_ketentuan(kegiatan)
-            // start listening to status verifikasi
-            db.on_kegiatan_status_verifikasi(uid, async snap_stat => {
-                if (!snap_stat.exists()) return
-                const status_verifikasi = snap_stat.val()
-
-                const antrean_lem = {
-                    [JenisRapat.PROPOSAL]: '',
-                    [JenisRapat.LPJ]: '',
-                }
-                await db.get_pengajuan_rapat_kegiatan(uid)
-                    .then(snap => {
-                        if (!snap.exists()) return
-                        const val = snap.val()
-                        if (val[JenisRapat.PROPOSAL]) {
-                            const propo = val[JenisRapat.PROPOSAL][RapatDengan.LEM]
-                            if (propo) {
-                                antrean_lem[JenisRapat.PROPOSAL] = common.to_date_string(new Date((propo.diterima || propo.diajukan)))
-                            }
-                        }
-                        if (val[JenisRapat.LPJ]) {
-                            const lpj = val[JenisRapat.LPJ][RapatDengan.LEM]
-                            if (lpj) {
-                                antrean_lem[JenisRapat.LPJ] = common.to_date_string(new Date((lpj.diterima || lpj.diajukan)))
-                            }
-                        }
-                    })
-
-                rapat_list_group.innerHTML = ''
-                rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.PROPOSAL, RapatDengan.LEM, status_verifikasi.proposal.lem))
-                rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.PROPOSAL, RapatDengan.DPM, status_verifikasi.proposal.dpm, status_verifikasi.proposal.lem, antrean_lem[JenisRapat.PROPOSAL]))
-                rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.LPJ, RapatDengan.LEM, status_verifikasi.lpj.lem))
-                rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.LPJ, RapatDengan.DPM, status_verifikasi.lpj.dpm, status_verifikasi.lpj.lem, antrean_lem[JenisRapat.LPJ]))
-            })
-
             update_berkas_ketentuan_table(organisasi, kegiatan.nama_kegiatan)
             update_templat_email(kegiatan, TemplatEmail.BERKAS_ZOOM, select_tujuan_email.value as RapatDengan)
             dashboard_status_controller.update(kegiatan)
 
             _kegiatan = kegiatan
             _form_edit_prev_kegiatan = kegiatan
+
+            // start listening to status verifikasi
+            db.on_kegiatan_status_verifikasi(uid, snap => {
+                if (!snap.exists()) return
+                _kegiatan.status.verifikasi = snap.val()
+                update_daftar_button(Object.values(OrganisasiKegiatan)[_kegiatan.organisasi_index], _kegiatan.status.verifikasi)
+                dashboard_status_controller.update(_kegiatan)
+            })
 
             dom.enable(button_ubah)
         })

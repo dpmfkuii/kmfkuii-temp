@@ -29,6 +29,7 @@
     const dengan: string = params.dengan || ''
     const status_lem: StatusRapat = params.status_lem || ''
     const antrean_lem: string = params.antrean_lem || ''
+    const organisasi: OrganisasiKegiatan = Object.values(OrganisasiKegiatan)[params.organisasi_index] || ''
     const penyelenggara_kegiatan: PenyelenggaraKegiatan = params.penyelenggara_kegiatan || PenyelenggaraKegiatan.INTERNAL_KM
     const tanggal_pertama_kegiatan: Date = new Date(params.tanggal_pertama_kegiatan) || new Date()
 
@@ -37,7 +38,7 @@
         return
     }
 
-    if (dengan === RapatDengan.DPM && status_lem === StatusRapat.NOT_STARTED) {
+    if (organisasi !== OrganisasiKegiatan.LPM_CARDIOS && dengan === RapatDengan.DPM && status_lem === StatusRapat.NOT_STARTED) {
         auth.redirect_home(UserRole.PENGURUS)
         return
     }
@@ -91,7 +92,7 @@
                 input_tanggal_rapat_invalid_feedback.innerHTML = 'Pendaftaran di tanggal itu sudah <strong>tutup</strong>!'
                 input_tanggal_rapat.classList.add('is-invalid')
             }
-            // cek kalau proposal H-7
+            // cek H- proposal
             else if (jenis === JenisRapat.PROPOSAL) {
                 const day_to = penyelenggara_kegiatan === PenyelenggaraKegiatan.INTERNAL_KM ? 30 : 7
                 const day_diff = common.get_difference_in_days(date_tanggal_rapat, tanggal_pertama_kegiatan)

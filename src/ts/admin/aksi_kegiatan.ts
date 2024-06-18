@@ -290,12 +290,17 @@
     //#endregion
 
     //#region rapat panel logic
-    const create_rapat_list_group_item = (jenis: JenisRapat, dengan: RapatDengan, status: StatusRapat, status_lem?: StatusRapat) => {
+    const create_rapat_list_group_item = (organisasi: OrganisasiKegiatan, jenis: JenisRapat, dengan: RapatDengan, status: StatusRapat, status_lem?: StatusRapat) => {
         let status_text = ''
-        if (dengan === RapatDengan.DPM && status === StatusRapat.NOT_STARTED && status_lem === StatusRapat.NOT_STARTED) {
-            status_text = '<span class="text-secondary">belum daftar LEM</span>'
+        if (status === StatusRapat.NOT_STARTED) {
+            if (organisasi === OrganisasiKegiatan.LPM_CARDIOS && dengan === RapatDengan.LEM) {
+                status_text = '<span class="text-secondary">LPM tidak perlu</span>'
+            }
+            else if (organisasi !== OrganisasiKegiatan.LPM_CARDIOS && dengan === RapatDengan.DPM && status_lem === StatusRapat.NOT_STARTED) {
+                status_text = '<span class="text-secondary">belum daftar LEM</span>'
+            }
         }
-        else {
+        if (status_text === '') {
             status_text = main.get_status_rapat_text(status, true)
         }
 
@@ -439,11 +444,12 @@
 
     const rapat_panel_update = (kegiatan: Kegiatan) => {
         const status_verifikasi = kegiatan.status.verifikasi
+        const organisasi = Object.values(OrganisasiKegiatan)[kegiatan.organisasi_index]
         rapat_list_group.innerHTML = ''
-        rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.PROPOSAL, RapatDengan.LEM, status_verifikasi.proposal.lem))
-        rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.PROPOSAL, RapatDengan.DPM, status_verifikasi.proposal.dpm, status_verifikasi.proposal.lem))
-        rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.LPJ, RapatDengan.LEM, status_verifikasi.lpj.lem))
-        rapat_list_group.appendChild(create_rapat_list_group_item(JenisRapat.LPJ, RapatDengan.DPM, status_verifikasi.lpj.dpm, status_verifikasi.lpj.lem))
+        rapat_list_group.appendChild(create_rapat_list_group_item(organisasi, JenisRapat.PROPOSAL, RapatDengan.LEM, status_verifikasi.proposal.lem))
+        rapat_list_group.appendChild(create_rapat_list_group_item(organisasi, JenisRapat.PROPOSAL, RapatDengan.DPM, status_verifikasi.proposal.dpm, status_verifikasi.proposal.lem))
+        rapat_list_group.appendChild(create_rapat_list_group_item(organisasi, JenisRapat.LPJ, RapatDengan.LEM, status_verifikasi.lpj.lem))
+        rapat_list_group.appendChild(create_rapat_list_group_item(organisasi, JenisRapat.LPJ, RapatDengan.DPM, status_verifikasi.lpj.dpm, status_verifikasi.lpj.lem))
     }
     //#endregion
 
