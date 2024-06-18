@@ -1,21 +1,42 @@
 {
     "name": "Web KM FK UII",
     "short_name": "Web KM",
+    "lang": "id-ID",
     "description": "Web Keluarga Mahasiswa Fakultas Kedokteran Universitas Islam Indonesia.",
+    "categories": ["productivity"],
+    "id": "/",
+    "scope": "/",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#ffffff",
+    "orientation": "natural",
+    "theme_color": "#042188",
+    "background_color": "white",
     "icons": [
         {
             "src": "/assets/images/favicon.png",
             "type": "image/png",
-            "sizes": "256x256"
+            "sizes": "512x512",
+            "purpose": "any"
         },
         {
-            "src": "/assets/images/favicon512.png",
+            "src": "/assets/images/favicon.png",
             "type": "image/png",
-            "sizes": "512x512"
+            "sizes": "512x512",
+            "purpose": "maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/assets/images/ss-narrow-1.png",
+            "type": "image/png",
+            "sizes": "540x720",
+            "form_factor": "narrow"
+        },
+        {
+            "src": "/assets/images/ss-wide-1.png",
+            "type": "image/png",
+            "sizes": "720x420",
+            "form_factor": "wide"
         }
     ]
 }
