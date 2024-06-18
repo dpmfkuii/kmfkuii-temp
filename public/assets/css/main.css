@@ -217,6 +217,10 @@ a.disabled {
     animation: 125ms ease animation-rise;
 }
 
+.start-animation-rise-500 {
+    animation: 500ms ease animation-rise;
+}
+
 @keyframes animation-rise {
     0% {
         opacity: 0;
@@ -296,7 +300,8 @@ a.disabled {
     overflow-x: auto;
 }
 .fincard-footer {
-    padding: 0.5rem 0;
+    padding: 0;
+    text-align: center;
 }
 .fincard .label {
     color: rgb(255, 255, 255, 0.3);

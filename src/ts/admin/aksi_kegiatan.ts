@@ -759,7 +759,7 @@ Jangan lupa untuk mengirim link Zoom yang telah disiapkan melalui fitur yang sud
         }
 
         list_group.prepend(dom.c('li', {
-            classes: ['list-group-item', `list-group-item-${defines.log_colors.awal_log}`, 'text-center', 'rounded-bottom'],
+            classes: ['list-group-item', `list-group-item-${defines.log_colors.awal_log}`, 'text-center'],
             html: 'Baca log kegiatan dari bawah ke atas <i class="fa-solid fa-arrow-turn-up"></i>',
         }))
     })

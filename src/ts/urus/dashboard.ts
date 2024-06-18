@@ -80,6 +80,22 @@
         },
     }
 
+    dashboard_status_controller.update({
+        nama_kegiatan: 'Memuat...',
+        status: {
+            verifikasi: {
+                proposal: {
+                    lem: -1,
+                    dpm: -1,
+                },
+                lpj: {
+                    lem: -1,
+                    dpm: -1,
+                },
+            }
+        }
+    } as any)
+
     //#region panel detail
     const panel_detail = dom.q<'div'>('#panel_urus_detail_kegiatan')!
 
@@ -694,17 +710,21 @@ https://zoom.xxx`,
             update_daftar_ketentuan(kegiatan)
             update_berkas_ketentuan_table(organisasi, kegiatan.nama_kegiatan)
             update_templat_email(kegiatan, TemplatEmail.BERKAS_ZOOM, select_tujuan_email.value as RapatDengan)
-            dashboard_status_controller.update(kegiatan)
 
             _kegiatan = kegiatan
             _form_edit_prev_kegiatan = kegiatan
 
             // start listening to status verifikasi
+            let is_first_load = true
             db.on_kegiatan_status_verifikasi(uid, snap => {
                 if (!snap.exists()) return
                 _kegiatan.status.verifikasi = snap.val()
                 update_daftar_button(Object.values(OrganisasiKegiatan)[_kegiatan.organisasi_index], _kegiatan.status.verifikasi)
                 dashboard_status_controller.update(_kegiatan)
+                if (is_first_load) {
+                    dashboard_status_controller.container.classList.add('start-animation-rise-500')
+                    is_first_load = false
+                }
             })
 
             dom.enable(button_ubah)
@@ -763,7 +783,7 @@ https://zoom.xxx`,
         }
 
         list_group.prepend(dom.c('li', {
-            classes: ['list-group-item', `list-group-item-${defines.log_colors.awal_log}`, 'text-center', 'rounded-bottom'],
+            classes: ['list-group-item', `list-group-item-${defines.log_colors.awal_log}`, 'text-center'],
             html: 'Baca log kegiatan dari bawah ke atas <i class="fa-solid fa-arrow-turn-up"></i>',
         }))
     })

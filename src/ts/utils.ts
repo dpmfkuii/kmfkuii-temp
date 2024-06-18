@@ -91,6 +91,7 @@ const dom = {
         classes?: string[],
         attributes?: { [name: string]: string },
         html?: string,
+        text?: string,
         children?: Node[],
     }): HTMLElementTagNameMap[K] {
         const el = document.createElement(tag_name)
@@ -102,6 +103,7 @@ const dom = {
                 }
             }
             if (options.html) el.innerHTML = options.html
+            else if (options.text) el.textContent = options.text
             if (options.children) {
                 for (const child of options.children) {
                     el.appendChild(child)

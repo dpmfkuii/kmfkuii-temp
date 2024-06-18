@@ -3,12 +3,15 @@ interface EventsMap {
 }
 
 (async () => {
+    //#region Init
     const IS_ADMIN = auth.get_logged_in_user()?.role === UserRole.ADMIN
     const PARAMS_UID = common.url_params.get('uid') || ''
 
     const panel_keuangan = dom.q<'div'>('#panel_keuangan')
     if (!panel_keuangan) return
+    //#endregion
 
+    //#region Fintime
     const _fintipe = Object.values(DatabaseKeuangan.FintimeTipe)
     const _finicon = Object.values(DatabaseKeuangan.FintimeIcon)
     const _fincolor = Object.values(DatabaseKeuangan.FintimeColor)
@@ -610,7 +613,21 @@ interface EventsMap {
             }
         },
     }
+    //#endregion
 
+    //#region Fincard
+    const fincard_controller = {
+        main_fincard: new Fincard(),
+        single_parent: dom.q<'div'>('#fincard_single_parent')!,
+        init() {
+            this.single_parent.appendChild(this.main_fincard.get_html_element())
+            this.main_fincard.update_height()
+        },
+    }
+    if (IS_ADMIN) fincard_controller.init()
+    //#endregion
+
+    //#region Start
     fintime_table_controller.start_loading()
     fintime_recap_table_controller.start_loading()
 
@@ -637,4 +654,5 @@ interface EventsMap {
     catch (err) {
         main.show_unexpected_error_message(err)
     }
+    //#endregion
 })()
