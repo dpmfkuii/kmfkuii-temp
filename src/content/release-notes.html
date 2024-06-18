@@ -24,7 +24,16 @@
         <div class="card-body">
             <small>
                 <code id="release_notes_container">
-                    <p class="fs-6" id="current_version_text"></p>
+                    <p class="fs-6" id="current_version_text">Version</p>
+                    <p>
+                        <small>
+                            <strong>Keywords:</strong>
+                            MAJOR = +0.1 and reset letter to 'a', minor =
+                            +letter, Build = for unplanned fixes (not adding
+                            versions), (e.g. 0.5b Build 4 = MAJOR 5, minor 1,
+                            and 3 unplanned fixes.)
+                        </small>
+                    </p>
                     <insert-component-release-notes/1.0 />
                     <insert-component-release-notes/0.9 />
                     <insert-component-release-notes/0.8 />
@@ -43,6 +52,12 @@
 
 <script defer>
     document.querySelector("#current_version_text").textContent =
-        "Version " +
-        document.querySelector("#release_notes_container h6")?.textContent;
+        "V" +
+        document
+            .querySelector("#release_notes_container div")
+            ?.textContent.substring(15)
+            .replace("?", "") +
+        " (" +
+        new Date("2024-06-19").toLocaleDateString() +
+        ")";
 </script>
