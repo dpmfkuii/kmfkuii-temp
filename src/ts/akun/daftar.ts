@@ -116,6 +116,20 @@
             await Promise.all([
                 db.set_kegiatan(new_kegiatan),
                 db.set_logbook(new_kegiatan),
+                db.keuangan.fincard.set(new_kegiatan.periode_kegiatan, new_kegiatan.organisasi_index, new_kegiatan.uid, {
+                    nama_kegiatan: new_kegiatan.nama_kegiatan,
+                    tahun_rkat: new Date().getFullYear(),
+                    sub_aktivitas_rkat_index: -1,
+                    rkat_murni: 0,
+                    rkat_alokasi: {},
+                    dpm: 0,
+                    sisa: 0,
+                    sudah_kembali: false,
+                    disimpan_dpm: 0,
+                    alokasi: {},
+                    status_lpj: StatusRapat.NOT_STARTED,
+                    updated_timestamp: created_timestamp,
+                }),
                 db.add_kegiatan_log(new_user.uid, defines.log_colors.akun_berhasil_dibuat, defines.log_text.akun_berhasil_dibuat),
             ])
             await auth.register(new_user)

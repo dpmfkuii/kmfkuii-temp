@@ -1,4 +1,4 @@
-const current_cache_name = 'web-km-fkuii-v0.6a1'
+const current_cache_name = 'web-km-fkuii-v0.6a2'
 
 self.addEventListener('install', ev => {
     ev.waitUntil(

@@ -347,10 +347,7 @@
                 const log_text = `@html Pembaruan data kegiatan.<ul>${changes_text.join('')}</ul>`
 
                 try {
-                    await Promise.all([
-                        db.update_kegiatan(uid, kegiatan_changes),
-                        db.change_logbook(old_periode_kegiatan, old_organisasi_index, _kegiatan),
-                    ])
+                    await db.sequence_update_detail_kegiatan(uid, kegiatan_changes, old_periode_kegiatan, old_organisasi_index, _kegiatan)
                     await Promise.all([
                         db.add_kegiatan_log(uid, defines.log_colors.pembaruan_data_kegiatan, log_text),
                         db.set_kegiatan_updated_timestamp(uid),

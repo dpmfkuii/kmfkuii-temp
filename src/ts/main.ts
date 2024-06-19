@@ -914,12 +914,40 @@ const db = {
     async sequence_set_status_verifikasi(uid: string, jenis_rapat: JenisRapat, rapat_dengan: RapatDengan, value: StatusRapat | number = common.timestamp()) {
         await Promise.all([
             db.set_kegiatan_status_verifikasi(uid, jenis_rapat, rapat_dengan, value),
-            db.get_kegiatan(uid).then(snap => db.set_logbook(snap.val()!)),
+            db.get_kegiatan(uid).then(snap => {
+                const kegiatan = snap.val()!
+                db.set_logbook(kegiatan)
+                db.keuangan.fincard.update(
+                    kegiatan.periode_kegiatan, kegiatan.periode_kegiatan,
+                    kegiatan.organisasi_index, kegiatan.organisasi_index, uid,
+                    {
+                        status_lpj: kegiatan.status.verifikasi.lpj.dpm
+                    }
+                )
+            }),
+        ])
+    },
+    async sequence_update_detail_kegiatan(uid: string, kegiatan_changes: Kegiatan, old_periode_kegiatan: string, old_organisasi_index: number, new_kegiatan: Kegiatan) {
+        await Promise.all([
+            db.update_kegiatan(uid, kegiatan_changes),
+            db.change_logbook(old_periode_kegiatan, old_organisasi_index, new_kegiatan),
+            db.keuangan.fincard.update(
+                old_periode_kegiatan, new_kegiatan.periode_kegiatan,
+                old_organisasi_index, new_kegiatan.organisasi_index, uid,
+                {
+                    nama_kegiatan: new_kegiatan.nama_kegiatan,
+                    status_lpj: new_kegiatan.status.verifikasi.lpj.dpm,
+                }
+            ),
         ])
     },
     async sequence_hapus_akun_kegiatan(uid: string) {
         await Promise.all([
-            db.get_kegiatan(uid).then(snap => db.remove_logbook(snap.val()!)),
+            db.get_kegiatan(uid).then(snap => {
+                const kegiatan = snap.val()!
+                db.remove_logbook(kegiatan)
+                db.keuangan.fincard.remove(kegiatan.periode_kegiatan, kegiatan.organisasi_index, uid)
+            }),
             db.remove_kegiatan_logs(uid),
             db.remove_pengajuan(uid),
             db.keuangan.remove_fintime_list(uid),
@@ -1000,18 +1028,34 @@ const db = {
              * @param new_ new/updated values
              * @returns 
              */
-            update(
+            async update(
                 old_periode: string,
                 new_periode: string,
                 old_organisasi_index: number,
                 new_organisasi_index: number,
                 uid: string,
-                fincard_updates: Partial<DatabaseKeuangan.Fincard>
+                fincard_updates: Partial<DatabaseKeuangan.Fincard>,
+                old_fincard?: DatabaseKeuangan.Fincard,
             ) {
                 if (old_periode !== new_periode || old_organisasi_index !== new_organisasi_index) {
-                    main_db.ref(`verifikasi/keuangan/fincard/${old_periode}/${old_organisasi_index}/${uid}`).remove()
+                    if (!old_fincard) {
+                        await this.get(old_periode, old_organisasi_index, uid).then(snap => old_fincard = snap.val()!)
+                    }
+
+                    if (old_fincard) {
+                        this.remove(old_periode, old_organisasi_index, uid)
+                        this.set(new_periode, new_organisasi_index, uid, {
+                            ...old_fincard,
+                            ...fincard_updates,
+                        })
+                    }
+                    else {
+                        throw new Error('Gagal menyimpan Fincard.')
+                    }
                 }
-                return main_db.ref(`verifikasi/keuangan/fincard/${new_periode}/${new_organisasi_index}/${uid}`).update(fincard_updates)
+                else {
+                    main_db.ref(`verifikasi/keuangan/fincard/${new_periode}/${new_organisasi_index}/${uid}`).update(fincard_updates)
+                }
             },
             set(
                 periode: string,
@@ -1019,10 +1063,13 @@ const db = {
                 uid: string,
                 fincard: DatabaseKeuangan.Fincard
             ) {
-                this.update(periode, periode, organisasi_index, organisasi_index, uid, fincard)
+                return main_db.ref(`verifikasi/keuangan/fincard/${periode}/${organisasi_index}/${uid}`).set(fincard)
             },
             get<T = DatabaseKeuangan.Fincard>(periode: string, organisasi_index: number, uid: string): Promise<FirebaseSnapshot<T>> {
                 return main_db.ref(`verifikasi/keuangan/fincard/${periode}/${organisasi_index}/${uid}`).once<T>('value')
+            },
+            remove(periode: string, organisasi_index: number, uid: string) {
+                main_db.ref(`verifikasi/keuangan/fincard/${periode}/${organisasi_index}/${uid}`).remove()
             },
             update_organisasi(
                 periode: string,

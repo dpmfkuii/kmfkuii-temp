@@ -333,3 +333,33 @@ var _ = {
         "resource manager in the future???": {},
     },
 }
+
+// reset all fincard
+// db.get_logbook().then(snap => {
+//     const a = snap.val()
+//     for (const b of Object.values(a)) {
+//         for (const c of Object.values(b)) {
+//             for (const uid in c) {
+//                 db.get_kegiatan(uid).then(async snap => {
+//                     if (snap.exists()) {
+//                         const kegiatan = snap.val()
+//                         db.keuangan.fincard.set(kegiatan.periode_kegiatan, kegiatan.organisasi_index, kegiatan.uid, {
+//                             nama_kegiatan: kegiatan.nama_kegiatan,
+//                             tahun_rkat: new Date().getFullYear(),
+//                             sub_aktivitas_rkat_index: -1,
+//                             rkat_murni: 0,
+//                             rkat_alokasi: {},
+//                             dpm: 0,
+//                             sisa: 0,
+//                             sudah_kembali: false,
+//                             disimpan_dpm: 0,
+//                             alokasi: {},
+//                             status_lpj: StatusRapat.NOT_STARTED,
+//                             updated_timestamp: kegiatan.created_timestamp,
+//                         })
+//                     }
+//                 })
+//             }
+//         }
+//     }
+// })
