@@ -186,7 +186,6 @@ var _ = {
                     // db.ref(`verifikasi/keuangan/fincard/recap/${periode}`)
                     "2023-2024": {
                         "{organisasi_index}": {
-                            "lpj_progress": 0.54,
                             "tahun_rkat": [2024, 2025],
                             "rkat_murni": 7000000,
                             "rkat_alokasi": 600000,
@@ -194,6 +193,7 @@ var _ = {
                             "sisa": 50000,
                             "disimpan_dpm": 0,
                             "alokasi": 50000,
+                            "lpj_progress": 0.54,
                             "updated_timestamp": 1234567890,
                         },
                     },
@@ -205,18 +205,20 @@ var _ = {
                         // db.ref(`verifikasi/keuangan/fincard/${periode}/${organisasi_index}/${uid}`)
                         "{uid}": {
                             "nama_kegiatan": "Konferensi", // make sure any instances where the main `nama_kegiatan` is changed this gets changed as well
-                            "status_lpj": -1, // updating status should not update timestamp, just update the status
                             "tahun_rkat": 2024,
                             "sub_aktivitas_rkat_index": 0,
                             "rkat_murni": 7000000,
-                            "rkat_alokasi": 600000,
+                            "rkat_alokasi": {
+                                "{dari_uid}": 60000,
+                            },
                             "dpm": 500000,
                             "sisa": 50000,
                             "sudah_kembali": true,
                             "disimpan_dpm": 0,
                             "alokasi": {
-                                "{uid}": 50000,
+                                "{untuk_uid}": 50000,
                             },
+                            "status_lpj": -1, // updating status should not update timestamp, just update the status
                             "updated_timestamp": 1234567890,
                         },
                     },
@@ -237,6 +239,17 @@ var _ = {
                             "DPM:500000",
                         ],
                         "keterangan": "",
+                    },
+                },
+            },
+            // db.ref(`verifikasi/keuangan/firaa`)
+            "firaa": {
+                // db.ref(`verifikasi/keuangan/firaa/${tahun_rkat}`)
+                "{tahun_rkat}": {
+                    // db.ref(`verifikasi/keuangan/firaa/${tahun_rkat}/${organisasi_index}`)
+                    "{organisasi_index}": {
+                        idealita: 30000000,
+                        realita: 20000000,
                     },
                 },
             },
@@ -272,24 +285,28 @@ var _ = {
                 // db.ref(`sistem/data/keuangan/sub_aktivitas_rkat`) => SistemData.Keuangan['sub_aktivitas_rkat']
                 "sub_aktivitas_rkat": {
                     // db.ref(`sistem/data/keuangan/sub_aktivitas_rkat/${tahun_rkat}`) => { [kode_rkat: string]: SubAktivitasRKAT }
-                    "2024": {
-                        "03": {
+                    "2024": [
+                        {
+                            kode: "03",
                             nama: "Kegiatan Lembaga Mahasiswa (Lembaga dan UKM)",
                             anggaran: 500000000,
                         },
-                        "06": {
+                        {
+                            kode: "06",
                             nama: "Delegasi Lomba Non-Akademik",
                             anggaran: 40000000,
                         },
-                        "07": {
+                        {
+                            kode: "07",
                             nama: "Delegasi Lomba Akademik",
                             anggaran: 220000000,
                         },
-                        "08": {
+                        {
+                            kode: "08",
                             nama: "Delegasi Non Lomba Nasional/Internasional",
                             anggaran: 99000000,
                         },
-                    }
+                    ]
                 },
             },
             // db.ref(`sistem/data/organisasi`) => SistemData.Organisasi[]

@@ -225,6 +225,15 @@ type LogColor = 'light' | 'info' | 'success' | 'warning' | 'danger'
 
 const main = {
     keuangan: {} as MainKeuangan,
+    set_bs_tooltip(el: HTMLElement, tooltip_text: string) {
+        dom.qa('.tooltip').forEach(n => {
+            if (dom.qe(n, '.tooltip-inner')?.textContent === el.getAttribute('data-bs-title')) {
+                n.remove()
+            }
+        })
+        el.setAttribute('data-bs-title', tooltip_text)
+        new (bootstrap as any).Tooltip(el)
+    },
     get_logbook_periode_text(current_fullyear: number = new Date().getFullYear()) {
         return `${current_fullyear - 1}—${current_fullyear + 1}`
     },
@@ -543,7 +552,25 @@ interface MainKeuangan {
             new_saldo: number
         }
         generate_recap_tfoot(kredit: number, debit: number, saldo: number, tfoot: HTMLTableSectionElement): void
-
+    }
+    fincard: {
+        get_alokasi_amount(alokasi: DatabaseKeuangan.Fincard['alokasi'] | DatabaseKeuangan.Fincard['rkat_alokasi']): number
+        get_front_card_data_single(fincard: DatabaseKeuangan.Fincard): {
+            title: string
+            out: string
+            in: string
+            left: string
+            rkat: string
+        }
+        get_back_card_data_single(fincard: DatabaseKeuangan.Fincard): {
+            out_rkat: string
+            out_dpm: string
+            in_dpm: string
+            in_alokasi: string
+            out_alokasi: string
+            left: string
+            lpj: string
+        }
     }
 }
 
@@ -694,7 +721,35 @@ main.keuangan = {
                 children: tds,
             }))
         },
-    }
+    },
+    fincard: {
+        get_alokasi_amount(alokasi: DatabaseKeuangan.Fincard['alokasi'] | DatabaseKeuangan.Fincard['rkat_alokasi']) {
+            return Object.values(alokasi || []).reduce((a, b) => a + b, 0) || 0
+        },
+        get_front_card_data_single(fincard: DatabaseKeuangan.Fincard) {
+            return {
+                title: fincard.nama_kegiatan,
+                out: common.format_rupiah_num(fincard.rkat_murni + this.get_alokasi_amount(fincard.rkat_alokasi) + fincard.dpm),
+                in: common.format_rupiah_num(fincard.sisa),
+                left: common.format_rupiah_num(fincard.sisa - fincard.disimpan_dpm - this.get_alokasi_amount(fincard.alokasi)),
+                rkat: `${fincard.tahun_rkat}`,
+            }
+        },
+        get_back_card_data_single(fincard: DatabaseKeuangan.Fincard) {
+            const out_rkat_amount = fincard.rkat_murni + this.get_alokasi_amount(fincard.rkat_alokasi)
+            const in_alokasi_amount = fincard.sisa - fincard.disimpan_dpm
+            const out_alokasi_amount = this.get_alokasi_amount(fincard.alokasi)
+            return {
+                out_rkat: common.format_rupiah_num(out_rkat_amount * -1),
+                out_dpm: common.format_rupiah_num(fincard.dpm * -1),
+                in_dpm: `${fincard.disimpan_dpm > 0 ? '+' : ''}${common.format_rupiah_num(fincard.disimpan_dpm)}`,
+                in_alokasi: `${in_alokasi_amount > 0 ? '+' : ''}${common.format_rupiah_num(in_alokasi_amount)}`,
+                out_alokasi: common.format_rupiah_num(out_alokasi_amount * -1),
+                left: common.format_rupiah_num(in_alokasi_amount - out_alokasi_amount),
+                lpj: fincard.status_lpj > StatusRapat.IN_PROGRESS ? 'Verified' : 'Unverified'
+            }
+        },
+    },
 }
 
 const db = {
@@ -938,6 +993,44 @@ const db = {
         remove_fintime_list(uid: string) {
             return main_db.ref(`verifikasi/keuangan/fintime/${uid}`)
                 .remove()
+        },
+        fincard: {
+            /**
+             * @param old_ required to check if periode and organisasi changed
+             * @param new_ new/updated values
+             * @returns 
+             */
+            update(
+                old_periode: string,
+                new_periode: string,
+                old_organisasi_index: number,
+                new_organisasi_index: number,
+                uid: string,
+                fincard_updates: Partial<DatabaseKeuangan.Fincard>
+            ) {
+                if (old_periode !== new_periode || old_organisasi_index !== new_organisasi_index) {
+                    main_db.ref(`verifikasi/keuangan/fincard/${old_periode}/${old_organisasi_index}/${uid}`).remove()
+                }
+                return main_db.ref(`verifikasi/keuangan/fincard/${new_periode}/${new_organisasi_index}/${uid}`).update(fincard_updates)
+            },
+            set(
+                periode: string,
+                organisasi_index: number,
+                uid: string,
+                fincard: DatabaseKeuangan.Fincard
+            ) {
+                this.update(periode, periode, organisasi_index, organisasi_index, uid, fincard)
+            },
+            get<T = DatabaseKeuangan.Fincard>(periode: string, organisasi_index: number, uid: string): Promise<FirebaseSnapshot<T>> {
+                return main_db.ref(`verifikasi/keuangan/fincard/${periode}/${organisasi_index}/${uid}`).once<T>('value')
+            },
+            update_organisasi(
+                periode: string,
+                organisasi_index: number,
+                fincard_organisasi_updates: Partial<DatabaseKeuangan.FincardOrganisasi>
+            ) {
+                return main_db.ref(`verifikasi/keuangan/fincard/${periode}/${organisasi_index}`).update(fincard_organisasi_updates)
+            },
         },
     },
 }

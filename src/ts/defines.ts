@@ -114,13 +114,15 @@ const sistem = {
 
 namespace DatabaseKeuangan {
     export interface Snapshot {
-        fincard: FincardKegiatan
+        fincard: FincardKM & {
+            recap: FincardRecapKM
+        }
         fintime: {
             [uid: string]: FintimeList
         }
     }
 
-    export interface FincardKegiatan {
+    export interface FincardKM {
         [periode: string]: FincardPeriode
     }
 
@@ -130,6 +132,18 @@ namespace DatabaseKeuangan {
 
     export interface FincardOrganisasi {
         [uid: string]: Fincard
+    }
+
+    export interface FincardRecapKM {
+        [periode: string]: FincardRecapPeriode
+    }
+
+    export interface FincardRecapPeriode {
+        [organisasi_index: string | number]: FincardRecapOrganisasi
+    }
+
+    export interface FincardRecapOrganisasi {
+        [uid: string]: FincardRecap
     }
 
     export interface FintimeList {
@@ -142,18 +156,32 @@ namespace DatabaseKeuangan {
      */
     export interface Fincard {
         nama_kegiatan: string // !IMPORTANT
-        status_lpj: StatusRapat // !IMPORTANT
         tahun_rkat: number
         sub_aktivitas_rkat_index: number
         rkat_murni: number
-        rkat_alokasi: number
+        rkat_alokasi: {
+            [dari_uid: string]: number
+        }
         dpm: number
         sisa: number
         sudah_kembali: boolean
         disimpan_dpm: number
         alokasi: {
-            [uid: string]: number
+            [untuk_uid: string]: number
         }
+        status_lpj: StatusRapat // !IMPORTANT
+        updated_timestamp: number
+    }
+
+    export interface FincardRecap {
+        tahun_rkat: number[]
+        rkat_murni: number
+        rkat_alokasi: number
+        dpm: number
+        sisa: number
+        disimpan_dpm: number
+        alokasi: number
+        lpj_progress: number
         updated_timestamp: number
     }
 

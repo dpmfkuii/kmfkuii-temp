@@ -245,7 +245,7 @@
     const update_pagination = (list: LogbookData[]) => {
         _paginated_list = list
         pagination_current_page = 0
-        pagination_span_jumlah_data.innerText = `dari ${list.length} data`
+        pagination_span_jumlah_data.textContent = `dari ${list.length} data`
 
         const opts = []
         if (_paginated_list.length < pagination_display_amount_options[pagination_display_amount_options.length - 1]) {

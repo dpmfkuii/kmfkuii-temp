@@ -22,7 +22,7 @@ interface EventsMap {
 
     const fintime_table_controller = {
         tbody: dom.qe<'tbody'>(fintime_table, 'tbody')!,
-        start_loading() {
+        show_loading() {
             this.tbody.innerHTML = `<tr><td><strong class="text-secondary fst-italic">Memuat...</strong></td></tr>`
         },
         show_nothing() {
@@ -574,7 +574,7 @@ interface EventsMap {
     const fintime_recap_table_controller = {
         tbody: dom.qe<'tbody'>(fintime_recap_table, 'tbody')!,
         tfoot: dom.qe<'tfoot'>(fintime_recap_table, 'tfoot')!,
-        start_loading() {
+        show_loading() {
             this.tbody.innerHTML = `<tr><td colspan="5"><strong class="text-secondary fst-italic">Memuat...</strong></td></tr>`
             this.tfoot.innerHTML = ''
         },
@@ -617,38 +617,60 @@ interface EventsMap {
 
     //#region Fincard
     const fincard_controller = {
-        main_fincard: new Fincard(),
+        main_fincard: new Fincard.Card(),
         single_parent: dom.q<'div'>('#fincard_single_parent')!,
+        show_nothing() {
+            this.main_fincard.set_title('Belum ada data')
+        },
+        update(fincard: DatabaseKeuangan.Fincard) {
+            this.main_fincard.update_data_single(fincard)
+        },
         init() {
             this.single_parent.appendChild(this.main_fincard.get_html_element())
-            this.main_fincard.update_height()
+            this.main_fincard.start_update_height_on_resize()
         },
     }
-    if (IS_ADMIN) fincard_controller.init()
+    fincard_controller.init()
     //#endregion
 
     //#region Start
-    fintime_table_controller.start_loading()
-    fintime_recap_table_controller.start_loading()
+    fintime_table_controller.show_loading()
+    fintime_recap_table_controller.show_loading()
 
     try {
         let uid = PARAMS_UID
+        let is_fintime_loaded = false
+        let is_fincard_loaded = false
         if (!IS_ADMIN) uid = auth.get_logged_in_user()?.uid || ''
         if (uid) {
-            await db.keuangan.on_fintime_list(uid, snap => {
-                if (!snap.exists()) {
-                    fintime_table_controller.show_nothing()
-                    fintime_recap_table_controller.show_nothing()
-                    return
-                }
-                const render_list = main.keuangan.fintime.fintime_list_to_render_list(snap.val())
-                fintime_table_controller.update(render_list)
-                fintime_recap_table_controller.update(render_list)
-            })
+            await Promise.all([
+                db.keuangan.on_fintime_list(uid, snap => {
+                    if (snap.exists()) {
+                        is_fintime_loaded = true
+                        const render_list = main.keuangan.fintime.fintime_list_to_render_list(snap.val())
+                        fintime_table_controller.update(render_list)
+                        fintime_recap_table_controller.update(render_list)
+                    }
+                }),
+                db.get_kegiatan(uid).then(async snap => {
+                    if (snap.exists()) {
+                        const kegiatan = snap.val()
+                        await db.keuangan.fincard.get(kegiatan.periode_kegiatan, kegiatan.organisasi_index, uid).then(async snap => {
+                            if (snap.exists()) {
+                                is_fincard_loaded = true
+                                fincard_controller.update(snap.val())
+                            }
+                        })
+                    }
+                })
+            ])
         }
-        else {
+        if (!is_fintime_loaded) {
             fintime_table_controller.show_nothing()
             fintime_recap_table_controller.show_nothing()
+        }
+        if (!is_fincard_loaded) {
+            fincard_controller.show_nothing()
         }
     }
     catch (err) {

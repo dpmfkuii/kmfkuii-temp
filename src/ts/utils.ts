@@ -1,7 +1,5 @@
 interface EventsMap {
-    test: {
-        text: string,
-    }
+    on_resize: UIEvent
 }
 
 // add events by doing this
@@ -52,6 +50,10 @@ const events: Events = {
         }
     },
 }
+
+window.addEventListener('resize', ev => {
+    events.trigger('on_resize', ev)
+})
 
 const dom = {
     q<K extends keyof HTMLElementTagNameMap>(selectors: K | string): HTMLElementTagNameMap[K] | null {
@@ -296,6 +298,16 @@ const common = {
         }
 
         return true
+    },
+    format_rupiah_num(num: number) {
+        const o = Math.abs(num).toFixed()
+        const p = 3
+        const q = '.'
+        let r = o.split('')
+        for (let i = o.length - p; i > 0; i -= p) {
+            r.splice(i, 0, q)
+        }
+        return `${num < 0 ? '-' : ''}${r.join('')}`
     },
     format_rupiah(num: number) {
         const o = Math.abs(num).toFixed()
