@@ -626,8 +626,7 @@ interface EventsMap {
             this.main_fincard.update_data_single(fincard)
         },
         init() {
-            this.single_parent.appendChild(this.main_fincard.get_html_element())
-            this.main_fincard.start_update_height_on_resize()
+            this.main_fincard.mount(this.single_parent)
         },
     }
     fincard_controller.init()

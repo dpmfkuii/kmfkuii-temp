@@ -217,6 +217,10 @@ a.disabled {
     animation: 125ms ease animation-rise;
 }
 
+.start-animation-rise-250 {
+    animation: 250ms ease animation-rise;
+}
+
 .start-animation-rise-500 {
     animation: 500ms ease animation-rise;
 }
@@ -304,9 +308,10 @@ a.disabled {
     text-align: center;
 }
 .fincard .label {
-    color: rgb(255, 255, 255, 0.3);
+    color: rgb(255, 255, 255, 0.4);
 }
-.fincard.fincard-basic {
+.fincard.fincard-basic,
+.fincard.fincard-sapphire {
     background-color: rgb(0, 35, 120);
     box-shadow: 0 0.15rem 0.6rem rgba(0, 35, 120, 0.6);
 }
@@ -322,6 +327,14 @@ a.disabled {
     box-shadow: 0 0.15rem 0.6rem rgba(26, 12, 35, 0.8);
     /* background-color: rgb(var(--bs-dark-rgb)); */
     /* box-shadow: 0 0.15rem 0.6rem rgba(var(--bs-dark-rgb), 0.8); */
+}
+.fincard.fincard-emerald {
+    background-color: rgb(var(--bs-success-rgb));
+    box-shadow: 0 0.15rem 0.6rem rgba(var(--bs-success-rgb), 0.8);
+}
+.fincard.fincard-ruby {
+    background-color: rgb(var(--bs-danger-rgb));
+    box-shadow: 0 0.15rem 0.6rem rgba(var(--bs-danger-rgb), 0.8);
 }
 .fincard-vica {
     font-size: 1.3rem;

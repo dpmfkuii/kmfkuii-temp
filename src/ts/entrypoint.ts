@@ -48,13 +48,7 @@ if (events.get_callbacks('sistem_data_organisasi_loaded').length > 0) {
 })()
 
 main.invoke_animation()
-
-dom.qa('[data-bs-toggle="tooltip"]').forEach(n => {
-    try {
-        new (bootstrap as any).Tooltip(n)
-    }
-    catch { }
-})
+main.init_bs_tooltip()
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

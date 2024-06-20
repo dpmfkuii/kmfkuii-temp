@@ -232,7 +232,11 @@ const main = {
             }
         })
         el.setAttribute('data-bs-title', tooltip_text)
-        new (bootstrap as any).Tooltip(el)
+        new bootstrap.Tooltip(el)
+    },
+    init_bs_tooltip(tooltip_elements: HTMLElement[] | NodeListOf<HTMLElement> = dom.qa('[data-bs-toggle="tooltip"]')) {
+        dom.qa('.tooltip').forEach(n => n.remove())
+        tooltip_elements.forEach(n => new bootstrap.Tooltip(n))
     },
     get_logbook_periode_text(current_fullyear: number = new Date().getFullYear()) {
         return `${current_fullyear - 1}—${current_fullyear + 1}`
@@ -554,22 +558,23 @@ interface MainKeuangan {
         generate_recap_tfoot(kredit: number, debit: number, saldo: number, tfoot: HTMLTableSectionElement): void
     }
     fincard: {
+        shorten_periode_text(periode_kegiatan: string): string
         get_alokasi_amount(alokasi: DatabaseKeuangan.Fincard['alokasi'] | DatabaseKeuangan.Fincard['rkat_alokasi']): number
         get_front_card_data_single(fincard: DatabaseKeuangan.Fincard): {
             title: string
-            out: string
-            in: string
-            left: string
+            out: number
+            in: number
+            left: number
             rkat: string
+            lpj: string
         }
         get_back_card_data_single(fincard: DatabaseKeuangan.Fincard): {
-            out_rkat: string
-            out_dpm: string
-            in_dpm: string
-            in_alokasi: string
-            out_alokasi: string
-            left: string
-            lpj: string
+            out_rkat: number
+            out_dpm: number
+            in_dpm: number
+            in_alokasi: number
+            out_alokasi: number
+            left: number
         }
     }
 }
@@ -723,30 +728,34 @@ main.keuangan = {
         },
     },
     fincard: {
-        get_alokasi_amount(alokasi: DatabaseKeuangan.Fincard['alokasi'] | DatabaseKeuangan.Fincard['rkat_alokasi']) {
+        shorten_periode_text(periode_kegiatan) {
+            return periode_kegiatan.split('-').map(s => s.slice(-2)).join('/')
+        },
+        get_alokasi_amount(alokasi) {
             return Object.values(alokasi || []).reduce((a, b) => a + b, 0) || 0
         },
-        get_front_card_data_single(fincard: DatabaseKeuangan.Fincard) {
+        get_front_card_data_single(fincard) {
+            const out_amount = fincard.rkat_murni + this.get_alokasi_amount(fincard.rkat_alokasi) + fincard.dpm
             return {
                 title: fincard.nama_kegiatan,
-                out: common.format_rupiah_num(fincard.rkat_murni + this.get_alokasi_amount(fincard.rkat_alokasi) + fincard.dpm),
-                in: common.format_rupiah_num(fincard.sisa),
-                left: common.format_rupiah_num(fincard.sisa - fincard.disimpan_dpm - this.get_alokasi_amount(fincard.alokasi)),
+                out: out_amount,
+                in: fincard.sisa,
+                left: fincard.sisa - fincard.disimpan_dpm - this.get_alokasi_amount(fincard.alokasi),
                 rkat: `${fincard.tahun_rkat}`,
+                lpj: out_amount === 0 ? 'No out' : fincard.status_lpj > StatusRapat.IN_PROGRESS ? 'Verified' : 'Unverified'
             }
         },
-        get_back_card_data_single(fincard: DatabaseKeuangan.Fincard) {
+        get_back_card_data_single(fincard) {
             const out_rkat_amount = fincard.rkat_murni + this.get_alokasi_amount(fincard.rkat_alokasi)
             const in_alokasi_amount = fincard.sisa - fincard.disimpan_dpm
             const out_alokasi_amount = this.get_alokasi_amount(fincard.alokasi)
             return {
-                out_rkat: common.format_rupiah_num(out_rkat_amount * -1),
-                out_dpm: common.format_rupiah_num(fincard.dpm * -1),
-                in_dpm: `${fincard.disimpan_dpm > 0 ? '+' : ''}${common.format_rupiah_num(fincard.disimpan_dpm)}`,
-                in_alokasi: `${in_alokasi_amount > 0 ? '+' : ''}${common.format_rupiah_num(in_alokasi_amount)}`,
-                out_alokasi: common.format_rupiah_num(out_alokasi_amount * -1),
-                left: common.format_rupiah_num(in_alokasi_amount - out_alokasi_amount),
-                lpj: fincard.status_lpj > StatusRapat.IN_PROGRESS ? 'Verified' : 'Unverified'
+                out_rkat: out_rkat_amount,
+                out_dpm: fincard.dpm,
+                in_dpm: fincard.disimpan_dpm,
+                in_alokasi: in_alokasi_amount,
+                out_alokasi: out_alokasi_amount,
+                left: in_alokasi_amount - out_alokasi_amount,
             }
         },
     },
@@ -1077,6 +1086,9 @@ const db = {
                 fincard_organisasi_updates: Partial<DatabaseKeuangan.FincardOrganisasi>
             ) {
                 return main_db.ref(`verifikasi/keuangan/fincard/${periode}/${organisasi_index}`).update(fincard_organisasi_updates)
+            },
+            get_periode<T = DatabaseKeuangan.FincardPeriode>(periode: string): Promise<FirebaseSnapshot<T>> {
+                return main_db.ref(`verifikasi/keuangan/fincard/${periode}`).once<T>('value')
             },
         },
     },

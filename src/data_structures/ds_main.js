@@ -181,23 +181,6 @@ var _ = {
         "keuangan": {
             // db.ref('verifikasi/keuangan/fincard')
             "fincard": {
-                // db.ref('verifikasi/keuangan/fincard/recap')
-                "recap": {
-                    // db.ref(`verifikasi/keuangan/fincard/recap/${periode}`)
-                    "2023-2024": {
-                        "{organisasi_index}": {
-                            "tahun_rkat": [2024, 2025],
-                            "rkat_murni": 7000000,
-                            "rkat_alokasi": 600000,
-                            "dpm": 500000,
-                            "sisa": 50000,
-                            "disimpan_dpm": 0,
-                            "alokasi": 50000,
-                            "lpj_progress": 0.54,
-                            "updated_timestamp": 1234567890,
-                        },
-                    },
-                },
                 // db.ref(`verifikasi/keuangan/fincard/${periode}`)
                 "2023-2024": {
                     // db.ref(`verifikasi/keuangan/fincard/${periode}/${organisasi_index}`)
@@ -279,6 +262,10 @@ var _ = {
                     "email_dpm": "dpm@gmail.com",
                     "email_kemahasiswaan": "kemahasiswaan@gmail.com",
                 },
+                "tahun_periode": {
+                    "saat_ini": 2024,
+                    "tertua": 2024,
+                },
             },
             // db.ref(`sistem/data/keuangan`) => SistemData.Keuangan
             "keuangan": {
@@ -354,7 +341,7 @@ var _ = {
 //                             sudah_kembali: false,
 //                             disimpan_dpm: 0,
 //                             alokasi: {},
-//                             status_lpj: StatusRapat.NOT_STARTED,
+//                             status_lpj: kegiatan.status.verifikasi.lpj.dpm,
 //                             updated_timestamp: kegiatan.created_timestamp,
 //                         })
 //                     }

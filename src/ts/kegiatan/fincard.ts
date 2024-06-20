@@ -4,13 +4,19 @@ namespace Fincard {
         MULTI = 'Multi',
     }
     export enum Rating {
-        BASIC = 'Basic',
-        GOLD = 'Gold',
-        PLATINUM = 'Platinum',
+        SAPPHIRE = 'Sapphire',
+        RUBY = 'Ruby',
+        EMERALD = 'Emerald',
+    }
+    export const RatingClass = {
+        [Rating.SAPPHIRE]: 'fincard-sapphire',
+        [Rating.RUBY]: 'fincard-ruby',
+        [Rating.EMERALD]: 'fincard-emerald',
     }
     export class Card {
         mode: Mode
         rating: Rating
+        is_flipped: boolean = false
         el: {
             flip_card: {
                 el: HTMLDivElement
@@ -32,7 +38,7 @@ namespace Fincard {
                         in: HTMLSpanElement
                         left: HTMLSpanElement
                         rkat: HTMLSpanElement
-                        updated: HTMLSpanElement
+                        lpj: HTMLSpanElement
                     }
                     footer: {
                         el: HTMLDivElement
@@ -50,7 +56,7 @@ namespace Fincard {
                         in_alokasi: HTMLSpanElement
                         out_alokasi: HTMLSpanElement
                         left: HTMLSpanElement
-                        lpj: HTMLSpanElement
+                        updated: HTMLSpanElement
                     }
                     footer: {
                         el: HTMLDivElement
@@ -60,7 +66,7 @@ namespace Fincard {
                 }
             }
         }
-        constructor(mode: Mode = Mode.SINGLE, rating: Rating = Rating.BASIC) {
+        constructor(mode: Mode = Mode.SINGLE, rating: Rating = Rating.SAPPHIRE) {
             const bb = (b: string) => dom.c('div', { classes: ['col', 'd-grid', 'px-0', 'py-2'], attributes: { role: 'button' }, html: `<i class="fa-solid fa-${b}"></i>` }) // footer button
             const tt = (t: string) => `data-bs-toggle="tooltip" data-bs-title="${t}"` // tooltip
             const p = dom.c('span') // placeholder
@@ -78,7 +84,7 @@ namespace Fincard {
                 },
                 fincard: {
                     front: {
-                        el: dom.c('div', { classes: ['fincard', 'fincard-basic', 'fincard-shine'] }),
+                        el: dom.c('div', { classes: ['fincard', 'fincard-sapphire', 'fincard-shine'] }),
                         header: {
                             el: dom.c('div', { classes: ['fincard-header'] }),
                             title: dom.c('span', { classes: ['fincard-title', 'flex-grow-1', 'pe-2', 'text-truncate'], text: '-' }),
@@ -90,7 +96,7 @@ namespace Fincard {
                             in: p,
                             left: p,
                             rkat: p,
-                            updated: p,
+                            lpj: p,
                         },
                         footer: {
                             el: dom.c('div', { classes: ['fincard-footer'] }),
@@ -99,7 +105,7 @@ namespace Fincard {
                         },
                     },
                     back: {
-                        el: dom.c('div', { classes: ['fincard', 'fincard-basic', 'fincard-shine'] }),
+                        el: dom.c('div', { classes: ['fincard', 'fincard-sapphire', 'fincard-shine'] }),
                         body: {
                             el: dom.c('div', { classes: ['fincard-body'] }),
                             out_rkat: p,
@@ -108,7 +114,7 @@ namespace Fincard {
                             in_alokasi: p,
                             out_alokasi: p,
                             left: p,
-                            lpj: p,
+                            updated: p,
                         },
                         footer: {
                             el: dom.c('div', { classes: ['fincard-footer'] }),
@@ -146,11 +152,11 @@ namespace Fincard {
 </tr>
 <tr>
     <th scope="col" class="fw-normal label"><span ${tt('Tahun/Sub Aktivitas RKAT')}>RKAT</span></th>
-    <th scope="col" class="fw-normal label"><i class="fa-solid fa-clock-rotate-left label" ${tt('Terakhir diperbarui')}></i></th>
+    <th scope="col" class="fw-normal label"><i class="fa-solid fa-check-double label" ${tt('Status verifikasi LPJ DPM')}></i></th>
 </tr>
 <tr>
     <td><span class="fincard-rkat-text">-</span></td>
-    <td><span class="fincard-updated-text">-</span></td>
+    <td><span class="fincard-lpj-text">-</span></td>
 </tr></tbody></table>
             `
             this.el.fincard.front.body.out = dom.qe(this.el.fincard.front.body.el, '.fincard-out-text')!
@@ -158,7 +164,7 @@ namespace Fincard {
             this.el.fincard.front.body.in = dom.qe(this.el.fincard.front.body.el, '.fincard-in-text')!
             this.el.fincard.front.body.left = dom.qe(this.el.fincard.front.body.el, '.fincard-left-text')!
             this.el.fincard.front.body.rkat = dom.qe(this.el.fincard.front.body.el, '.fincard-rkat-text')!
-            this.el.fincard.front.body.updated = dom.qe(this.el.fincard.front.body.el, '.fincard-updated-text')!
+            this.el.fincard.front.body.lpj = dom.qe(this.el.fincard.front.body.el, '.fincard-lpj-text')!
             this.el.fincard.front.footer.el.appendChild(dom.c('div', {
                 classes: ['row', 'g-1'], children: [
                     this.el.fincard.front.footer.more_button,
@@ -214,10 +220,9 @@ namespace Fincard {
     </tr>
     <tr><td colspan="2"><hr class="my-1" /></td></tr>
     <tr>
-        <th scope="row" class="label">LPJ</th>
-        <td ${tt('Status verifikasi LPJ DPM')}>
-            <i class="fa-solid fa-check-double label"></i>
-            <span class="fincard-lpj-text">-</span>
+        <th scope="row" class="label"><i class="fa-solid fa-clock-rotate-left"></i></th>
+        <td>
+            <span class="fincard-updated-text">-</span>
         </td>
     </tr></tbody></table>
             `
@@ -227,7 +232,7 @@ namespace Fincard {
             this.el.fincard.back.body.in_alokasi = dom.qe(this.el.fincard.back.body.el, '.fincard-in-alokasi-text')!
             this.el.fincard.back.body.out_alokasi = dom.qe(this.el.fincard.back.body.el, '.fincard-out-alokasi-text')!
             this.el.fincard.back.body.left = dom.qe(this.el.fincard.back.body.el, '.fincard-left-text')!
-            this.el.fincard.back.body.lpj = dom.qe(this.el.fincard.back.body.el, '.fincard-lpj-text')!
+            this.el.fincard.back.body.updated = dom.qe(this.el.fincard.back.body.el, '.fincard-updated-text')!
             this.el.fincard.back.footer.el.appendChild(dom.c('div', {
                 classes: ['row', 'g-1'], children: [
                     this.el.fincard.back.footer.more_button,
@@ -255,9 +260,22 @@ namespace Fincard {
         }
         flip(): void {
             this.el.flip_card.el.classList.toggle('flipped')
+            this.is_flipped = this.el.flip_card.el.classList.contains('flipped')
+        }
+        flip_to_front(): void {
+            if (this.is_flipped) this.flip()
+        }
+        mount(parent: HTMLElement): void {
+            parent.appendChild(this.el.flip_card.el)
+            this.start_update_height_on_resize()
+            main.init_bs_tooltip()
         }
         get_html_element(): HTMLDivElement {
             return this.el.flip_card.el
+        }
+        init_more_button(on_click: (ev: MouseEvent) => any): void {
+            this.el.fincard.front.footer.more_button.addEventListener('click', ev => on_click(ev))
+            this.el.fincard.back.footer.more_button.addEventListener('click', ev => on_click(ev))
         }
         hide_el(el: HTMLElement) {
             el.classList.add('visually-hidden')
@@ -265,47 +283,51 @@ namespace Fincard {
         show_el(el: HTMLElement) {
             el.classList.remove('visually-hidden')
         }
+        /**
+         * 
+         * @param options select which to update, all true by default
+         */
         update_mode(): void {
-            const lpj_icon = dom.qe<'i'>(this.el.fincard.back.body.el, 'table > tbody > tr:last-child > td > i')!
+            this.update_footer_buttons()
+            const lpj_icon = dom.qe<'i'>(this.el.fincard.front.body.el, 'table > tbody > tr:nth-child(5) > th > i')
             switch (this.mode) {
+                case Mode.SINGLE:
+                    if (lpj_icon) {
+                        lpj_icon.classList.add('fa-check')
+                        lpj_icon.classList.remove('fa-check-double')
+                    }
+                    break
+                case Mode.MULTI:
+                default:
+                    if (lpj_icon) {
+                        lpj_icon.classList.add('fa-check-double')
+                        lpj_icon.classList.remove('fa-check')
+                    }
+                    break
+            }
+        }
+        update_footer_buttons(mode: Mode = this.mode): void {
+            switch (mode) {
                 case Mode.SINGLE:
                     this.hide_el(this.el.fincard.front.footer.more_button)
                     this.hide_el(this.el.fincard.back.footer.more_button)
-                    lpj_icon.classList.add('fa-check')
-                    lpj_icon.classList.remove('fa-check-double')
                     break
                 case Mode.MULTI:
                 default:
                     this.show_el(this.el.fincard.front.footer.more_button)
                     this.show_el(this.el.fincard.back.footer.more_button)
-                    lpj_icon.classList.add('fa-check-double')
-                    lpj_icon.classList.remove('fa-check')
                     break
             }
         }
         update_rating(): void {
             this.el.fincard.front.body.rating.textContent = this.rating
-            this.el.fincard.front.el.classList.remove('fincard-basic')
-            this.el.fincard.front.el.classList.remove('fincard-gold')
-            this.el.fincard.front.el.classList.remove('fincard-platinum')
-            this.el.fincard.back.el.classList.remove('fincard-basic')
-            this.el.fincard.back.el.classList.remove('fincard-gold')
-            this.el.fincard.back.el.classList.remove('fincard-platinum')
-            switch (this.rating) {
-                case Rating.GOLD:
-                    this.el.fincard.front.el.classList.add('fincard-gold')
-                    this.el.fincard.back.el.classList.add('fincard-gold')
-                    break
-                case Rating.PLATINUM:
-                    this.el.fincard.front.el.classList.add('fincard-platinum')
-                    this.el.fincard.back.el.classList.add('fincard-platinum')
-                    break
-                case Rating.BASIC:
-                default:
-                    this.el.fincard.front.el.classList.add('fincard-basic')
-                    this.el.fincard.back.el.classList.add('fincard-basic')
-                    break
-            }
+            Object.values(RatingClass).forEach(old_class => {
+                this.el.fincard.front.el.classList.remove(old_class)
+                this.el.fincard.back.el.classList.remove(old_class)
+            })
+            const new_class = RatingClass[this.rating]
+            this.el.fincard.front.el.classList.add(new_class)
+            this.el.fincard.back.el.classList.add(new_class)
         }
         update_height(): void {
             // todo: update front/back body height to match max
@@ -336,25 +358,98 @@ namespace Fincard {
             const m = d.getMonth() + 1
             const mm = m < 10 ? `0${m}` : m
             const yy = `${d.getFullYear()}`.slice(-2)
-            this.el.fincard.front.body.updated.textContent = `${mm}/${yy}`
-            main.set_bs_tooltip(this.el.fincard.front.body.updated, d.toLocaleString())
+            this.el.fincard.back.body.updated.textContent = `${mm}/${yy}`
+            main.set_bs_tooltip(this.el.fincard.back.body.updated, d.toLocaleString())
         }
         update_data_single(fincard: DatabaseKeuangan.Fincard): void {
             const front_data = main.keuangan.fincard.get_front_card_data_single(fincard)
             const back_data = main.keuangan.fincard.get_back_card_data_single(fincard)
             this.set_title(front_data.title)
-            this.el.fincard.front.body.out.textContent = front_data.out
-            this.el.fincard.front.body.in.textContent = front_data.in
-            this.el.fincard.front.body.left.textContent = front_data.left
+            this.el.fincard.front.body.out.textContent = common.format_rupiah_num(front_data.out)
+            this.el.fincard.front.body.in.textContent = common.format_rupiah_num(front_data.in)
+            this.el.fincard.front.body.left.textContent = common.format_rupiah_num(front_data.left)
             this.set_front_rkat_text(front_data.rkat)
+            this.el.fincard.front.body.lpj.textContent = front_data.lpj
+            this.el.fincard.back.body.out_rkat.textContent = common.format_rupiah_num(-back_data.out_rkat)
+            this.el.fincard.back.body.out_dpm.textContent = common.format_rupiah_num(-back_data.out_dpm)
+            this.el.fincard.back.body.in_dpm.textContent = common.format_rupiah_num(back_data.in_dpm, true)
+            this.el.fincard.back.body.in_alokasi.textContent = common.format_rupiah_num(back_data.in_alokasi, true)
+            this.el.fincard.back.body.out_alokasi.textContent = common.format_rupiah_num(-back_data.out_alokasi)
+            this.el.fincard.back.body.left.textContent = common.format_rupiah_num(back_data.left)
             this.set_updated_text(fincard.updated_timestamp)
-            this.el.fincard.back.body.out_rkat.textContent = back_data.out_rkat
-            this.el.fincard.back.body.out_dpm.textContent = back_data.out_dpm
-            this.el.fincard.back.body.in_dpm.textContent = back_data.in_dpm
-            this.el.fincard.back.body.in_alokasi.textContent = back_data.in_alokasi
-            this.el.fincard.back.body.out_alokasi.textContent = back_data.out_alokasi
-            this.el.fincard.back.body.left.textContent = back_data.left
-            this.el.fincard.back.body.lpj.textContent = back_data.lpj
+        }
+        update_data_multi_periode(periode: string, fincard_periode: DatabaseKeuangan.FincardPeriode): void {
+            const periode_front_data = {
+                title: `KM FK UII ${main.keuangan.fincard.shorten_periode_text(periode)}`,
+                out: 0,
+                in: 0,
+                left: 0,
+                rkat: [] as number[],
+                updated: 0,
+                lpj: 0,
+            }
+            const periode_back_data = {
+                out_rkat: 0,
+                out_dpm: 0,
+                in_dpm: 0,
+                in_alokasi: 0,
+                out_alokasi: 0,
+                left: 0,
+            }
+            let fincard_count = 0
+            for (const fincard_organisasi of Object.values(fincard_periode)) {
+                for (const uid in fincard_organisasi) {
+                    const fincard = fincard_organisasi[uid]
+                    const front_data = main.keuangan.fincard.get_front_card_data_single(fincard)
+                    const back_data = main.keuangan.fincard.get_back_card_data_single(fincard)
+                    periode_front_data.out += front_data.out
+                    periode_front_data.in += front_data.in
+                    periode_front_data.left += front_data.left
+                    if (!periode_front_data.rkat.includes(fincard.tahun_rkat)) {
+                        periode_front_data.rkat.push(fincard.tahun_rkat)
+                    }
+                    periode_back_data.out_rkat += back_data.out_rkat
+                    periode_back_data.out_dpm += back_data.out_dpm
+                    periode_back_data.in_dpm += back_data.in_dpm
+                    periode_back_data.in_alokasi += back_data.in_alokasi
+                    periode_back_data.out_alokasi += back_data.out_alokasi
+                    periode_back_data.left += back_data.left
+                    if (fincard.updated_timestamp > periode_front_data.updated) {
+                        periode_front_data.updated = fincard.updated_timestamp
+                    }
+                    fincard_count++
+                    if (fincard.status_lpj > StatusRapat.IN_PROGRESS) {
+                        periode_front_data.lpj++
+                    }
+                }
+            }
+            this.set_title(periode_front_data.title)
+            this.el.fincard.front.body.out.textContent = common.format_rupiah_num(periode_front_data.out)
+            this.el.fincard.front.body.in.textContent = common.format_rupiah_num(periode_front_data.in)
+            this.el.fincard.front.body.left.textContent = common.format_rupiah_num(periode_front_data.left)
+            if (periode_front_data.rkat.length > 0) {
+                if (periode_front_data.rkat.length > 1) {
+                    periode_front_data.rkat.sort((a, b) => a - b)
+                    this.set_front_rkat_text(`${periode_front_data.rkat[0]}—${periode_front_data.rkat[periode_front_data.rkat.length - 1]}`)
+                }
+                else {
+                    this.set_front_rkat_text(`${periode_front_data.rkat[0]}`)
+                }
+            }
+            this.el.fincard.front.body.lpj.textContent = `${periode_front_data.lpj}/${fincard_count} (${Math.ceil((periode_front_data.lpj / (fincard_count || 1)) * 100)}%)`
+            this.el.fincard.back.body.out_rkat.textContent = common.format_rupiah_num(-periode_back_data.out_rkat)
+            this.el.fincard.back.body.out_dpm.textContent = common.format_rupiah_num(-periode_back_data.out_dpm)
+            this.el.fincard.back.body.in_dpm.textContent = common.format_rupiah_num(periode_back_data.in_dpm, true)
+            this.el.fincard.back.body.in_alokasi.textContent = common.format_rupiah_num(periode_back_data.in_alokasi, true)
+            this.el.fincard.back.body.out_alokasi.textContent = common.format_rupiah_num(-periode_back_data.out_alokasi)
+            this.el.fincard.back.body.left.textContent = common.format_rupiah_num(periode_back_data.left)
+            if (periode_front_data.updated > 0) {
+                this.set_updated_text(periode_front_data.updated)
+            }
+        }
+        update_data_multi_organisasi(periode: string, organisasi_index: string, fincard_organisasi: DatabaseKeuangan.FincardOrganisasi): void {
+            this.update_data_multi_periode(periode, { [organisasi_index]: fincard_organisasi })
+            this.set_title(`${Object.values(OrganisasiKegiatan)[Number(organisasi_index)] || 'Organisasi'} ${main.keuangan.fincard.shorten_periode_text(periode)}`)
         }
     }
 }

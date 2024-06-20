@@ -110,13 +110,15 @@ const sistem = {
         link_berkas_lem: 'https://drive.google.com/drive/folders/1iwwJJ4WUT8R12fwMdhATC7e_gLRGlYz5?usp=sharing',
         link_berkas_dpm: 'https://drive.google.com/drive/folders/1xZ8mS5auho8IH4omtOqBXBrZDThIdFER?usp=sharing',
     },
+    tahun_periode: {
+        saat_ini: new Date().getFullYear(),
+        tertua: 2024,
+    }
 }
 
 namespace DatabaseKeuangan {
     export interface Snapshot {
-        fincard: FincardKM & {
-            recap: FincardRecapKM
-        }
+        fincard: FincardKM
         fintime: {
             [uid: string]: FintimeList
         }
@@ -132,18 +134,6 @@ namespace DatabaseKeuangan {
 
     export interface FincardOrganisasi {
         [uid: string]: Fincard
-    }
-
-    export interface FincardRecapKM {
-        [periode: string]: FincardRecapPeriode
-    }
-
-    export interface FincardRecapPeriode {
-        [organisasi_index: string | number]: FincardRecapOrganisasi
-    }
-
-    export interface FincardRecapOrganisasi {
-        [uid: string]: FincardRecap
     }
 
     export interface FintimeList {
@@ -170,18 +160,6 @@ namespace DatabaseKeuangan {
             [untuk_uid: string]: number
         }
         status_lpj: StatusRapat // !IMPORTANT
-        updated_timestamp: number
-    }
-
-    export interface FincardRecap {
-        tahun_rkat: number[]
-        rkat_murni: number
-        rkat_alokasi: number
-        dpm: number
-        sisa: number
-        disimpan_dpm: number
-        alokasi: number
-        lpj_progress: number
         updated_timestamp: number
     }
 
@@ -253,6 +231,10 @@ namespace SistemData {
             email_lem: string
             email_dpm: string
             email_kemahasiswaan: string
+        }
+        tahun_periode: {
+            saat_ini: number
+            tertua: number
         }
     }
 

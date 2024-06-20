@@ -1,0 +1,38 @@
+<div class="container main-container">
+    <div class="row">
+        <div class="col-12 col-lg-3 mb-3">
+            <insert-template-admin-nav />
+            <script defer>
+                document.addEventListener("DOMContentLoaded", () => {
+                    admin_nav_select_label("admin_nav", "Keuangan");
+                });
+            </script>
+        </div>
+        <div class="col-12 col-lg-9 animate animate-rise-on-enter">
+            <div class="card">
+                <div class="card-header">
+                    <span class="fs-4">Keuangan</span>
+                </div>
+                <div class="card-body">
+                    <insert-component-admin/keuangan/fincard-explorer />
+                    <!-- todo: button to generate/download data per periode rkat instead of periode kegiatan -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media (min-width: 992px) {
+        .main-container .row > *:nth-child(1) {
+            padding-right: calc(var(--bs-gutter-x) * 0.25);
+        }
+        .main-container .row > *:nth-child(2) {
+            padding-left: calc(var(--bs-gutter-x) * 0.25);
+        }
+    }
+</style>
+
+<script defer src="/assets/js/kegiatan/fincard.js"></script>
+<script defer src="/assets/js/admin/fincard_explorer.js"></script>
+<script defer src="/assets/js/admin/keuangan.js"></script>

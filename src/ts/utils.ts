@@ -121,6 +121,16 @@ const dom = {
         })
         return value
     },
+    hide(...elements: HTMLElement[]) {
+        for (const el of elements) {
+            el.classList.add('visually-hidden')
+        }
+    },
+    show(...elements: HTMLElement[]) {
+        for (const el of elements) {
+            el.classList.remove('visually-hidden')
+        }
+    },
 }
 
 enum Day {
@@ -299,7 +309,7 @@ const common = {
 
         return true
     },
-    format_rupiah_num(num: number) {
+    format_rupiah_num(num: number, add_plus_sign?: boolean) {
         const o = Math.abs(num).toFixed()
         const p = 3
         const q = '.'
@@ -307,7 +317,7 @@ const common = {
         for (let i = o.length - p; i > 0; i -= p) {
             r.splice(i, 0, q)
         }
-        return `${num < 0 ? '-' : ''}${r.join('')}`
+        return `${add_plus_sign && num > 0 ? '+' : num < 0 ? '-' : ''}${r.join('')}`
     },
     format_rupiah(num: number) {
         const o = Math.abs(num).toFixed()

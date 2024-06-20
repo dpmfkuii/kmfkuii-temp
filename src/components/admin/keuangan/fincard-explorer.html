@@ -1,0 +1,144 @@
+<h5
+    class="text-bg-success-subtle d-flex align-items-center gap-2 rounded overflow-auto"
+    style="padding: 0.6125rem 1rem"
+>
+    <i class="fa-regular fa-credit-card"></i> <strong>Periode</strong>
+    <select class="form-select w-auto" id="fincard_exp_periode_select">
+        <option selected>-- Pilih --</option>
+        <!-- minimum is 2024 as this Fincard applied -->
+        <!-- i.e. <option value="2023-2025" selected>2023—2025</option> -->
+    </select>
+    <i
+        class="fa-solid fa-circle-info"
+        role="button"
+        id="fincard_exp_periode_info_button"
+    ></i>
+</h5>
+<p
+    class="text-secondary bg-light p-4 text-center fst-italic rounded"
+    id="fincard_exp_periode_info"
+>
+    Pilih periode untuk menampilkan Fincard dalam rentang tersebut.
+</p>
+<div class="px-2">
+    <div class="row pt-3 visually-hidden" id="fincard_exp_card_parent">
+        <div class="col d-flex justify-content-center mb-3 px-1"></div>
+        <div class="col d-flex justify-content-center mb-3 px-1"></div>
+        <div class="col d-flex justify-content-center px-1"></div>
+    </div>
+</div>
+<hr />
+<h5
+    class="text-bg-success-subtle p-3 d-flex align-items-center gap-2 rounded overflow-auto"
+>
+    <i class="fa-solid fa-table-list"></i>
+    <span style="min-width: max-content">
+        <strong>Detail</strong> Per Kegiatan
+    </span>
+</h5>
+<p
+    class="text-secondary bg-light p-4 text-center fst-italic rounded"
+    id="fincard_exp_detail_info"
+>
+    Klik tombol
+    <span class="px-1 mx-1 border rounded"
+        ><i class="fa-solid fa-bars"></i
+    ></span>
+    pada bawah kiri Fincard periode dan Fincard organisasi untuk menampilkan
+    detail per kegiatan.
+</p>
+<div
+    class="table-responsive rounded border visually-hidden"
+    style="max-height: 400px"
+>
+    <table
+        class="fincard-data-table table table-striped table-hover text-center align-middle table-sm mb-1"
+        style="min-width: max-content"
+        id="fincard_exp_main_table"
+    >
+        <thead>
+            <tr>
+                <th scope="col" rowspan="3">No</th>
+                <th scope="col" rowspan="3">Nama Kegiatan</th>
+                <th scope="colgroup" colspan="9" class="table-primary rounded">
+                    Anggaran (Rp)
+                </th>
+                <th scope="col" rowspan="3">Selesai LPJ</th>
+                <th scope="col" rowspan="3">Terakhir diperbarui</th>
+                <th scope="col" rowspan="3">Aksi</th>
+            </tr>
+            <tr>
+                <th scope="colgroup" colspan="4" class="table-danger rounded">
+                    RKAT
+                </th>
+                <th scope="colgroup" colspan="4" class="table-warning rounded">
+                    DPM
+                </th>
+                <th scope="col" class="table-info rounded">RKAT</th>
+            </tr>
+            <tr>
+                <th scope="col" class="table-danger rounded">Tahun</th>
+                <th scope="col" class="table-danger rounded">Sub Aktivitas</th>
+                <th scope="col" class="table-danger rounded">Murni</th>
+                <th scope="col" class="table-info rounded">Alokasi</th>
+                <th scope="col" class="table-warning rounded">DPM</th>
+                <th scope="col" class="table-warning rounded">Sisa</th>
+                <th scope="col" class="table-warning rounded">Sudah Kembali</th>
+                <th scope="col" class="table-warning rounded">Disimpan DPM</th>
+                <th scope="col" class="table-info rounded">Alokasi</th>
+            </tr>
+            <tr class="table-dark">
+                <th scope="row">Total</th>
+                <th scope="col"></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<style>
+    .fincard-data-table {
+        font-size: 0.75em;
+    }
+    .fincard-data-table .btn-sm {
+        font-size: inherit;
+        padding: 0 0.5rem;
+    }
+    .fincard-data-table thead > tr:first-child > th:first-child,
+    .fincard-data-table thead > tr:last-child > th:first-child,
+    .fincard-data-table tbody > tr > td:first-child {
+        position: -webkit-sticky;
+        position: sticky;
+        left: 0;
+        z-index: 1;
+    }
+    .fincard-data-table thead {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+    .fincard-data-table thead tr th {
+        border: 0;
+        padding: 0.25rem 0.75rem;
+        box-shadow: inset -1px 1px 0 white, inset 1px -1px 0 white;
+    }
+    .fincard-data-table thead > tr:last-child th {
+        box-shadow: inset 0 1px 0 white;
+    }
+    .fincard-data-table tbody > tr > td:nth-child(2) {
+        text-align: left;
+    }
+</style>

@@ -14,6 +14,7 @@
     const pagination_button_prev = dom.qe<'button'>(pagination_button_container, 'button[aria-label="Previous"]')!
     const pagination_button_next = dom.qe<'button'>(pagination_button_container, 'button[aria-label="Next"]')!
 
+    // todo: use tahun settings
     const current_year = new Date().getFullYear()
     let select_periode_previous_value = select_periode.value = `${current_year}`
     select_periode.innerHTML = `
