@@ -113,7 +113,38 @@ const sistem = {
     tahun_periode: {
         saat_ini: new Date().getFullYear(),
         tertua: 2024,
-    }
+    },
+    sub_aktivitas_rkat: {
+        2024: [
+            {
+                kode: '03',
+                nama: 'Kegiatan Lembaga Mahasiswa (Lembaga dan UKM)',
+                anggaran: 500000000,
+            },
+            {
+                kode: '06',
+                nama: 'Delegasi Lomba Non-Akademik',
+                anggaran: 40000000,
+            },
+            {
+                kode: '07',
+                nama: 'Delegasi Lomba Akademik',
+                anggaran: 220000000,
+            },
+            {
+                kode: '08',
+                nama: 'Delegasi Non Lomba Nasional/Internasional',
+                anggaran: 99000000,
+            },
+        ],
+    } as any,
+    get_sub_rkat(tahun: number, index: number) {
+        try {
+            return this.sub_aktivitas_rkat[tahun][index]?.nama || '-'
+        }
+        catch { }
+        return '-'
+    },
 }
 
 namespace DatabaseKeuangan {

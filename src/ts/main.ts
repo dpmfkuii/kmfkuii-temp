@@ -742,7 +742,7 @@ main.keuangan = {
                 in: fincard.sisa,
                 left: fincard.sisa - fincard.disimpan_dpm - this.get_alokasi_amount(fincard.alokasi),
                 rkat: `${fincard.tahun_rkat}`,
-                lpj: out_amount === 0 ? 'No out' : fincard.status_lpj > StatusRapat.IN_PROGRESS ? 'Verified' : 'Unverified'
+                lpj: fincard.status_lpj > StatusRapat.IN_PROGRESS ? 'Verified' : 'Unverified'
             }
         },
         get_back_card_data_single(fincard) {
