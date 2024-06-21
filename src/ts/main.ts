@@ -226,13 +226,15 @@ type LogColor = 'light' | 'info' | 'success' | 'warning' | 'danger'
 const main = {
     keuangan: {} as MainKeuangan,
     set_bs_tooltip(el: HTMLElement, tooltip_text: string) {
-        dom.qa('.tooltip').forEach(n => {
-            if (dom.qe(n, '.tooltip-inner')?.textContent === el.getAttribute('data-bs-title')) {
-                n.remove()
-            }
-        })
-        el.setAttribute('data-bs-title', tooltip_text)
-        new bootstrap.Tooltip(el)
+        if (tooltip_text) {
+            dom.qa('.tooltip').forEach(n => {
+                if (dom.qe(n, '.tooltip-inner')?.textContent === el.getAttribute('data-bs-title')) {
+                    n.remove()
+                }
+            })
+            el.setAttribute('data-bs-title', tooltip_text)
+            new bootstrap.Tooltip(el)
+        }
     },
     init_bs_tooltip(tooltip_elements: HTMLElement[] | NodeListOf<HTMLElement> = dom.qa('[data-bs-toggle="tooltip"]')) {
         dom.qa('.tooltip').forEach(n => n.remove())
@@ -566,6 +568,7 @@ interface MainKeuangan {
             in: number
             left: number
             rkat: string
+            rkat_tooltip: string
             lpj: string
         }
         get_back_card_data_single(fincard: DatabaseKeuangan.Fincard): {
@@ -736,12 +739,20 @@ main.keuangan = {
         },
         get_front_card_data_single(fincard) {
             const out_amount = fincard.rkat_murni + this.get_alokasi_amount(fincard.rkat_alokasi) + fincard.dpm
+            const sub_rkat_text = `${sistem.get_sub_rkat_text(fincard.tahun_rkat, fincard.sub_aktivitas_rkat_index, '')}`
+            let rkat = `${fincard.tahun_rkat}`
+            let rkat_tooltip = rkat
+            if (sub_rkat_text) {
+                rkat_tooltip = `${fincard.tahun_rkat}/${sub_rkat_text}`
+                rkat = `${fincard.tahun_rkat}/${sub_rkat_text.substring(0, 2)}`
+            }
             return {
                 title: fincard.nama_kegiatan,
                 out: out_amount,
                 in: fincard.sisa,
                 left: fincard.sisa - fincard.disimpan_dpm - this.get_alokasi_amount(fincard.alokasi),
-                rkat: `${fincard.tahun_rkat}`,
+                rkat,
+                rkat_tooltip,
                 lpj: fincard.status_lpj > StatusRapat.IN_PROGRESS ? 'Verified' : 'Unverified'
             }
         },

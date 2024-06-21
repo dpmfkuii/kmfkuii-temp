@@ -221,14 +221,14 @@ try {
                 const all_show_buttons: HTMLDivElement[] = []
                 for (let i = 0; i < this.fincard_kegiatan_data_cache.length; i++) {
                     const fincard = this.fincard_kegiatan_data_cache[i]
-                    const sub_aktivitas_rkat = sistem.get_sub_rkat(fincard.tahun_rkat, fincard.sub_aktivitas_rkat_index)
+                    const sub_aktivitas_rkat_shorten = sistem.get_sub_rkat_shorten(fincard.tahun_rkat, fincard.sub_aktivitas_rkat_index)
                     const rkat_alokasi = main.keuangan.fincard.get_alokasi_amount(fincard.rkat_alokasi)
                     const alokasi = main.keuangan.fincard.get_alokasi_amount(fincard.alokasi)
                     if (!total_data.tahun_rkat.includes(fincard.tahun_rkat)) {
                         total_data.tahun_rkat.push(fincard.tahun_rkat)
                     }
-                    if (!total_data.sub_aktivitas_rkat.includes(sub_aktivitas_rkat)) {
-                        total_data.sub_aktivitas_rkat.push(sub_aktivitas_rkat)
+                    if (!total_data.sub_aktivitas_rkat.includes(sub_aktivitas_rkat_shorten)) {
+                        total_data.sub_aktivitas_rkat.push(sub_aktivitas_rkat_shorten)
                     }
                     total_data.rkat_murni += fincard.rkat_murni
                     total_data.rkat_alokasi += rkat_alokasi
@@ -248,12 +248,14 @@ try {
                         text: 'Tampilkan',
                     })
                     all_show_buttons.push(show_button)
+                    const td_sub_aktivitas = dom.c('td', { text: `${sub_aktivitas_rkat_shorten}` })
+                    main.set_bs_tooltip(td_sub_aktivitas, sistem.get_sub_rkat_text(fincard.tahun_rkat, fincard.sub_aktivitas_rkat_index))
                     tbody.appendChild(dom.c('tr', {
                         children: [
-                            dom.c('td', { text: `${no++} (${common.remove_whitespaces(fincard.nama_kegiatan).substring(0, 3)})` }),
+                            dom.c('td', { text: `${no++}. ${common.remove_whitespaces(fincard.nama_kegiatan).substring(0, 3)}...` }),
                             dom.c('td', { text: fincard.nama_kegiatan }),
                             dom.c('td', { text: `${fincard.tahun_rkat}` }),
-                            dom.c('td', { text: `${sub_aktivitas_rkat}` }),
+                            td_sub_aktivitas,
                             dom.c('td', { text: common.format_rupiah_num(fincard.rkat_murni) }),
                             dom.c('td', { text: common.format_rupiah_num(rkat_alokasi) }),
                             dom.c('td', { text: common.format_rupiah_num(fincard.dpm) }),
@@ -300,7 +302,7 @@ try {
                 thead_tr_total.innerHTML = `<th scope="row">Total</th>
 <th scope="col">${organisasi} ${main.keuangan.fincard.shorten_periode_text(periode)}</th>
 <th>${tahun_rkat_org_text}</th>
-<th>-</th>
+<th>${total_data.sub_aktivitas_rkat.length}</th>
 <th>${common.format_rupiah_num(total_data.rkat_murni)}</th>
 <th>${common.format_rupiah_num(total_data.rkat_alokasi)}</th>
 <th>${common.format_rupiah_num(total_data.dpm)}</th>

@@ -137,13 +137,22 @@ const sistem = {
                 anggaran: 99000000,
             },
         ],
-    } as any,
-    get_sub_rkat(tahun: number, index: number) {
+    } as SistemData.Keuangan['sub_aktivitas_rkat'],
+    get_sub_rkat_text(tahun: number, index: number, fallback: string = '-') {
         try {
-            return this.sub_aktivitas_rkat[tahun][index]?.nama || '-'
+            const sub = this.sub_aktivitas_rkat[tahun][index]
+            return `${sub.kode}-${sub.nama}` || fallback
         }
         catch { }
-        return '-'
+        return fallback
+    },
+    get_sub_rkat_shorten(tahun: number, index: number, fallback: string = '-') {
+        try {
+            const sub = this.sub_aktivitas_rkat[tahun][index]
+            return `${sub.kode}-${sub.nama.substring(0, 4)}...` || fallback
+        }
+        catch { }
+        return fallback
     },
 }
 
@@ -271,13 +280,12 @@ namespace SistemData {
 
     export interface Keuangan {
         sub_aktivitas_rkat: {
-            [tahun_rkat: string]: {
-                [kode_rkat: string]: SubAktivitasRKAT
-            }
+            [tahun_rkat: string]: SubAktivitasRKAT[]
         }
     }
 
     export interface SubAktivitasRKAT {
+        kode: string
         nama: string
         anggaran: number
     }

@@ -220,7 +220,7 @@ namespace Fincard {
     </tr>
     <tr><td colspan="2"><hr class="my-1" /></td></tr>
     <tr>
-        <th scope="row" class="label"><i class="fa-solid fa-clock-rotate-left"></i></th>
+        <th scope="row" class="label"><i class="fa-solid fa-clock-rotate-left" ${tt('Terakhir diperbarui')}></i></th>
         <td>
             <span class="fincard-updated-text">-</span>
         </td>
@@ -368,7 +368,7 @@ namespace Fincard {
             this.el.fincard.front.body.out.textContent = common.format_rupiah_num(front_data.out)
             this.el.fincard.front.body.in.textContent = common.format_rupiah_num(front_data.in)
             this.el.fincard.front.body.left.textContent = common.format_rupiah_num(front_data.left)
-            this.set_front_rkat_text(front_data.rkat)
+            this.set_front_rkat_text(front_data.rkat, front_data.rkat_tooltip)
             this.el.fincard.front.body.lpj.textContent = front_data.lpj
             this.el.fincard.back.body.out_rkat.textContent = common.format_rupiah_num(-back_data.out_rkat)
             this.el.fincard.back.body.out_dpm.textContent = common.format_rupiah_num(-back_data.out_dpm)
