@@ -69,7 +69,7 @@ try {
                 classes: ['text-break', 'start-animation-rise'],
                 html: `
                     <div class="spinner-border" aria-hidden="true"></div>
-                    <p role="status" class="text-secondary fst-italic m-0">Mencari Fincard <span class="text-success-emphasis">${search_value}</span>.</p>
+                    <p role="status" class="text-secondary fst-italic m-0">Memuat Fincard <span class="text-success-emphasis">${search_value}</span>.</p>
                 `
             }))
         },
@@ -221,13 +221,13 @@ try {
                 const all_show_buttons: HTMLDivElement[] = []
                 for (let i = 0; i < this.fincard_kegiatan_data_cache.length; i++) {
                     const fincard = this.fincard_kegiatan_data_cache[i]
-                    const sub_aktivitas_rkat_shorten = sistem.get_sub_rkat_shorten(fincard.tahun_rkat, fincard.sub_aktivitas_rkat_index)
+                    const sub_aktivitas_rkat_shorten = sistem.get_sub_rkat_shorten(fincard.tahun_rkat, fincard.sub_aktivitas_rkat_index, '-')
                     const rkat_alokasi = main.keuangan.fincard.get_alokasi_amount(fincard.rkat_alokasi)
                     const alokasi = main.keuangan.fincard.get_alokasi_amount(fincard.alokasi)
                     if (!total_data.tahun_rkat.includes(fincard.tahun_rkat)) {
                         total_data.tahun_rkat.push(fincard.tahun_rkat)
                     }
-                    if (!total_data.sub_aktivitas_rkat.includes(sub_aktivitas_rkat_shorten)) {
+                    if (sub_aktivitas_rkat_shorten !== '-' && !total_data.sub_aktivitas_rkat.includes(sub_aktivitas_rkat_shorten)) {
                         total_data.sub_aktivitas_rkat.push(sub_aktivitas_rkat_shorten)
                     }
                     total_data.rkat_murni += fincard.rkat_murni
@@ -260,7 +260,7 @@ try {
                             dom.c('td', { text: common.format_rupiah_num(rkat_alokasi) }),
                             dom.c('td', { text: common.format_rupiah_num(fincard.dpm) }),
                             dom.c('td', { text: common.format_rupiah_num(fincard.sisa) }),
-                            dom.c('td', { text: fincard.sudah_kembali ? 'Sudah' : 'Belum' }),
+                            dom.c('td', { text: fincard.sudah_kembali ? fincard.sisa > 0 ? 'Sudah' : 'Tidak ada sisa' : 'Belum' }),
                             dom.c('td', { text: common.format_rupiah_num(fincard.disimpan_dpm) }),
                             dom.c('td', { text: common.format_rupiah_num(alokasi) }),
                             dom.c('td', { text: fincard.status_lpj > StatusRapat.IN_PROGRESS ? 'Sudah' : 'Belum' }),
