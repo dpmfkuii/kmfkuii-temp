@@ -553,7 +553,7 @@ Feedback akan diberikan lewat comment di file PDF dan secara langsung saat perte
 2. PENGIRIMAN LINK ZOOM
 Jangan lupa untuk mengirim link Zoom yang telah disiapkan melalui fitur yang sudah ada di website.
 
-*NOTE: DEADLINE pengumpulan berkas & link zoom adalah H-8 JAM sebelum verifikasi.${post}`
+*NOTE: DEADLINE pengumpulan berkas & link zoom adalah H-5 JAM sebelum verifikasi.${post}`
         }
         return pre + {
             [TemplatEmail.KONFIRMASI_VERIFIKASI_PROPOSAL]: `proposal dan SPD`,
