@@ -219,6 +219,14 @@ interface JenisPengajuanRapatKegiatan {
     }
 }
 
+enum JenisKegiatan {
+    ProgramKerja = 'Program Kerja',
+    Lomba = 'Lomba',
+    NonLomba = 'Non Lomba',
+    Kemanusiaan = 'Kemanusiaan',
+    Khusus = 'Khusus',
+}
+
 type LogColor = 'light' | 'info' | 'success' | 'warning' | 'danger'
 
 //#endregion
@@ -239,6 +247,24 @@ const main = {
     init_bs_tooltip(tooltip_elements: HTMLElement[] | NodeListOf<HTMLElement> = dom.qa('[data-bs-toggle="tooltip"]')) {
         dom.qa('.tooltip').forEach(n => n.remove())
         tooltip_elements.forEach(n => new bootstrap.Tooltip(n))
+    },
+    get_opsi_jenis_kegiatan(penyelenggara_kegiatan: PenyelenggaraKegiatan) {
+        const opsi: JenisKegiatan[] = []
+        if (penyelenggara_kegiatan === PenyelenggaraKegiatan.INTERNAL_KM) {
+            opsi.push(JenisKegiatan.ProgramKerja)
+        }
+        else if (penyelenggara_kegiatan === PenyelenggaraKegiatan.EKSTERNAL_KM) {
+            opsi.push(JenisKegiatan.Lomba, JenisKegiatan.NonLomba, JenisKegiatan.Kemanusiaan)
+        }
+        opsi.push(JenisKegiatan.Khusus)
+        return opsi
+    },
+    get_hmin_proposal_from_jenis_kegiatan(jenis_kegiatan: JenisKegiatan) {
+        if (jenis_kegiatan === JenisKegiatan.Lomba) return 7
+        if (jenis_kegiatan === JenisKegiatan.NonLomba) return 14
+        if (jenis_kegiatan === JenisKegiatan.Kemanusiaan) return 3
+        if (jenis_kegiatan === JenisKegiatan.Khusus) return -Infinity
+        return 30
     },
     get_logbook_periode_text(current_fullyear: number = new Date().getFullYear()) {
         return `${current_fullyear - 1}—${current_fullyear + 1}`

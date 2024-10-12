@@ -9,6 +9,9 @@
 
     const input_jenis_rapat = dom.q<'input'>('input[name="jenis_rapat"]')!
     const input_rapat_dengan = dom.q<'input'>('input[name="rapat_dengan"]')!
+    const input_group_proposal_addon = dom.q<'input'>('#input_group_proposal_addon')!
+    const input_penyelenggara_kegiatan = dom.q<'input'>('input[name="penyelenggara_kegiatan"]')!
+    const select_jenis_kegiatan = dom.q<'select'>('select[name="jenis_kegiatan"]')!
     const input_tanggal_rapat = dom.q<'input'>('input[name="tanggal_rapat"]')!
     const select_jam_rapat = dom.q<'select'>('select[name="jam_rapat"]')!
     const input_tanggal_rapat_invalid_feedback = dom.qe<'div'>(input_tanggal_rapat.parentElement!, '.invalid-feedback')!
@@ -45,8 +48,32 @@
 
     input_jenis_rapat.value = (defines.jenis_rapat_text as any)[jenis]
     input_rapat_dengan.value = (defines.rapat_dengan_text as any)[dengan]
+    input_penyelenggara_kegiatan.value = penyelenggara_kegiatan
+    let select_jenis_kegiatan_previous_value = select_jenis_kegiatan.value
+
+    if (jenis === JenisRapat.LPJ) {
+        // if lpj, remove h- proposal input, no need to remove required attr as we always fill its value
+        dom.hide(input_group_proposal_addon)
+    }
 
     // fill in options
+    const set_jenis_kegiatan_options = () => {
+        select_jenis_kegiatan.innerHTML = '<option disabled selected value>-- Pilih jenis kegiatan --</option>'
+        const opsi = main.get_opsi_jenis_kegiatan(penyelenggara_kegiatan)
+        let count = 0
+        for (const jenis_kegiatan of opsi) {
+            const option = dom.c('option')
+            const hmin_text = jenis_kegiatan === JenisKegiatan.Khusus ? 'sudah konsul DPM' : `H-${main.get_hmin_proposal_from_jenis_kegiatan(jenis_kegiatan)}`
+            option.value = jenis_kegiatan
+            option.textContent = `${jenis_kegiatan} (${hmin_text})`
+            if (count++ === 0) option.selected = true
+            select_jenis_kegiatan.appendChild(option)
+        }
+        select_jenis_kegiatan_previous_value = select_jenis_kegiatan.value
+    }
+
+    set_jenis_kegiatan_options()
+
     const set_jam_rapat_options = (data_opsi_jam_rapat: string[], data_jam_reschedule: string[], taken_hours: string[] = []) => {
         select_jam_rapat.innerHTML = '<option disabled selected value>-- Pilih jam --</option>'
         for (const jam of data_opsi_jam_rapat) {
@@ -97,10 +124,10 @@
 
             // cek H- proposal
             if (!is_invalid && jenis === JenisRapat.PROPOSAL) {
-                const day_to = penyelenggara_kegiatan === PenyelenggaraKegiatan.INTERNAL_KM ? 30 : 7
+                const day_to = main.get_hmin_proposal_from_jenis_kegiatan(select_jenis_kegiatan.value as JenisKegiatan)
                 const day_diff = common.get_difference_in_days(date_tanggal_rapat, tanggal_pertama_kegiatan)
                 if (day_diff < day_to) {
-                    input_tanggal_rapat_invalid_feedback.innerHTML = `Rapat proposal ${penyelenggara_kegiatan === PenyelenggaraKegiatan.INTERNAL_KM ? 'internal KM' : 'eksternal KM'} minimal <strong>H-${day_to}</strong> kegiatan!`
+                    input_tanggal_rapat_invalid_feedback.innerHTML = `Rapat proposal ${select_jenis_kegiatan.value.toLowerCase()} (${penyelenggara_kegiatan === PenyelenggaraKegiatan.INTERNAL_KM ? 'internal KM' : 'eksternal KM'}) minimal <strong>H-${day_to}</strong> kegiatan!`
                     is_invalid = true
                 }
             }
@@ -120,8 +147,10 @@
             }
         }
         else {
-            input_tanggal_rapat_invalid_feedback.innerHTML = 'Tanggal tidak ditemukan!'
-            is_invalid = true
+            if (!is_invalid && input_tanggal_rapat.value) {
+                input_tanggal_rapat_invalid_feedback.innerHTML = 'Tanggal tidak ditemukan!'
+                is_invalid = true
+            }
         }
 
         if (is_invalid) {
@@ -176,6 +205,37 @@
         set_jam_rapat_options(data_opsi_jam_rapat, data_jam_reschedule, taken_hours)
     }
 
+    select_jenis_kegiatan.addEventListener('change', () => {
+        if (select_jenis_kegiatan.value === JenisKegiatan.Khusus) {
+            swal.fire({
+                icon: 'warning',
+                title: `Sudah konsul DPM?`,
+                html: `<small>Perlakuan khusus akan tercatat dalam log kegiatan dan organisasi.</small>`,
+                showDenyButton: true,
+                confirmButtonText: 'Sudah',
+                denyButtonText: 'Belum',
+                customClass: {
+                    confirmButton: 'btn btn-secondary',
+                    denyButton: 'btn btn-danger ms-2',
+                },
+                buttonsStyling: false,
+                showCloseButton: true,
+            }).then((result: any) => {
+                if (result.isConfirmed) {
+                    validate_date_and_time()
+                    select_jenis_kegiatan_previous_value = select_jenis_kegiatan.value
+                }
+                else {
+                    select_jenis_kegiatan.value = select_jenis_kegiatan_previous_value
+                    validate_date_and_time()
+                }
+            })
+        }
+        else {
+            validate_date_and_time()
+            select_jenis_kegiatan_previous_value = select_jenis_kegiatan.value
+        }
+    })
     input_tanggal_rapat.addEventListener('change', () => validate_date_and_time())
 
     form.addEventListener('submit', async ev => {
@@ -223,7 +283,10 @@
             await Promise.all([
                 db.add_kegiatan_log(uid,
                     defines.log_colors.jadwal_masuk_antrean,
-                    defines.log_text.rapat_dalam_antrean(nama_rapat, waktu_rapat),
+                    defines.log_text.rapat_dalam_antrean(
+                        nama_rapat, waktu_rapat,
+                        (jenis === JenisRapat.PROPOSAL && select_jenis_kegiatan.value === JenisKegiatan.Khusus) ? '(penggunaan KHUSUS)' : ''
+                    ),
                 ),
                 db.set_kegiatan_updated_timestamp(uid),
             ])
