@@ -71,8 +71,9 @@
         // reset jam
         select_jam_rapat.value = ''
 
+        // cek pemilihan tanggal
         const date_tanggal_rapat = input_tanggal_rapat.valueAsDate
-
+        let is_invalid = false
         if (date_tanggal_rapat) {
             if (input_tanggal_rapat.classList.contains('is-invalid')) {
                 input_tanggal_rapat.classList.remove('is-invalid')
@@ -85,24 +86,27 @@
             // cek itu hari weekend atau ngga
             if (date_tanggal_rapat.getDay() === Day.Saturday || date_tanggal_rapat.getDay() === Day.Sunday) {
                 input_tanggal_rapat_invalid_feedback.innerHTML = 'Pilih waktu <strong>Senin—Jum’at</strong>!'
-                input_tanggal_rapat.classList.add('is-invalid')
+                is_invalid = true
             }
+
             // cek itu dah tutup atau belum
-            else if (common.is_date_before(date_tanggal_rapat, min_tanggal_rapat)) {
+            if (!is_invalid && common.is_date_before(date_tanggal_rapat, min_tanggal_rapat)) {
                 input_tanggal_rapat_invalid_feedback.innerHTML = 'Pendaftaran di tanggal itu sudah <strong>tutup</strong>!'
-                input_tanggal_rapat.classList.add('is-invalid')
+                is_invalid = true
             }
+
             // cek H- proposal
-            else if (jenis === JenisRapat.PROPOSAL) {
+            if (!is_invalid && jenis === JenisRapat.PROPOSAL) {
                 const day_to = penyelenggara_kegiatan === PenyelenggaraKegiatan.INTERNAL_KM ? 30 : 7
                 const day_diff = common.get_difference_in_days(date_tanggal_rapat, tanggal_pertama_kegiatan)
                 if (day_diff < day_to) {
                     input_tanggal_rapat_invalid_feedback.innerHTML = `Rapat proposal ${penyelenggara_kegiatan === PenyelenggaraKegiatan.INTERNAL_KM ? 'internal KM' : 'eksternal KM'} minimal <strong>H-${day_to}</strong> kegiatan!`
-                    input_tanggal_rapat.classList.add('is-invalid')
+                    is_invalid = true
                 }
             }
+
             // cek jarak lem ke dpm
-            else if (dengan === RapatDengan.DPM) {
+            if (!is_invalid && dengan === RapatDengan.DPM) {
                 // lem belum selesai dan lem ada di antrean, pastikan jaraknya sesuai
                 if (status_lem < StatusRapat.MARKED_AS_DONE && antrean_lem) {
                     const lem_date = new Date(antrean_lem)
@@ -110,17 +114,18 @@
                     const diff = common.get_difference_in_days(lem_date, selected_date)
                     if (diff < 2) {
                         input_tanggal_rapat_invalid_feedback.innerHTML = 'Jarak antar rapat LEM ke DPM <strong>minimal 2 hari</strong>!'
-                        input_tanggal_rapat.classList.add('is-invalid')
+                        is_invalid = true
                     }
                 }
             }
         }
         else {
             input_tanggal_rapat_invalid_feedback.innerHTML = 'Tanggal tidak ditemukan!'
-            input_tanggal_rapat.classList.add('is-invalid')
+            is_invalid = true
         }
 
-        if (input_tanggal_rapat.classList.contains('is-invalid')) {
+        if (is_invalid) {
+            input_tanggal_rapat.classList.add('is-invalid')
             select_jam_rapat_invalid_feedback.innerHTML = 'Pilih tanggal yang sesuai!'
             select_jam_rapat.classList.add('is-invalid')
             set_jam_rapat_options([], [])
@@ -128,6 +133,7 @@
             return
         }
 
+        // lolos pemilihan tanggal
         // cek jam berapa yg avail di tanggal segitu
         // ambil dari antrean dan terkonfirmasi
         let data_opsi_jam_rapat: string[] = []

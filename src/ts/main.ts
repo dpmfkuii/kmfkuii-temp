@@ -279,7 +279,12 @@ const main = {
                 return `<i class="fa-solid fa-check ${no_color ? '' : 'text-success'}"></i>`
         }
     },
-    is_status_verifikasi_selesai(status_verifikasi: Kegiatan['status']['verifikasi']) {
+    is_status_verifikasi_selesai(organisasi: OrganisasiKegiatan, status_verifikasi: Kegiatan['status']['verifikasi']) {
+        if (organisasi === OrganisasiKegiatan.LPM_CARDIOS) {
+            return status_verifikasi.proposal.dpm > 0
+                && status_verifikasi.lpj.dpm > 0
+        }
+
         return status_verifikasi.proposal.lem > 0
             && status_verifikasi.proposal.dpm > 0
             && status_verifikasi.lpj.lem > 0
@@ -430,6 +435,8 @@ const main = {
                         const div = dom.qe<'div'>(popup, '#swal2-html-container > div')!
                         if (snap.exists()) {
                             const kegiatan = snap.val()
+                            const is_LPM = Object.values(OrganisasiKegiatan)[kegiatan.organisasi_index] === OrganisasiKegiatan.LPM_CARDIOS
+                            const LEM_LPM_status_text = '<span class="text-secondary">LPM tidak perlu</span>'
                             let uid_text = ''
                             const role = auth.get_logged_in_user()?.role
                             if (role === UserRole.ADMIN) {
@@ -461,9 +468,9 @@ const main = {
                                     <h6>Tanggal Pertama Kegiatan</h6>
                                     <p class="small">${kegiatan.tanggal_kegiatan[0]}</p>` : ''}
                                 <h6>Status Verifikasi</h6>
-                                <p class="small">Proposal LEM ${main.get_status_rapat_text(kegiatan.status.verifikasi.proposal.lem, true)}.<br />
+                                <p class="small">Proposal LEM ${is_LPM ? LEM_LPM_status_text : main.get_status_rapat_text(kegiatan.status.verifikasi.proposal.lem, true)}.<br />
                                 Proposal DPM ${main.get_status_rapat_text(kegiatan.status.verifikasi.proposal.dpm, true)}.<br />
-                                LPJ LEM ${main.get_status_rapat_text(kegiatan.status.verifikasi.lpj.lem, true)}.<br />
+                                LPJ LEM ${is_LPM ? LEM_LPM_status_text : main.get_status_rapat_text(kegiatan.status.verifikasi.lpj.lem, true)}.<br />
                                 LPJ DPM ${main.get_status_rapat_text(kegiatan.status.verifikasi.lpj.dpm, true)}.</p>
                                 <h6>Dibuat</h6>
                                 <p class="small">${new Date(kegiatan.created_timestamp).toLocaleString()}</p>

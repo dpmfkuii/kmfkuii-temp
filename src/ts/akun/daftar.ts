@@ -78,7 +78,7 @@
 
         await common.sleep(100)
 
-        const prefix_uid = input_nama_kegiatan.value.substring(0, 3).toLowerCase()
+        const prefix_uid = common.remove_whitespaces(input_nama_kegiatan.value).substring(0, 3).toLowerCase()
         const new_user: User = {
             uid: `${prefix_uid}${auth.make_uid().substring(prefix_uid.length)}`,
             role: UserRole.PENGURUS,

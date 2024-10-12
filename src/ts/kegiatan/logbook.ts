@@ -92,7 +92,7 @@
                             const log = logbook_periode[organisasi_index][uid]
                             const { nama_kegiatan, status } = main.extract_logbook_text(log)
 
-                            organisasi_verifikasi_selesai_count += main.is_status_verifikasi_selesai(status.verifikasi) ? 1 : 0
+                            organisasi_verifikasi_selesai_count += main.is_status_verifikasi_selesai(organisasi, status.verifikasi) ? 1 : 0
 
                             const list_item_kegiatan_title = dom.c('span', {
                                 attributes: { role: 'button' },
@@ -118,7 +118,11 @@
                                 ],
                             })
 
-                            if (status.verifikasi.proposal.lem > StatusRapat.NOT_STARTED || status.verifikasi.lpj.lem > StatusRapat.NOT_STARTED) {
+                            if (status.verifikasi.proposal.lem > StatusRapat.NOT_STARTED
+                                || status.verifikasi.proposal.dpm > StatusRapat.NOT_STARTED
+                                || status.verifikasi.lpj.lem > StatusRapat.NOT_STARTED
+                                || status.verifikasi.lpj.dpm > StatusRapat.NOT_STARTED
+                            ) {
                                 organisasi_verifikasi_dimulai_count++
                                 if (status.verifikasi.lpj.dpm < StatusRapat.MARKED_AS_DONE) {
                                     if (!quick_lookup_list[organisasi]) {
