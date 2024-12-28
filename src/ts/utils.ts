@@ -240,8 +240,8 @@ const common = {
      * @param date2 
      */
     is_date_before(date1: Date, date2: Date) {
-        const sum1 = date1.getFullYear() + ((date1.getMonth() + 1) * 100) + date1.getDate()
-        const sum2 = date2.getFullYear() + ((date2.getMonth() + 1) * 100) + date2.getDate()
+        const sum1 = date1.getFullYear() * 10000 + ((date1.getMonth() + 1) * 100) + date1.getDate()
+        const sum2 = date2.getFullYear() * 10000 + ((date2.getMonth() + 1) * 100) + date2.getDate()
         return sum1 < sum2
     },
     to_12h_format(date: Date) {
