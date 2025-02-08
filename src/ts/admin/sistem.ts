@@ -1,10 +1,10 @@
 (() => {
     enum ATUR_MENU {
         VERIFIKASI = 'Verifikasi',
-        KEUANGAN = 'Keuangan',
+        // KEUANGAN = 'Keuangan',
         // ORGANISASI = 'Organisasi',
-        DATA_USANG = 'Data Usang',
-        PANDUAN = 'Panduan',
+        // DATA_USANG = 'Data Usang',
+        // PANDUAN = 'Panduan',
     }
 
     const atur_nav_controller = {
@@ -171,31 +171,31 @@
         //     async save() { },
         //     init() { },
         // },
-        [ATUR_MENU.KEUANGAN]: {
-            container: dom.q<'div'>('#atur_card_keuangan')!,
-            async save() { },
-            init() {
-                try {
-                    db.sistem.get_data_keuangan().then(snap => {
-                        try {
-                            this.container.querySelector('.temp')!.innerHTML = JSON.stringify(snap.val())
-                        }
-                        catch { }
-                    })
-                }
-                catch { }
-            },
-        },
-        [ATUR_MENU.DATA_USANG]: {
-            container: dom.q<'div'>('#atur_card_data_usang')!,
-            async save() { },
-            init() { },
-        },
-        [ATUR_MENU.PANDUAN]: {
-            container: dom.q<'div'>('#atur_card_panduan')!,
-            async save() { },
-            init() { },
-        },
+        // [ATUR_MENU.KEUANGAN]: {
+        //     container: dom.q<'div'>('#atur_card_keuangan')!,
+        //     async save() { },
+        //     init() {
+        //         try {
+        //             db.sistem.get_data_keuangan().then(snap => {
+        //                 try {
+        //                     this.container.querySelector('.temp')!.innerHTML = JSON.stringify(snap.val())
+        //                 }
+        //                 catch { }
+        //             })
+        //         }
+        //         catch { }
+        //     },
+        // },
+        // [ATUR_MENU.DATA_USANG]: {
+        //     container: dom.q<'div'>('#atur_card_data_usang')!,
+        //     async save() { },
+        //     init() { },
+        // },
+        // [ATUR_MENU.PANDUAN]: {
+        //     container: dom.q<'div'>('#atur_card_panduan')!,
+        //     async save() { },
+        //     init() { },
+        // },
         hide_all_card() {
             for (const menu of Object.values(ATUR_MENU)) {
                 this[menu].container.classList.add('visually-hidden')
